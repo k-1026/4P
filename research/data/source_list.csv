@@ -1,0 +1,27 @@
+﻿노트,데이터셋명,제공기관,제공 형식,공식 URL,대구 지역 데이터 여부,URL 상태
+food_businesses.md,전국일반음식점표준데이터 (파일명 행정안전부_식품_일반음식점_20251127),행정안전부 (소관 식품의약품안전처),CSV,https://www.data.go.kr/data/15096283/openapi.do,"전국 데이터(2,129,830행). 대구 필터 방법은 확인 필요(주소 문자열로 걸러야 할 가능성)",200
+food_businesses.md,소상공인시장진흥공단_상가(상권)정보_20260630,소상공인시장진흥공단,"CSV (zip, UTF-8)",https://www.data.go.kr/data/15083033/fileData.do,전국 데이터. 시도별 파일 분할 여부는 확인 필요,200
+food_businesses.md,소상공인시장진흥공단_상가(상권)정보_API,소상공인시장진흥공단,"API(REST, JSON/XML)",https://www.data.go.kr/data/15012005/openapi.do,"전국 데이터. 키워드에 ""시도단위"", ""반경조회"", ""영역별조회""가 있어 대구 단위 조회 가능성이 있으나 오퍼레이션 명세는 확인 필요",200
+food_businesses.md,대구광역시 남구_식품위생업소현황_20260620,대구광역시 남구,"CSV / API(XML, JSON)",https://www.data.go.kr/data/3072264/fileData.do,"대구 남구만 (4,060행)",200
+traditional_markets.md,전국전통시장표준데이터,소상공인시장진흥공단 (소관 중소벤처기업부),CSV (XLS·XML·JSON·RDF 다운로드도 있음) / API,https://www.data.go.kr/data/15012894/standard.do,전국 데이터. 주소로 대구 필터 가능 (페이지에 지역 필터 안내는 없음),200
+traditional_markets.md,대구광역시 서구_전통시장 현황_20250612,대구광역시 서구,"CSV / API(XML, JSON)",https://www.data.go.kr/data/15093591/fileData.do,서구만 (12행),200
+traditional_markets.md,대구광역시 동구_전통시장_20260331,대구광역시 동구,"CSV / API(XML, JSON)",https://www.data.go.kr/data/15102915/fileData.do,동구만 (15행),200
+traditional_markets.md,대구광역시 북구_전통시장 현황정보 데이터_20221212,대구광역시 북구,CSV,https://data.daegu.go.kr/open/data/dataView.do?dataSetId=15109867&dataSetDetailId=151098671b6babd11f8ca&provdMethod=FILE,북구만,200
+traditional_markets.md,"대구광역시 달서구_○○시장 상점정보 데이터_20221213 (월배신시장, 월촌역시장, 월성청구시장, 월배시장 등)",대구광역시 달서구,확인 필요 (목록에 FILE로 표시),https://data.daegu.go.kr/open/data/dataList.do?searchWrd=전통시장,달서구 개별 시장만,200
+traditional_markets.md,소상공인시장진흥공단_전국 온누리상품권 가맹점 현황_20260731,소상공인시장진흥공단,"CSV / API(XML, JSON)",https://www.data.go.kr/data/3060079/fileData.do,"전국 데이터 (125,589행). 소재지로 대구 필터 필요",200
+food_districts.md,소상공인시장진흥공단_상가(상권)정보_20260630,소상공인시장진흥공단,"CSV (zip, UTF-8)",https://www.data.go.kr/data/15083033/fileData.do,전국 데이터. 대구 필터 방법 확인 필요,200
+food_districts.md,소상공인시장진흥공단_상가(상권)정보_API,소상공인시장진흥공단,"API(REST, JSON/XML)",https://www.data.go.kr/data/15012005/openapi.do,전국 데이터. 상권 영역 조회 기능의 구체 명세는 확인 필요,200
+food_districts.md,대구광역시 남구_먹거리골목 업소현황(안지랑곱창골목)_20261002,대구광역시 남구,"CSV / API(XML, JSON)",https://www.data.go.kr/data/15122879/fileData.do,남구 골목만 (52행),200
+food_districts.md,대구광역시 남구_먹거리골목 업소현황(앞산카페거리)_20260901,대구광역시 남구,"CSV / API(XML, JSON)",https://www.data.go.kr/data/15122876/fileData.do,남구 골목만 (32행),200
+food_districts.md,대구광역시 남구_먹거리골목 업소현황(앞산맛둘레길)_20261002,대구광역시 남구,"CSV / API(XML, JSON)",https://www.data.go.kr/data/3069689/fileData.do,남구 골목만 (44행),200
+food_prices.md,"한국농수산식품유통공사_지역별 품목별 도,소매 가격정보 조회",한국농수산식품유통공사 (디지털AI운영부),"API(REST, JSON/XML)",https://www.data.go.kr/data/15156062/openapi.do,응답에 시군구코드/명이 있으나 **대구 포함 여부는 페이지에서 확인 못함** (명세 zip 확인 필요),200
+food_prices.md,KAMIS 농산물유통정보 Open-API (17종),한국농수산식품유통공사,"API (응답 포맷은 페이지에 표기 없음, 확인 필요)",https://www.kamis.or.kr/customer/reference/openapi_list.do,지역별 API가 있으나 대구 지역코드 존재 여부는 확인 필요,200
+food_prices.md,농림수산식품교육문화정보원_일별 품목 경락가격_20221231,농림수산식품교육문화정보원,"CSV / API(XML, JSON)",https://www.data.go.kr/data/15151243/fileData.do,**도매시장 구분 컬럼이 없어 대구 시장 데이터인지 알 수 없음**. 1회성 데이터,200
+food_prices.md,참가격 서비스가격정보 > 외식비,"한국소비자원 (원자료 행정안전부, 출처 국가데이터처)","웹페이지 + ""엑셀저장"" 버튼 (CSV/API 아님, API 여부 확인 필요)",https://www.price.go.kr/tprice/portal/servicepriceinfo/dineoutprice/dineOutPriceList.do,**대구 포함** (시도 단위). 지역 선택 조회 가능,200
+food_prices.md,대구광역시 북구_착한가격업소_20260624,대구광역시 북구,"CSV / API(XML, JSON)",https://www.data.go.kr/data/15030563/fileData.do,북구만 (66행),200
+local_food_access.md,대구광역시_로컬푸드직매장 및 직거래장터 현황_20250508,대구광역시 (농산유통과),CSV,https://data.daegu.go.kr/open/data/dataView.do?dataSetId=15029608&dataSetDetailId=150296081a8eb090ea816&provdMethod=FILE,**대구 전체** (2019~2025년 연도별 파일 있음),200
+local_food_access.md,농림축산식품부_로컬푸드 직매장 현황_20211231,농림축산식품부,CSV,https://www.data.go.kr/data/15055113/fileData.do,전국 데이터 (138행). 대구 행 포함 여부 확인 필요,200
+local_food_access.md,경상북도_로컬푸드 직매장 현황_20210928,경상북도,"CSV / API(XML, JSON)",https://www.data.go.kr/data/15044807/fileData.do,"경북만 (40행), 대구 아님",200
+local_food_access.md,대구광역시 달성군_현풍백년도깨비시장_점포별_판매상품_20261014,대구광역시 달성군,확인 필요 (목록에 FILE로 표시),https://data.daegu.go.kr/open/data/dataList.do?searchWrd=전통시장,달성군 시장 1곳,200
+local_food_access.md,소상공인시장진흥공단_전국 온누리상품권 가맹점 현황_20260731,소상공인시장진흥공단,"CSV / API(XML, JSON)",https://www.data.go.kr/data/3060079/fileData.do,전국 데이터. 소재지로 대구 필터 필요,200
+local_food_access.md,대구광역시_농축산물 재배현황_주요작목별현황_20251231,대구광역시,"CSV / API(XML, JSON)",https://www.data.go.kr/data/15130918/fileData.do,대구 전체 합계 1행,200
