@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>버틴집 고객 여정지도</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one horizontal map, seven stages as columns, rows for each lens. */
+:root {
+  --bg: #f5f0e6;
+  --surface: #fbf8f1;
+  --ink: #1d2620;
+  --muted: #5d685f;
+  --line: #d9d1bf;
+  --moss: #3d6a4d;
+  --moss-soft: #dfe9dd;
+  --brick: #a8432c;
+  --brick-soft: #f3dcd3;
+  --amber: #9a6b12;
+  --amber-soft: #f4e7c4;
+  --curve: #1d2620;
+  --display: "Gowun Batang", "Noto Serif KR", serif;
+  --body: "Noto Sans KR", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161c18;
+    --surface: #1e2620;
+    --ink: #ecE6d8;
+    --muted: #a3ada0;
+    --line: #34403a;
+    --moss: #8fc29f;
+    --moss-soft: #223428;
+    --brick: #e8957f;
+    --brick-soft: #3a2420;
+    --amber: #e0bd6a;
+    --amber-soft: #3a3019;
+    --curve: #ecE6d8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161c18;
+  --surface: #1e2620;
+  --ink: #ecE6d8;
+  --muted: #a3ada0;
+  --line: #34403a;
+  --moss: #8fc29f;
+  --moss-soft: #223428;
+  --brick: #e8957f;
+  --brick-soft: #3a2420;
+  --amber: #e0bd6a;
+  --amber-soft: #3a3019;
+  --curve: #ecE6d8;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+.wrap { max-width: 1320px; margin: 0 auto; }
+header { display: grid; gap: 10px; margin-bottom: 26px; }
+.kicker { font-size: 12px; letter-spacing: .08em; color: var(--muted); }
+h1 { font: 700 30px/1.25 var(--display); margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); margin: 0; }
+.chip {
+  display: inline-block; width: fit-content; font-size: 12px;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted);
+}
+.persona {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px 18px; margin-bottom: 22px;
+}
+.persona h2 { font: 700 16px var(--display); margin: 0 0 4px; }
+.persona p { margin: 0; color: var(--muted); }
+.persona .label { font-size: 11px; letter-spacing: .06em; color: var(--muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.map {
+  display: grid;
+  grid-template-columns: 96px repeat(7, minmax(160px, 1fr));
+  min-width: 1240px;
+  position: relative;
+}
+.cell { padding: 12px 12px; border-top: 1px solid var(--line); border-left: 1px solid var(--line); min-width: 0; }
+.rowhead {
+  font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: .04em;
+  border-left: 0; background: var(--bg);
+}
+.stagehead { background: var(--moss); color: #fff; border-top: 0; }
+.stagehead.first { border-left: 0; }
+.stagehead .n { font-size: 11px; opacity: .8; }
+.stagehead .t { font: 700 17px var(--display); margin-top: 2px; }
+.stagehead .c { font-size: 12px; opacity: .9; margin-top: 4px; }
+.stagehead .star { display: inline-block; margin-top: 6px; font-size: 11px; padding: 1px 8px; border-radius: 999px; background: #fff; color: var(--moss); font-weight: 700; }
+.corner { background: var(--bg); border-top: 0; border-left: 0; }
+.stagehead.moment { background: var(--amber); color: #fff; }
+ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+li { position: relative; padding-left: 12px; }
+li::before { content: ""; position: absolute; left: 0; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: var(--muted); }
+.quote {
+  font: 500 14px/1.55 var(--display); font-style: normal; color: var(--ink);
+  border-left: 3px solid var(--moss); padding: 2px 0 2px 10px;
+}
+.emo { position: relative; height: 140px; }
+.emo .scale { position: absolute; inset: 0; }
+.emo .tick { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--line); font-size: 10px; color: var(--muted); }
+.emo .tick span { position: absolute; left: 0; top: -8px; background: var(--surface); padding-right: 4px; }
+.dot {
+  position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%;
+  background: var(--curve); border: 3px solid var(--surface); box-sizing: content-box;
+}
+.emo-label { position: absolute; font-size: 11px; color: var(--ink); white-space: nowrap; transform: translate(-50%, 0); }
+#curve { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.tag {
+  display: block; font-size: 12.5px; padding: 6px 9px; border-radius: 6px; margin-bottom: 6px; line-height: 1.45;
+}
+.tag.strong { background: var(--brick-soft); color: var(--brick); }
+.tag.mid { background: var(--amber-soft); color: var(--amber); }
+.tag b { font-weight: 700; margin-right: 4px; }
+.opp { background: var(--moss-soft); color: var(--moss); border-radius: 6px; padding: 7px 9px; font-size: 12.5px; margin-bottom: 6px; line-height: 1.45; }
+.touch { font-size: 12.5px; line-height: 1.5; }
+.touch .who { display: inline-block; font-size: 11px; font-weight: 700; padding: 0 6px; border-radius: 4px; margin-right: 4px; }
+.touch .who.high { background: var(--moss); color: #fff; }
+.touch .who.mid { background: var(--amber-soft); color: var(--amber); }
+.touch .who.low { background: var(--line); color: var(--muted); }
+.msg { font-size: 12.5px; line-height: 1.5; font-style: italic; color: var(--ink); }
+.kpi { font-size: 12.5px; line-height: 1.5; color: var(--muted); }
+.ev { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+.ev.fact { background: var(--moss-soft); color: var(--moss); }
+.ev.hyp { background: var(--line); color: var(--muted); }
+.empty { color: var(--muted); font-size: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 14px 0 0; font-size: 12px; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
+h2.sec { font: 700 20px var(--display); margin: 34px 0 12px; }
+.tops { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.top {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px;
+  display: grid; gap: 6px; align-content: start;
+}
+.top .rank { font: 700 13px var(--body); color: var(--brick); }
+.top h3 { margin: 0; font: 700 16px/1.4 var(--display); text-wrap: balance; }
+.top p { margin: 0; color: var(--muted); font-size: 13px; }
+.top .where { font-size: 12px; color: var(--moss); }
+.panel {
+  margin-top: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px;
+  display: grid; gap: 12px;
+}
+.panel h3 { margin: 0; font: 700 16px var(--display); }
+.panel ul { gap: 8px; }
+.panel ul li { font-size: 13px; color: var(--muted); }
+.panel ul li b { color: var(--ink); }
+.notes { margin-top: 18px; display: grid; gap: 8px; color: var(--muted); font-size: 12.5px; }
+.notes b { color: var(--ink); }
+@media (max-width: 640px) {
+  h1 { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="chip">가설 기반 수정본 · 인터뷰로 검증 필요</span>
+    <div class="kicker">BUTIN-JIP · CUSTOMER JOURNEY MAP</div>
+    <h1>버틴집 고객 여정지도</h1>
+    <p class="sub">광고에 안 속고 싶은 단골 탐색러가 맛집을 고르고, 믿고, 다시 찾기까지</p>
+  </header>
+
+  <section class="persona" aria-label="페르소나">
+    <div>
+      <div class="label">페르소나 (가상 인물)</div>
+      <h2>김서윤 · 32세 · 회사원</h2>
+      <p>주 3~4회 외식. 점심은 회사 근처, 주말 저녁 약속 장소는 직접 고름.</p>
+    </div>
+    <div>
+      <div class="label">배경</div>
+      <p>리뷰를 믿고 갔다가 실망한 경험이 여러 번. 별점 4.8 가게도 기대와 달라 리뷰를 그대로 믿지 않음.</p>
+    </div>
+    <div>
+      <div class="label">원하는 것</div>
+      <p>광고 리뷰 대신 손님들이 인정한 가게. 오래 버텼다는 건 인정받았다는 뜻이라고 생각함.</p>
+    </div>
+  </section>
+
+  <div class="scroll" id="scroll">
+    <div class="map" id="map"></div>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:var(--brick-soft)"></i>강한 페인포인트</span>
+    <span><i style="background:var(--amber-soft)"></i>중간 페인포인트 · 핵심 순간</span>
+    <span><i style="background:var(--moss-soft)"></i>버틴집 기회 (가설)</span>
+    <span>버틴집 개입: 높음 · 중간 · 낮음</span>
+    <span>감정 곡선: +2 매우 만족 · 0 중립 · -2 매우 불안·불만 (전부 가설)</span>
+  </div>
+
+  <h2 class="sec">핵심 페인포인트 Top 3</h2>
+  <div class="tops" id="tops"></div>
+
+  <section class="panel" aria-label="한계와 검증 계획">
+    <h3>이 지도의 한계와 검증 계획</h3>
+    <ul>
+      <li><b>근거 구분.</b> 발표 v2 자료에 있는 내용은 '근거', 제가 추정한 내용은 '가설'로 표시했습니다. 감정 점수와 강·중 구분은 모두 가설입니다.</li>
+      <li><b>버틴집의 역할.</b> 이 지도는 버틴집이 검색·상세 화면을 제공하는 서비스라고 가정합니다. 1단계의 유입 경로(지인, 검색, 공식 인증 채널)는 아직 정하지 않았습니다.</li>
+      <li><b>'오래 버틴 = 좋은 가게'는 전제입니다.</b> 생존배수는 영업 기간을 보여 줄 뿐 맛이나 만족도를 보장하지 않습니다. 가족 운영이나 임대 유지도 높게 나올 수 있어서, 인증·리뷰와 함께 보여 줘야 합니다.</li>
+      <li><b>데이터 한계.</b> 개·폐업 상태는 행정 신고 기준이라 실제 상황과 차이가 날 수 있습니다. 메뉴·가격 정보는 현재 데이터에 없습니다.</li>
+      <li><b>검증 계획.</b> 실제 고객 5~10명을 인터뷰합니다. 질문은 "어디서 가게를 찾나요?", "광고 리뷰를 어떻게 걸러내나요?", "방문 전에 무엇을 확인하나요?" 세 가지로 시작합니다. 결과에 따라 1·3·5단계 가설과 Top 3 순위를 고칩니다.</li>
+    </ul>
+  </section>
+
+  <div class="notes">
+    <div><b>근거.</b> 김서윤 페르소나, 페인포인트, 행동 항목은 「버틴집 발표 v2」(04 페르소나 슬라이드)에서 가져왔습니다. 해당 슬라이드도 가상의 인물이며 인터뷰나 설문으로 검증이 필요하다고 명시합니다.</div>
+    <div><b>참고 수치.</b> 최근 3년간 네이버플레이스 리뷰 권리침해 신고 12만 2,000건, 그중 약 75%(9만 1,800건) 삭제 (뉴시스 2025.9.8, 국회의원실 제출 자료). 광고·신뢰 문제의 배경으로만 사용합니다.</div>
+  </div>
+</div>
+
+<script>
+const stages = [
+  {
+    n: 1, name: "떠올리기", ctx: "점심 · 주말 약속",
+    acts: ["점심은 회사 근처에서 해결", "주말 저녁 약속 장소를 직접 고름"],
+    quote: "오늘 뭐 먹지? 오래된 집 가고 싶은데.",
+    emo: 0, emoLabel: "무덤덤",
+    pains: [
+      { s: "mid", t: "회사 근처에서 늘 가던 곳만 반복하게 됨" },
+      { s: "mid", t: "'오래된 집'을 찾고 싶지만 어디서부터 찾을지 기준이 없음" }
+    ],
+    opps: ["'오래 버틴 가게'를 시작점으로 보여주는 진입 화면"],
+    touch: { who: "low", label: "개입 낮음", text: "지인 추천, 일상 검색. 버틴집 유입 경로를 정해야 함" },
+    msg: "대구에서 오래 버틴 가게, 여기서 찾아보세요",
+    kpi: "검색 유입 수, 신규 방문자 중 검색 유입 비율",
+    ev: "hyp"
+  },
+  {
+    n: 2, name: "찾아보기", ctx: "버틴집에서 검색",
+    acts: ["버틴집에서 지역 · 업종으로 가게 검색", "영업기간과 생존배수로 목록 훑기"],
+    quote: "여기 목록은 광고 글 없이 오래 버틴 순서인가?",
+    emo: -1, emoLabel: "반신반의",
+    pains: [
+      { s: "strong", t: "리뷰와 순위에 광고 · 협찬 · 체험단 글이 섞여 있음 (주로 버틴집 밖 검색에서 생김)" },
+      { s: "mid", t: "관광객용 맛집과 주민 단골집이 구분되지 않음" }
+    ],
+    opps: ["광고 리뷰 대신 영업기간을 기준으로 정렬"],
+    touch: { who: "high", label: "개입 높음", text: "버틴집 검색 · 목록 화면" },
+    msg: "광고 글 없이, 영업 기간 순으로 보기",
+    kpi: "검색 결과 → 상세 클릭률",
+    ev: "fact"
+  },
+  {
+    n: 3, name: "거르기", ctx: "후보를 추리는 단계", moment: true,
+    acts: ["광고처럼 보이는 리뷰는 제외", "백년가게 · 모범음식점 같은 공식 인증 확인", "동네 지인에게 \"오래된 집이야?\" 질문"],
+    quote: "별점 4.8인데 광고 같아. 오래된 집인지부터 알고 싶다.",
+    emo: -2, emoLabel: "답답함",
+    pains: [
+      { s: "strong", t: "광고인지 진짜인지 구분할 수 없음" },
+      { s: "strong", t: "'오래 인정받았다'는 근거를 한눈에 볼 수 없음" }
+    ],
+    opps: ["주변 대비 얼마나 오래 버텼는지 보여주는 '생존배수' 표시 (맛·만족도와는 별도로 표시)", "공식 인증(백년가게 · 모범음식점) 연계 표시"],
+    touch: { who: "high", label: "개입 높음", text: "가게 상세 페이지 (생존배수, 영업 연수, 인증 배지)" },
+    msg: "얼마나 오래, 어떤 근거로 버텼는지 보여 드립니다",
+    kpi: "상세 체류 시간, 저장 수",
+    ev: "hyp"
+  },
+  {
+    n: 4, name: "가격 확인", ctx: "방문 전 메뉴 · 가격",
+    acts: ["가게 소개에서 메뉴와 가격을 찾아봄", "찾지 못하면 그냥 가기로 함"],
+    quote: "메뉴랑 가격도 모르고 가도 될까?",
+    emo: -1, emoLabel: "막연한 불안",
+    pains: [
+      { s: "mid", t: "메뉴·가격 정보가 없어 방문 전에 예산과 메뉴를 짐작하기 어려움" }
+    ],
+    opps: ["대표 메뉴와 가격대를 함께 표시 (데이터 확보 필요)"],
+    touch: { who: "mid", label: "개입 중간", text: "상세 페이지의 메뉴·가격 영역 (현재 데이터 없음)" },
+    msg: "대표 메뉴와 가격대를 미리 확인하세요",
+    kpi: "메뉴·가격 정보 보유율, 확인 후 방문 비율",
+    ev: "hyp"
+  },
+  {
+    n: 5, name: "가보기", ctx: "후보 확정 · 방문",
+    acts: ["후보 2~3곳으로 좁힘", "방문 전 영업 중인지 다시 확인", "방문해서 식사"],
+    quote: "문 닫았으면 어쩌지? 기대랑 다르면 어떡하지.",
+    emo: 0, emoLabel: "걱정 반 기대 반",
+    pains: [
+      { s: "strong", t: "개업 · 폐업 정보가 사이트마다 달라 영업 여부를 확인하기 어려움" },
+      { s: "mid", t: "별점만 보고 갔다가 기대와 달라 실망" }
+    ],
+    opps: ["개업 · 폐업 상태를 한 화면에서 확인 (정보 출처와 확인 날짜 함께 표시)"],
+    touch: { who: "mid", label: "개입 중간", text: "영업 상태 표시, 지도 길찾기 연결" },
+    msg: "지금 영업 중인지 방문 전에 확인하세요",
+    kpi: "길찾기 클릭 수, 방문 후 만족도",
+    ev: "hyp"
+  },
+  {
+    n: 6, name: "먹고 느끼기", ctx: "식사 경험",
+    acts: ["음식과 응대를 직접 경험", "손님이 오래 찾는 이유를 체감"],
+    quote: "여기는 손님들이 오래 찾는 이유가 있네.",
+    emo: 1, emoLabel: "인정",
+    pains: [
+      { s: "mid", t: "좋았던 가게를 다음에 다시 찾을 근거가 남지 않음" }
+    ],
+    opps: ["방문 후 '다시 찾는 단골집' 기록 저장"],
+    touch: { who: "low", label: "개입 낮음", text: "오프라인 식사 경험. 방문 후 기록 요청 정도" },
+    msg: "(직접 메시지는 두지 않음) 방문 후 '다시 찾는 가게'로 저장",
+    kpi: "재방문 의향 (설문), 방문 후 저장 비율",
+    ev: "hyp"
+  },
+  {
+    n: 7, name: "기록 · 추천", ctx: "리뷰 · 지인 공유",
+    acts: ["좋았던 단골집을 카드로 저장", "카드를 지인에게 공유"],
+    quote: "이 집은 근거가 있으니 친구에게 자신 있게 추천할 수 있겠다.",
+    emo: 2, emoLabel: "뿌듯함",
+    pains: [
+      { s: "mid", t: "추천할 근거를 말로 설명하기 어려우면 망설여짐 (가설)" }
+    ],
+    opps: ["검증된 단골집을 카드로 공유 (공유 기능 가정)"],
+    touch: { who: "high", label: "개입 높음", text: "단골집 공유 카드 생성 · 링크 공유 (기능 구현 가정)" },
+    msg: "검증된 단골집을 친구에게 공유하세요",
+    kpi: "공유 수, 공유 링크로 들어온 신규 방문자 수",
+    ev: "hyp"
+  }
+];
+
+const topPains = [
+  { rank: "P1", title: "광고 · 체험단 리뷰 때문에 리뷰 전체를 믿을 수 없음", where: "2 찾아보기 · 3 거르기", body: "버틴집 밖 검색에서 생긴 불신이 버틴집 목록으로 이어집니다. 버틴집은 목록과 상세에서 리뷰와 별도의 기준(영업 기간, 인증)을 보여 주는 방식으로 대응합니다." },
+  { rank: "P2", title: "'오래 버틴 가게'라는 표시가 믿을 근거가 되는지 불분명함", where: "3 거르기", body: "생존배수는 맛이나 만족도를 보장하지 않습니다. 인증과 함께 보여 주고, 고객이 이 차이를 이해하는지 인터뷰로 먼저 확인해야 합니다." },
+  { rank: "P3", title: "개업 · 폐업 정보가 흩어져 있어 방문이 실패할 수 있음", where: "5 가보기", body: "사이트마다 정보가 달라 영업 여부를 확인하기 어렵습니다. 출처와 확인 날짜를 함께 보여 주면 헛걸음을 줄일 수 있습니다." }
+];
+
+// Build the map grid
+const map = document.getElementById("map");
+let html = "";
+// header row
+html += `<div class="cell corner"></div>`;
+stages.forEach((s, i) => {
+  html += `<div class="cell stagehead ${i === 0 ? "first" : ""} ${s.moment ? "moment" : ""}">
+    <div class="n">STAGE ${s.n}</div>
+    <div class="t">${s.name}</div>
+    <div class="c">${s.ctx}</div>
+    ${s.moment ? `<span class="star">핵심 순간</span>` : ""}
+  </div>`;
+});
+// 행동
+html += `<div class="cell rowhead">행동</div>`;
+stages.forEach(s => {
+  html += `<div class="cell"><ul>${s.acts.map(a => `<li>${a}</li>`).join("")}</ul></div>`;
+});
+// 생각 (발화)
+html += `<div class="cell rowhead">생각<br>(발화)</div>`;
+stages.forEach(s => {
+  html += `<div class="cell"><p class="quote">${s.quote}</p></div>`;
+});
+// 감정
+html += `<div class="cell rowhead">감정 곡선<br>(가설)</div>`;
+stages.forEach((s, i) => {
+  html += `<div class="cell emo" data-i="${i}">
+    <div class="scale">
+      <div class="tick" style="top:0%"><span>+2</span></div>
+      <div class="tick" style="top:25%"><span>+1</span></div>
+      <div class="tick" style="top:50%"><span>0</span></div>
+      <div class="tick" style="top:75%"><span>-1</span></div>
+      <div class="tick" style="top:100%"><span>-2</span></div>
+    </div>
+    <div class="dot" data-score="${s.emo}"></div>
+    <div class="emo-label" data-label="${i}">${s.emoLabel}</div>
+  </div>`;
+});
+// 페인포인트
+html += `<div class="cell rowhead">페인<br>포인트</div>`;
+stages.forEach(s => {
+  const body = s.pains.length
+    ? s.pains.map(p => `<span class="tag ${p.s}"><b>${p.s === "strong" ? "강" : "중"}</b>${p.t}</span>`).join("")
+    : `<span class="empty">뚜렷한 불편 없음</span>`;
+  html += `<div class="cell">${body}</div>`;
+});
+// 기회
+html += `<div class="cell rowhead">버틴집<br>기회 (가설)</div>`;
+stages.forEach(s => {
+  html += `<div class="cell">${s.opps.map(o => `<div class="opp">${o}</div>`).join("")}</div>`;
+});
+// 접점 · 채널
+html += `<div class="cell rowhead">접점 ·<br>채널</div>`;
+stages.forEach(s => {
+  html += `<div class="cell touch"><span class="who ${s.touch.who}">${s.touch.label}</span>${s.touch.text}</div>`;
+});
+// 메시지
+html += `<div class="cell rowhead">고객에게<br>전할 메시지</div>`;
+stages.forEach(s => {
+  html += `<div class="cell msg">"${s.msg}"</div>`;
+});
+// 지표
+html += `<div class="cell rowhead">핵심 지표<br>(KPI)</div>`;
+stages.forEach(s => {
+  html += `<div class="cell kpi">${s.kpi}</div>`;
+});
+// 근거 수준
+html += `<div class="cell rowhead">근거<br>수준</div>`;
+stages.forEach(s => {
+  const label = s.ev === "fact" ? "발표 자료 근거 있음" : "가설 · 검증 필요";
+  html += `<div class="cell"><span class="ev ${s.ev === "fact" ? "fact" : "hyp"}">${label}</span></div>`;
+});
+map.innerHTML = html;
+
+// Top 3 cards
+document.getElementById("tops").innerHTML = topPains.map(p => `
+  <article class="top">
+    <span class="rank">${p.rank}</span>
+    <h3>${p.title}</h3>
+    <span class="where">${p.where}</span>
+    <p>${p.body}</p>
+  </article>`).join("");
+
+// Draw the emotion curve across the seven emotion cells
+function placeDots() {
+  const cells = [...map.querySelectorAll(".emo")];
+  const mapRect = map.getBoundingClientRect();
+  const points = [];
+  cells.forEach((cell) => {
+    const dot = cell.querySelector(".dot");
+    const label = cell.querySelector(".emo-label");
+    const score = Number(dot.dataset.score);
+    const h = cell.clientHeight;
+    const cellLeft = cell.getBoundingClientRect().left - mapRect.left;
+    const cx = cellLeft + cell.clientWidth / 2;   // page-level x, used for the curve
+    const y = (2 - score) / 4 * h;                 // y inside the emotion cell
+    dot.style.left = (cell.clientWidth / 2) + "px";
+    dot.style.top = y + "px";
+    label.style.left = (cell.clientWidth / 2) + "px";
+    label.style.top = (y + 10) + "px";
+    points.push([cx, y]);
+  });
+  let svg = map.querySelector("#curve");
+  if (!svg) {
+    svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("id", "curve");
+    map.appendChild(svg);
+  }
+  svg.innerHTML = "";
+  const mapRect2 = map.getBoundingClientRect();
+  const row0 = cells[0].getBoundingClientRect().top - mapRect2.top;
+  svg.style.top = row0 + "px";
+  svg.style.left = "0";
+  svg.style.width = map.clientWidth + "px";
+  svg.style.height = cells[0].clientHeight + "px";
+  svg.setAttribute("viewBox", `0 0 ${map.clientWidth} ${cells[0].clientHeight}`);
+  const d = points.map((p, i) => `${i === 0 ? "M" : "L"}${p[0]},${p[1]}`).join(" ");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", d);
+  path.setAttribute("fill", "none");
+  path.setAttribute("stroke", getComputedStyle(document.documentElement).getPropertyValue("--curve").trim());
+  path.setAttribute("stroke-width", "2");
+  svg.appendChild(path);
+}
+window.addEventListener("load", placeDots);
+window.addEventListener("resize", placeDots);
+placeDots();
+</script>
+</body>
+</html>
