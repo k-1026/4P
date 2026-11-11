@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>레드팀 관제 · BM 캔버스</title>
+<style>
+  :root {
+    --bg: #000000; --card: #121212; --ink: #f2f2f2; --muted: #9a9a9a; --line: #333333;
+    --accent: #e6e6e6; --tag: #242424; --warn: #f0b429; --bad: #ff5c5c; --ok: #7fe3a0;
+    --neon1: #39ff14; --neon2: #ff2bd6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; font-size: 16px; font-weight: 600; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 18px 24px; border-bottom: 2px solid var(--line); background: var(--card); }
+  h1 { font-size: 24px; margin: 0; font-weight: 900; }
+  .sub { color: var(--muted); font-size: 14px; }
+  button { font: inherit; font-weight: 800; border: 2px solid var(--accent); background: var(--card); color: var(--accent); padding: 8px 14px; border-radius: 8px; cursor: pointer; }
+  button:hover { background: var(--tag); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.run { background: var(--accent); color: #fff; font-size: 18px; padding: 12px 22px; }
+  button.acc { border-color: var(--ok); color: var(--ok); }
+  button.mod { border-color: var(--warn); color: var(--warn); }
+  button.rej { border-color: var(--bad); color: var(--bad); }
+  main { padding: 20px 24px 40px; display: flex; flex-direction: column; gap: 20px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card { background: var(--card); border: 2px solid var(--line); border-radius: 12px; padding: 16px; }
+  .card h2 { margin: 0 0 6px; font-size: 20px; font-weight: 900; }
+  .card .desc { color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+  .pill { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 14px; font-weight: 800; background: var(--tag); color: var(--accent); }
+  .pill.running { background: var(--neon1); color: #0b2a0b; }
+  .pill.error { background: #fbe3e0; color: var(--bad); }
+  .card.running { animation: neon 0.5s steps(2, start) infinite; }
+  .card.running .pill { animation: blinkpill 0.5s steps(2, start) infinite; }
+  @keyframes neon {
+    0%   { border-color: var(--neon1); box-shadow: 0 0 18px var(--neon1); background: #0f1f0f; }
+    50%  { border-color: var(--neon2); box-shadow: 0 0 18px var(--neon2); background: #220f1f; }
+    100% { border-color: var(--neon1); box-shadow: 0 0 18px var(--neon1); background: #0f1f0f; }
+  }
+  @keyframes blinkpill { 0% { background: var(--neon1); } 50% { background: var(--neon2); color: #fff; } 100% { background: var(--neon1); } }
+  .meta { font-size: 14px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+  section.panel { background: var(--card); border: 2px solid var(--line); border-radius: 12px; padding: 16px; }
+  section.panel h2 { margin: 0 0 10px; font-size: 20px; font-weight: 900; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--tag); font-weight: 900; }
+  td .btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  td textarea { width: 100%; min-height: 70px; font: inherit; font-size: 15px; padding: 8px; border: 2px solid var(--accent); border-radius: 8px; background: var(--card); color: var(--ink); }
+  .st { font-weight: 900; }
+  .st.ing { color: var(--warn); }
+  .st.ok { color: var(--ok); }
+  .st.no { color: var(--muted); }
+  .st.err { color: var(--bad); }
+  .log { max-height: 260px; overflow: auto; font-size: 14px; line-height: 1.6; }
+  .log div { border-bottom: 1px dashed var(--line); padding: 4px 0; }
+  .empty { color: var(--muted); padding: 16px 0; }
+  .warn { color: var(--bad); font-size: 14px; }
+  @media (max-width: 900px) { .cards { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>레드팀 관제 · BM 캔버스</h1>
+    <div class="sub" id="runline">서버 연결 확인 중…</div>
+  </div>
+  <button class="run" id="runBtn">실행</button>
+</header>
+
+<main>
+  <div class="cards" id="cards"></div>
+
+  <section class="panel">
+    <h2>사람 결정이 필요한 항목</h2>
+    <div class="sub" style="margin-bottom:10px">수용: 수정안을 캔버스에 반영 · 수정: 문구를 고쳐서 반영 · 반려: 의견을 무시</div>
+    <div id="decisions"><div class="empty">아직 실행 결과가 없습니다. 실행 버튼을 누르세요.</div></div>
+  </section>
+
+  <section class="panel">
+    <h2>실행 로그</h2>
+    <div class="log" id="log"><div class="empty">로그 없음</div></div>
+  </section>
+</main>
+
+<script>
+const AGENTS = [
+  { key: "investor", name: "투자자 레드팀", desc: "수익성 · 시장 규모 · 자금 회수" },
+  { key: "customer", name: "고객 레드팀", desc: "문제 인식 · 지불 의사 · 대체 수단" },
+  { key: "competitor", name: "경쟁자 레드팀", desc: "경쟁 대응 · 진입 장벽 · 차별성" },
+];
+const STATUS_TEXT = { idle: "대기", running: "실행 중", done: "완료", error: "오류" };
+const DEC_TEXT = { "대기": "반영 대기", "반영 중": "캔버스 반영 중", "반영됨": "반영 완료", "오류": "반영 오류", "무시됨": "무시됨" };
+
+const drafts = {};      // 수정 입력값 보존 (key -> text)
+const editing = {};     // 수정 칸 열림 여부 (key -> true)
+let lastRender = "";
+let serverOk = true;
+
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+function renderCards(state) {
+  const box = document.getElementById("cards");
+  box.innerHTML = AGENTS.map(a => {
+    const s = (state.agents || {})[a.key] || {};
+    const st = s.status || "idle";
+    const count = (s.items || []).length;
+    const meta = [
+      s.started ? `시작 ${esc(s.started)}` : "",
+      s.finished ? `완료 ${esc(s.finished)}` : "",
+      s.file ? `결과 파일: ${esc(s.file)}` : "",
+      s.error ? `<span class="warn">${esc(s.error)}</span>` : "",
+      st === "done" ? `결정 필요 ${count}건` : "",
+    ].filter(Boolean).join("<br>");
+    return `<div class="card ${st === "running" ? "running" : ""}">
+      <h2>${a.name}</h2>
+      <div class="desc">${a.desc}</div>
+      <span class="pill ${st === "running" ? "running" : st === "error" ? "error" : ""}">${STATUS_TEXT[st] || st}</span>
+      <div class="meta">${meta || "실행 전"}</div>
+    </div>`;
+  }).join("");
+}
+
+function renderDecisions(state, decisions) {
+  const rows = [];
+  for (const a of AGENTS) {
+    const s = (state.agents || {})[a.key] || {};
+    for (const it of (s.items || [])) {
+      const key = `${s.run_id}:${a.key}:${it.no}`;
+      rows.push({ key, agent: a, it, dec: (decisions || {})[key] || null });
+    }
+  }
+  const box = document.getElementById("decisions");
+  if (!rows.length) {
+    box.innerHTML = `<div class="empty">결정 필요 항목이 없습니다. 실행 후 완료된 레드팀의 항목이 여기에 나옵니다.</div>`;
+    return;
+  }
+  const html = `<table>
+    <thead><tr><th style="width:12%">레드팀</th><th style="width:5%">번호</th><th style="width:30%">결정 필요 항목</th><th style="width:25%">수정안</th><th style="width:16%">결정</th><th style="width:12%">상태</th></tr></thead>
+    <tbody>${rows.map(r => {
+      const d = r.dec || {};
+      const status = d.status ? (DEC_TEXT[d.status] || d.status) : "미결정";
+      const cls = d.status === "반영됨" ? "ok" : d.status === "오류" ? "err" : d.status === "무시됨" ? "no" : d.status ? "ing" : "no";
+      const isEdit = !!editing[r.key];
+      const proposal = r.it.proposal || "";
+      const editBox = isEdit
+        ? `<textarea id="ta_${esc(r.key)}" oninput="drafts['${esc(r.key)}']=this.value">${esc(drafts[r.key] ?? proposal)}</textarea>
+           <div class="btns" style="margin-top:6px"><button class="mod" onclick="submitDecision('${esc(r.key)}','수정')">수정안으로 반영</button><button onclick="cancelEdit('${esc(r.key)}')">취소</button></div>`
+        : "";
+      return `<tr>
+        <td>${esc(r.agent.name)}</td>
+        <td>${esc(r.it.no)}</td>
+        <td><strong>${esc(r.it.title)}</strong></td>
+        <td>${esc(proposal)}</td>
+        <td>${isEdit ? editBox : `<div class="btns">
+          <button class="acc" onclick="submitDecision('${esc(r.key)}','수용')">수용</button>
+          <button class="mod" onclick="startEdit('${esc(r.key)}')">수정</button>
+          <button class="rej" onclick="submitDecision('${esc(r.key)}','반려')">반려</button></div>`}</td>
+        <td><span class="st ${cls}">${esc(status)}</span></td>
+      </tr>`;
+    }).join("")}</tbody></table>`;
+  if (html !== box.dataset.last) { box.innerHTML = html; box.dataset.last = html; }
+}
+
+function renderLog(log) {
+  const box = document.getElementById("log");
+  if (!log.length) { box.innerHTML = `<div class="empty">로그 없음</div>`; return; }
+  box.innerHTML = log.slice().reverse().map(e => {
+    let text;
+    if (e.event === "start") text = `실행 시작 (${e.agents.join(", ")})`;
+    else if (e.event === "complete") text = "전체 완료";
+    else if (e.event === "decision") text = `결정: ${e.verdict} · ${e.key}`;
+    else if (e.event === "canvas_applied") text = `캔버스 반영 완료 · ${e.key}`;
+    else if (e.event === "canvas_error") text = `캔버스 반영 오류 · ${e.key} · ${e.error || ""}`;
+    else if (e.status === "done") text = `${e.agent} 완료 · 결정 필요 ${e.items}건 · ${e.file}`;
+    else if (e.status === "error") text = `${e.agent} 오류 · ${e.error}`;
+    else text = JSON.stringify(e);
+    return `<div>${esc(e.ts || "")} · ${esc(text)}</div>`;
+  }).join("");
+}
+
+async function poll() {
+  try {
+    const r = await fetch("/api/state", { cache: "no-store" });
+    const data = await r.json();
+    serverOk = true;
+    const st = data.state || {};
+    window.__lastState = st;
+    const running = !!st.running;
+    document.getElementById("runBtn").disabled = running;
+    document.getElementById("runline").textContent = running
+      ? `실행 중 · 실행 번호 ${st.run_id} · 시작 ${st.started || ""}`
+      : (st.finished ? `마지막 실행 완료 · ${st.finished}` : "대기 중 · 실행 버튼을 누르면 레드팀 3개가 동시에 돕니다");
+    const sig = JSON.stringify([st, data.decisions]);
+    if (sig !== lastRender) {
+      renderCards(st);
+      renderDecisions(st, data.decisions);
+      lastRender = sig;
+    }
+    renderLog(data.log || []);
+  } catch (e) {
+    serverOk = false;
+    const msg = location.protocol === "file:"
+      ? `<span class="warn">이 파일을 직접 열면 실행 기능이 동작하지 않습니다. 서버가 켜진 상태에서 <a href="http://127.0.0.1:8766/">http://127.0.0.1:8766/</a> 로 접속하세요.</span>`
+      : `<span class="warn">서버가 꺼져 있습니다. 1111실습 폴더에서 python bm/redteam_server.py 를 실행한 뒤 새로고침하세요.</span>`;
+    document.getElementById("runline").innerHTML = msg;
+  }
+}
+
+document.getElementById("runBtn").addEventListener("click", async () => {
+  const r = await fetch("/api/run", { method: "POST" });
+  const data = await r.json();
+  if (!r.ok) alert(data.error || "실행할 수 없습니다");
+  poll();
+});
+
+function startEdit(key) { editing[key] = true; drafts[key] = drafts[key]; lastRender = ""; poll(); }
+function cancelEdit(key) { delete editing[key]; lastRender = ""; poll(); }
+
+async function submitDecision(key, verdict) {
+  const row = AGENTS.flatMap(a => {
+    const s = (window.__lastState || {}).agents?.[a.key] || {};
+    return (s.items || []).map(it => ({ agent: a, it, key: `${s.run_id}:${a.key}:${it.no}` }));
+  }).find(r => r.key === key);
+  if (!row) return;
+  const body = {
+    key, verdict, agent: row.agent.key, no: row.it.no, title: row.it.title,
+    proposal: row.it.proposal || "",
+    note: verdict === "수정" ? (document.getElementById("ta_" + key)?.value ?? drafts[key] ?? "") : "",
+  };
+  if (verdict === "수정" && !body.note.trim()) { alert("수정안을 입력하세요"); return; }
+  const r = await fetch("/api/decision", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const data = await r.json();
+  if (!r.ok) { alert(data.error || "기록하지 못했습니다"); return; }
+  delete editing[key];
+  lastRender = "";
+  poll();
+}
+
+poll();
+setInterval(poll, 1500);
+</script>
+</body>
+</html>
