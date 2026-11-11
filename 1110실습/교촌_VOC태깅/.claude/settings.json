@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "AX_PROJECT_ROOT": "C:/Users/Green/Desktop/실습2"
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      { "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/log_event.py\"" } ] }
+    ],
+    "PreToolUse": [
+      { "matcher": "*", "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/log_event.py\"" } ] }
+    ],
+    "PostToolUse": [
+      { "matcher": "*", "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/log_event.py\"" } ] }
+    ],
+    "SubagentStop": [
+      { "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/log_event.py\"" } ] }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/log_event.py\"" } ] }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Write(output/**)",
+      "Edit(output/**)",
+      "Write(ax/demo/**)",
+      "Edit(ax/demo/**)"
+    ],
+    "deny": [
+      "Edit(*.pdf)",
+      "Write(*.pdf)",
+      "Bash(rm -rf:*)"
+    ]
+  }
+}

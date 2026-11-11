@@ -1,0 +1,4 @@
+ax/demo/logs/
+board/state/
+ax/demo/parts/test.*
+__pycache__/

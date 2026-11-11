@@ -1,0 +1,56 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python 'C:\\Users\\Green\\Desktop\\실습2\\.codex\\hooks\\log_event.py'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python 'C:\\Users\\Green\\Desktop\\실습2\\.codex\\hooks\\log_event.py'"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python 'C:\\Users\\Green\\Desktop\\실습2\\.codex\\hooks\\log_event.py'"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python 'C:\\Users\\Green\\Desktop\\실습2\\.codex\\hooks\\log_event.py'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python 'C:\\Users\\Green\\Desktop\\실습2\\.codex\\hooks\\log_event.py'"
+          }
+        ]
+      }
+    ]
+  }
+}

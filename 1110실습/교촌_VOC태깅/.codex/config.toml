@@ -1,0 +1,5 @@
+[shell_environment_policy]
+inherit = "core"
+
+[shell_environment_policy.set]
+AX_PROJECT_ROOT = "C:/Users/Green/Desktop/실습2"

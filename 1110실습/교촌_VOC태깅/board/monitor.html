@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VOC 관제 모니터</title>
+<style>
+:root{
+  --bg:#f4f5f7; --panel:#fff; --line:#e2e5ea; --text:#1b2130; --muted:#6b7385;
+  --accent:#2f6fed; --ok:#1f9d55; --bad:#d64545; --wait:#c3c8d2; --chip:#eef1f5;
+  --ok-bg:#e8f6ee; --bad-bg:#fdeeee;
+  --neon:#39ff14; --neon-dim:#c9ffb8; --neon-glow:rgba(57,255,20,.55); --on-neon:#0b1a00;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f131a; --panel:#171c25; --line:#2a3140; --text:#e6e9ef; --muted:#9099ab;
+    --accent:#5b8dff; --ok:#3fc27a; --bad:#ff6b6b; --wait:#4a5263; --chip:#222938;
+    --ok-bg:#14301f; --bad-bg:#3a1c1c; --neon-dim:#2f5a22;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 "Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif}
+button{font:inherit;border:1px solid var(--line);background:var(--chip);color:var(--text);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}
+.run{background:var(--ok);border-color:var(--ok);color:#fff;font-weight:700}
+.stop{background:var(--bad);border-color:var(--bad);color:#fff;font-weight:700}
+.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.muted{color:var(--muted)}
+input,select{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text)}
+
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h1{font-size:18px;margin:0}
+header .sp{flex:1}
+.live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:6px}
+.live.off{background:var(--bad)}
+main{max-width:1200px;margin:0 auto;padding:20px 16px;display:grid;gap:20px}
+
+/* 묶음 카드 3개 */
+.cards{display:grid;gap:16px;grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:900px){.cards{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card.live-card{border-color:var(--neon);box-shadow:0 0 0 2px var(--neon-glow)}
+.card-h{display:flex;align-items:center;gap:8px}
+.card-h h2{margin:0;font-size:20px}
+.badge{font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.badge.on{background:var(--neon);color:var(--on-neon);animation:blink 1s steps(1,end) infinite}
+.badge.done{background:var(--ok-bg);color:var(--ok)}
+.badge.bad{background:var(--bad-bg);color:var(--bad)}
+.card-h .sp{flex:1}
+
+/* 단계 6칸 세로 */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.st{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:center;padding:7px 10px;border-radius:10px;border:1px solid transparent}
+.st .no{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:var(--chip);color:var(--muted)}
+.st .nm{font-weight:600}
+.st .d{display:block;font-size:12px;color:var(--muted);font-weight:400}
+.st.done .no{background:var(--ok);color:#fff}
+.st.done .no::after{content:"✓"}
+.st.done .no span{display:none}
+.st.fail{background:var(--bad-bg)}
+.st.fail .no{background:var(--bad);color:#fff}
+.st.wait .nm{color:var(--muted)}
+.st.cur:not(.active){border-color:var(--accent)}
+/* 진행 중: 형광 깜박임 */
+.st.active{border-color:var(--neon);animation:neon 1s steps(1,end) infinite}
+.st.active .no{background:var(--on-neon);color:var(--neon)}
+.st.active .nm,.st.active .d{color:var(--on-neon)}
+@keyframes neon{0%{background:var(--neon);box-shadow:0 0 8px 2px var(--neon-glow)}50%{background:var(--neon-dim);box-shadow:none}}
+@keyframes blink{50%{opacity:.35}}
+@media (prefers-reduced-motion: reduce){.st.active,.badge.on{animation:none}.st.active{background:var(--neon)}}
+
+.bar{height:8px;border-radius:4px;background:var(--chip);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .4s}
+.prog{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
+/* 10건 단위 막대그래프 */
+.chunks{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;align-items:end}
+.col{display:flex;flex-direction:column;align-items:center;gap:3px}
+.col span{font-size:10px;color:var(--muted)}
+.tube{width:100%;height:56px;background:var(--chip);border-radius:5px;display:flex;align-items:flex-end;overflow:hidden}
+.tube i{display:block;width:100%;background:var(--accent);border-radius:5px;transition:height .4s}
+.col.full .tube i{background:var(--ok)}
+.col.part .tube i{background:var(--bad)}
+.col.work .tube{outline:2px solid var(--neon);animation:neon 1s steps(1,end) infinite}
+.col.work .tube i{background:var(--on-neon)}
+.col.work span{color:var(--text);font-weight:700}
+.prog b{color:var(--text)}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.nums div{background:var(--chip);border-radius:8px;padding:6px 2px}
+.nums b{display:block;font-size:18px}
+.nums span{font-size:11px;color:var(--muted)}
+.now{font-size:12px;color:var(--muted);min-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.now b{color:var(--text)}
+
+/* 아래 접는 영역 */
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+summary{cursor:pointer;font-weight:700}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.vitem{border-top:1px solid var(--line);padding:8px 0}
+.vitem .o{color:var(--muted);font-size:13px;margin:2px 0 6px}
+mark{background:rgba(255,190,0,.35);color:inherit;border-radius:3px;padding:0 2px}
+.ag{background:var(--ok);border-color:var(--ok);color:#fff}
+.dg{background:var(--bad);border-color:var(--bad);color:#fff}
+table{width:100%;border-collapse:collapse;font-size:12px}
+td,th{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted)}
+.cond{list-style:none;padding:0;margin:8px 0}
+
+.toast{position:fixed;right:16px;bottom:16px;background:var(--text);color:var(--bg);padding:10px 14px;border-radius:8px;opacity:0;transition:opacity .2s;max-width:380px;z-index:60}
+.toast.show{opacity:.95}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal[hidden]{display:none}
+.modal .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;max-width:420px;width:100%;white-space:pre-line}
+.modal .btns{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>VOC 관제 모니터</h1>
+  <span class="muted" style="font-size:12px"><span class="live" id="live"></span><span id="clock">-</span></span>
+  <span class="sp"></span>
+  <button class="run" id="runAll">▶ 전체 실행</button>
+  <button class="stop" id="stopAll">■ 전체 중지</button>
+</header>
+
+<main>
+  <div class="cards" id="cards"></div>
+
+  <details id="dReview">
+    <summary>확인 · 승인 <span class="muted" style="font-weight:400">— 사용자 대조 10건, 최종 승인</span></summary>
+    <div class="row">
+      <select id="vTarget"></select>
+      <button id="btnSample">샘플 10건 뽑기</button>
+      <span class="muted" id="vsum"></span>
+    </div>
+    <div id="verify"></div>
+    <ul class="cond" id="cond"></ul>
+    <div class="row">
+      <input id="approver" placeholder="승인자 이름" size="12">
+      <button class="primary" id="btnApprove">승인</button>
+      <button id="btnRevoke">승인 취소</button>
+      <span class="muted" id="apprInfo"></span>
+    </div>
+  </details>
+
+  <details>
+    <summary>실행 기록</summary>
+    <table style="margin-top:8px"><thead><tr><th>작업</th><th>상태</th><th>시작</th><th>걸린 시간</th><th>결과</th></tr></thead><tbody id="jobs"></tbody></table>
+  </details>
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal" hidden>
+  <div class="box" role="dialog" aria-modal="true">
+    <div id="modalMsg"></div>
+    <div class="btns"><button id="modalNo">취소</button><button class="primary" id="modalYes">확인</button></div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const hhmm = ts => ts ? new Date(ts*1000).toLocaleTimeString("ko-KR",{hour12:false}) : "-";
+const dur = s => s == null ? "-" : s < 60 ? `${s}초` : `${Math.floor(s/60)}분 ${s%60}초`;
+let S = null, vSel = null;
+
+function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2800); }
+function ask(msg){ // 앱 브라우저는 confirm() 을 막으므로 직접 그린 확인 창
+  return new Promise(res=>{
+    const m=$("modal"); $("modalMsg").textContent=msg; m.hidden=false; $("modalYes").focus();
+    const done=v=>{ m.hidden=true; $("modalYes").onclick=$("modalNo").onclick=m.onclick=document.onkeydown=null; res(v); };
+    $("modalYes").onclick=()=>done(true); $("modalNo").onclick=()=>done(false);
+    m.onclick=e=>{ if(e.target===m) done(false); }; document.onkeydown=e=>{ if(e.key==="Escape") done(false); };
+  });
+}
+async function post(path, body){
+  const r = await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const j = await r.json().catch(()=>({error:"응답 오류"}));
+  if(!r.ok) throw new Error(j.error||r.status);
+  return j;
+}
+async function refresh(){
+  try{ S = await (await fetch("/api/status",{cache:"no-store"})).json(); $("live").classList.remove("off"); render(); }
+  catch(e){ $("live").classList.add("off"); $("clock").textContent="서버 연결 끊김"; }
+}
+
+/* ── 카드 ─────────────────────────────────────────── */
+function laneOf(n){ return (S.runner.lanes||{})[n] || {current:null,queue:[]}; }
+
+function cardStatus(b){
+  const p = b.pipeline, lane = laneOf(b.n);
+  if(lane.current || p.steps.some(s=>s.state==="active")) return ["on","진행 중"];
+  if(p.done_all) return ["done","완료"];
+  if(p.steps.some(s=>s.state==="fail")) return ["bad","확인 필요"];
+  if(p.current >= 4) return ["", "사용자 차례"];
+  return ["","대기"];
+}
+
+function renderCards(){
+  const pass = S.criteria.pass;
+  $("cards").innerHTML = S.batches.map(b=>{
+    const p = b.pipeline, lane = laneOf(b.n), busy = !!(lane.current || lane.queue.length);
+    const [cls, txt] = cardStatus(b);
+    const sc = b.scores || {};
+    const num = (k)=>{ const v = sc[k]; return `<div><b style="color:${v==null?"var(--muted)":v>=pass?"var(--ok)":"var(--bad)"}">${v==null?"-":Math.round(v)}</b><span>${k}</span></div>`; };
+    let now = "";
+    if(b.now_step) now = `지금: <b>${esc(b.now_step.agent)}</b> · ${esc(b.now_step.tool)} ${esc(b.now_step.target)}`;
+    else if(lane.current) now = `지금: <b>${esc(lane.current.label)}</b> 준비 중 · ${dur(S.now-(lane.current.started||S.now))}`;
+    else if(lane.queue.length) now = `대기: ${esc(lane.queue.map(q=>q.label).join(" → "))}`;
+    return `<section class="card ${cls==="on"?"live-card":""}">
+      <div class="card-h"><h2>${esc(b.batch)}</h2><span class="badge ${cls}">${txt}</span><span class="sp"></span>
+        ${busy ? `<button class="stop" data-stop="${b.n}">■ 중지</button>` : `<button class="run" data-run="${b.n}">▶ 실행</button>`}
+      </div>
+      <ol class="steps">${p.steps.map((s,i)=>`<li class="st ${s.state} ${i===p.current&&!p.done_all?"cur":""}">
+          <span class="no"><span>${i+1}</span></span>
+          <span><span class="nm">${esc(S.stages[i].name)}</span><span class="d">${esc(s.detail)}</span></span></li>`).join("")}</ol>
+      ${chunkChart(b)}
+      <div class="nums">${num("범위")}${num("근거")}${num("형식")}
+        <div><b style="color:${b.review==null?"var(--muted)":b.review_ratio<=S.criteria.review_max?"var(--ok)":"var(--bad)"}">${b.review??"-"}</b><span>검토 건수</span></div></div>
+      <div class="now">${now || (b.score_source?`점수: ${esc(b.score_source)}`:"&nbsp;")}</div>
+    </section>`;
+  }).join("");
+  $("cards").querySelectorAll("[data-run]").forEach(el=>el.onclick=()=>runBatches([el.dataset.run]));
+  $("cards").querySelectorAll("[data-stop]").forEach(el=>el.onclick=()=>stopBatches([el.dataset.stop]));
+}
+
+/* 10건 단위 저장 막대그래프: 막대 1개 = 원문 10건 */
+function chunkChart(b){
+  let ch = b.chunks;
+  if(!ch){ // 서버가 아직 chunks 를 안 주면 행 수로 계산
+    ch = Array.from({length:Math.ceil((b.originals||100)/10)},(_,k)=>({no:k+1,size:10,saved:Math.max(0,Math.min(10,b.rows-k*10)),reading:0,tags:{},range:""}));
+  }
+  const tagging = b.pipeline.steps[1].state === "active";
+  const doneN = ch.filter(c=>c.saved>=c.size).length;
+  // 진행 중인데 읽는 위치를 모르면 '다음 저장할 묶음'을 작업 중으로 본다
+  const workIdx = tagging ? (ch.findIndex(c=>c.reading>0) >= 0 ? ch.findIndex(c=>c.reading>0) : ch.findIndex(c=>c.saved<c.size)) : -1;
+  const bars = ch.map((c,i)=>{
+    const full = c.saved >= c.size, work = i === workIdx;
+    const h = full ? 100 : work ? Math.max(12, (c.reading||0)/c.size*100) : c.saved/c.size*100;
+    const tagTxt = Object.entries(c.tags||{}).map(([k,v])=>`${k} ${v}`).join(" · ");
+    const tip = `${c.no}번째 10건${c.range?` (${c.range})`:""}\n저장 ${c.saved}/${c.size}${work?`\n지금 작업 중${c.reading?` · ${c.reading}번째 읽는 중`:""}`:""}${tagTxt?`\n${tagTxt}`:""}`;
+    return `<div class="col ${full?"full":work?"work":c.saved?"part":""}" title="${esc(tip)}">
+      <div class="tube"><i style="height:${h}%"></i></div><span>${c.no}</span></div>`;
+  }).join("");
+  return `<div><div class="prog"><span>10건 단위 저장</span><span><b>${doneN}</b> / ${ch.length} 묶음 · ${b.rows}행</span></div>
+    <div class="chunks">${bars}</div></div>`;
+}
+
+function planText(b){
+  if(b.rows < b.originals) return b.rows ? `태깅(처음부터 다시) → 채점` : "태깅 → 채점";
+  if(!b.graded) return "채점";
+  return null;
+}
+async function runBatches(ns){
+  const list = ns.map(n=>S.batches.find(b=>b.n===n));
+  const todo = list.map(b=>[b, planText(b)]);
+  let mode = "auto";
+  if(todo.every(([,t])=>!t)){
+    if(!await ask(`${ns.map(n=>"batch"+n).join(", ")}은(는) 이미 채점까지 끝났습니다.\n태깅부터 다시 할까요? (part·grade 파일을 덮어씁니다)`)) return;
+    mode = "all";
+  }else{
+    const lines = todo.map(([b,t])=>`· ${b.batch}: ${t || "이미 완료 — 건너뜀"}`).join("\n");
+    if(!await ask(`다음 작업을 실행합니다.\n${lines}\n\nClaude 에이전트가 실제로 돌아가며 사용량이 듭니다.`)) return;
+  }
+  try{ toast((await post("/api/run",{batches:ns,mode})).message); refresh(); }catch(e){ toast(e.message); }
+}
+async function stopBatches(ns){
+  if(!await ask(`${ns.length? ns.map(n=>"batch"+n).join(", ") : "실행 중인 모든 작업"}을(를) 중지할까요?\n이미 저장된 행은 남습니다.`)) return;
+  try{ toast((await post("/api/stop",{batches:ns})).message); refresh(); }catch(e){ toast(e.message); }
+}
+$("runAll").onclick = ()=>runBatches(S.batches.map(b=>b.n));
+$("stopAll").onclick = ()=>stopBatches([]);
+
+/* ── 확인 · 승인 ─────────────────────────────────── */
+const tgt = () => S.targets.find(t=>t.id===vSel);
+function renderReview(){
+  const parts = S.targets.filter(t=>t.kind==="part");
+  const sel = $("vTarget");
+  const opts = parts.map(t=>`<option value="${esc(t.id)}">${esc(t.label)}</option>`).join("");
+  if(sel.dataset.o !== opts){ sel.innerHTML = opts; sel.dataset.o = opts; }
+  if(!vSel || !parts.find(t=>t.id===vSel)) vSel = parts[0]?.id;
+  sel.value = vSel || "";
+  const t = tgt();
+  if(!t){ $("verify").innerHTML = `<div class="muted">채점까지 끝난 묶음이 생기면 여기서 대조합니다.</div>`; $("cond").innerHTML=""; return; }
+  const v = t.verify;
+  $("vsum").textContent = v ? `동의 ${v.agree} · 비동의 ${v.disagree} · 남음 ${v.pending}` : "";
+  $("verify").innerHTML = v ? v.items.map(it=>{
+    const o = esc(it.original), e = esc(it.evidence);
+    return `<div class="vitem"><b>${esc(it.voc_id)}</b> · ${esc(it.tag)} ${it.note?`<span class="muted">(${esc(it.note)})</span>`:""}
+      <div class="o">${e && o.includes(e) ? o.replace(e,`<mark>${e}</mark>`) : o}</div>
+      <button class="${it.verdict==="agree"?"ag":""}" data-id="${esc(it.voc_id)}" data-v="agree">동의</button>
+      <button class="${it.verdict==="disagree"?"dg":""}" data-id="${esc(it.voc_id)}" data-v="disagree">비동의</button></div>`;
+  }).join("") : `<div class="muted">샘플을 뽑으면 원문과 태그를 나란히 보여 줍니다.</div>`;
+  $("verify").querySelectorAll("button").forEach(btn=>btn.onclick=async()=>{
+    const it = v.items.find(x=>x.voc_id===btn.dataset.id);
+    try{ await post("/api/verify",{target:t.id,voc_id:btn.dataset.id,verdict: it.verdict===btn.dataset.v?null:btn.dataset.v}); refresh(); }catch(e){ toast(e.message); }
+  });
+  const g = t.gate, m = ok => ok ? "✅" : "⬜";
+  $("cond").innerHTML = `<li>${m(g.score_ok)} 범위·근거·형식 모두 ${S.criteria.pass}점 이상</li><li>${m(g.review_ok)} 검토 ${S.criteria.review_max}% 이하 · 이유 기재</li><li>${m(g.verify_ok)} 대조 ${S.criteria.agree_min}/${S.criteria.sample} 이상 동의</li>`;
+  $("btnApprove").disabled = !g.ready || !!t.approval;
+  $("btnRevoke").disabled = !t.approval;
+  $("apprInfo").textContent = t.approval ? `승인됨 · ${t.approval.approver}` : "";
+}
+$("vTarget").onchange = e => { vSel = e.target.value; render(); };
+$("btnSample").onclick = async()=>{ const t=tgt(); if(!t) return;
+  if(t.verify && t.verify.agree+t.verify.disagree>0 && !await ask("이미 대조한 기록이 지워집니다. 새로 뽑을까요?")) return;
+  try{ toast((await post("/api/sample",{target:t.id})).message); refresh(); }catch(e){ toast(e.message); } };
+$("btnApprove").onclick = async()=>{ const t=tgt();
+  if(!await ask(`${t.label}을(를) 승인합니다. 직접 확인하셨나요?`)) return;
+  try{ toast((await post("/api/approve",{target:t.id,approver:$("approver").value})).message); refresh(); }catch(e){ toast(e.message); } };
+$("btnRevoke").onclick = async()=>{ try{ toast((await post("/api/revoke",{target:tgt().id})).message); refresh(); }catch(e){ toast(e.message); } };
+
+/* ── 실행 기록 ───────────────────────────────────── */
+function renderJobs(){
+  const R = S.runner;
+  const live = Object.values(R.lanes||{}).flatMap(l=>[...(l.current?[l.current]:[]), ...l.queue]);
+  const rows = [...live, ...R.history];
+  $("jobs").innerHTML = rows.length ? rows.map(j=>`<tr><td>${esc(j.label)}</td><td>${esc(j.status)}</td><td>${hhmm(j.started)}</td>
+    <td>${j.started?dur((j.ended||S.now)-j.started):"-"}</td><td>${esc(j.message||"")}</td></tr>`).join("")
+    : `<tr><td colspan="5" class="muted">아직 실행한 작업이 없습니다</td></tr>`;
+}
+
+function render(){
+  $("clock").textContent = hhmm(S.now) + " 갱신";
+  const anyBusy = Object.values(S.runner.lanes||{}).some(l=>l.current||l.queue.length);
+  $("runAll").disabled = !S.runner.claude_bin;
+  $("stopAll").disabled = !anyBusy;
+  renderCards(); renderReview(); renderJobs();
+}
+refresh(); setInterval(refresh, 3000);
+</script>
+</body>
+</html>
