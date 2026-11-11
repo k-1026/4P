@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>야시장 오늘의 매대판 — BM 캔버스</title>
+<style>
+  :root {
+    --bg: #f6f1e1;
+    --card: #fffdf5;
+    --ink: #1f3b2d;
+    --muted: #5e6e61;
+    --line: #d9d3b8;
+    --accent: #2e7d4f;
+    --tag: #e5f1e3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1d2a22; --card: #25362b; --ink: #f3efdf; --muted: #adbcae; --line: #3b503f; --accent: #86cfa0; --tag: #2d4535;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1d2a22; --card: #25362b; --ink: #f3efdf; --muted: #adbcae; --line: #3b503f; --accent: #86cfa0; --tag: #2d4535;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .wrap { width: min(100%, calc((100vh - 32px) * 16 / 9), 1600px); aspect-ratio: 16 / 9; container-type: inline-size; }
+  .canvas {
+    width: 100%; height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.25fr 1fr 1fr;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.25fr);
+    min-height: 0;
+    gap: 0.6cqw;
+  }
+  .cell {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 0.8cqw;
+    padding: 1cqw 1.1cqw;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .cell h2 {
+    font-size: 1.35cqw; font-weight: 800; color: var(--accent);
+    margin-bottom: 0.5cqw; letter-spacing: -0.02em;
+  }
+  .cell h2 .no { color: var(--muted); font-weight: 600; margin-right: 0.3cqw; }
+  .cell ul { list-style: none; font-size: 1.08cqw; font-weight: 600; line-height: 1.45; color: var(--ink); }
+  .cell li { padding-left: 0.9cqw; position: relative; margin-bottom: 0.22cqw; }
+  .cell li::before { content: "•"; position: absolute; left: 0; color: var(--muted); }
+  .cell .note { font-size: 0.75cqw; color: var(--muted); margin-top: auto; padding-top: 0.4cqw; line-height: 1.35; }
+  .tag { display: inline-block; font-size: 0.72cqw; background: var(--tag); color: var(--accent); border-radius: 0.3cqw; padding: 0.05cqw 0.35cqw; margin-right: 0.2cqw; }
+
+  .partner    { grid-column: 1; grid-row: 1 / span 2; }
+  .activities { grid-column: 2; grid-row: 1; }
+  .resources  { grid-column: 2; grid-row: 2; }
+  .value      { grid-column: 3; grid-row: 1 / span 2; background: var(--tag); }
+  .relations  { grid-column: 4; grid-row: 1; }
+  .channels   { grid-column: 4; grid-row: 2; }
+  .segments   { grid-column: 5; grid-row: 1 / span 2; }
+  .cost       { grid-column: 1 / span 2; grid-row: 3; }
+  .revenue    { grid-column: 3 / span 3; grid-row: 3; }
+
+  .value h2 { font-size: 1.35cqw; }
+  .value ul { font-size: 1cqw; }
+
+  footer { position: absolute; }
+  .header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5cqw; }
+  .title { font-size: 1.6cqw; font-weight: 800; }
+  .sub { font-size: 0.85cqw; color: var(--muted); }
+  .frame { width: 100%; height: 100%; display: flex; flex-direction: column; gap: 0.6cqw; }
+  .frame .canvas { flex: 1; min-height: 0; }
+  .legend { font-size: 0.72cqw; color: var(--muted); line-height: 1.4; }
+  .axblock { background: var(--card); border: 1px solid var(--line); border-radius: 0.8cqw; padding: 0.6cqw 1cqw; display: flex; flex-direction: column; gap: 0.4cqw; }
+  .axblock h2 { font-size: 1.05cqw; color: var(--accent); }
+  .flow { display: flex; align-items: stretch; gap: 0.4cqw; }
+  .step { flex: 1; background: var(--tag); border-radius: 0.5cqw; padding: 0.4cqw 0.6cqw; font-size: 0.78cqw; line-height: 1.4; }
+  .step b { display: block; font-size: 0.9cqw; margin-bottom: 0.15cqw; }
+  .arrow { align-self: center; color: var(--muted); font-size: 1.2cqw; }
+  .loopback { font-size: 0.72cqw; color: var(--muted); text-align: right; }
+  .num { font-size: 1.3em; font-weight: 900; color: var(--accent); }
+  .num.neg { color: #d64545; }
+  .cost ul, .revenue ul { font-size: 1.05cqw; }
+  .tag { font-size: 0.85cqw; font-weight: 700; }
+  .cell li small { font-size: 0.75cqw; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="frame">
+    <div class="header">
+      <div class="title">야시장 오늘의 매대판 — BM 캔버스 (v1, 결정 항목 포함)</div>
+      <div class="sub">확인값 · 가정값 · 결정 표기 기준 (수업용 가상 데이터)</div>
+    </div>
+
+    <div class="canvas">
+      <section class="cell partner">
+        <h2><span class="no">8</span>핵심 파트너</h2>
+        <ul>
+          <li>야시장 상인회</li>
+          <li>입력 안내 · 게시 확인 · 신고 접수 창구</li>
+          <li>상인회 사무국 (게시 전 확인 담당, <span class="tag">결정</span>)</li>
+        </ul>
+        <div class="note">근거: 사용자 메모, 설문조사</div>
+      </section>
+
+      <section class="cell activities">
+        <h2><span class="no">7</span>핵심 활동</h2>
+        <ul>
+          <li>① 상인 정보 입력 안내 <span class="tag">○ AI 보조</span></li>
+          <li>② AI가 결제 수단 · 영업 · 품절을 카드로 정리 <span class="tag">◎ AI</span></li>
+          <li>③ 게시 전 확인 <span class="tag">○ AI 보조</span></li>
+          <li>④ 신고 접수 후 수정 <span class="tag">○ AI 보조</span></li>
+        </ul>
+      </section>
+
+      <section class="cell resources">
+        <h2><span class="no">6</span>핵심 자원</h2>
+        <ul>
+          <li>매대 정보 카드 자동 정리 AI</li>
+          <li>상인 입력 데이터 (D5, 운영 후 생김)</li>
+          <li>상인회 운영 공지 (D2)</li>
+          <li>사무국 수정 기록 <span class="tag">결정</span></li>
+        </ul>
+      </section>
+
+      <section class="cell value">
+        <h2><span class="no">2</span>가치 제안</h2>
+        <ul>
+          <li><b>결제 수단</b> 표시 → P1 직접 해결</li>
+          <li><b>오늘 영업 여부</b> 표시 → P2 직접 해결</li>
+          <li><b>품절 메뉴</b> 표시 → P3 부분 해결 (대기 시간 제외, <span class="tag">결정</span>)</li>
+          <li>방문 전 매대 카드 화면에서 확인</li>
+        </ul>
+        <div class="note">근거: painpoint/painpoint_def.md, 교차 확인 결과</div>
+      </section>
+
+      <section class="cell relations">
+        <h2><span class="no">4</span>고객 관계</h2>
+        <ul>
+          <li>틀린 정보를 신고하면 접수 후 수정하는 신고형 관계</li>
+        </ul>
+      </section>
+
+      <section class="cell channels">
+        <h2><span class="no">3</span>채널</h2>
+        <ul>
+          <li>야시장 입구 안내판</li>
+          <li>매대별 QR 코드</li>
+        </ul>
+      </section>
+
+      <section class="cell segments">
+        <h2><span class="no">1</span>고객 세그먼트</h2>
+        <ul>
+          <li><b>방문객</b> — 현금 없이 방문한 구매자 (직장인 · 주말 가족 · 관광객)</li>
+          <li><b>지불자</b> — 야시장 상인회</li>
+        </ul>
+        <div class="note">근거: painpoint_def.md, 사용자 설문조사</div>
+      </section>
+
+      <section class="cell cost">
+        <h2><span class="no">9</span>비용 구조</h2>
+        <ul>
+          <li>상인 입력 안내 인건비: 월 <span class="num">40시간</span> → <span class="num">48만 원</span> <span class="tag">가정값</span></li>
+          <li>게시 전 확인 인건비: 월 <span class="num">20시간</span> → <span class="num">24만 원</span> <span class="tag">가정값</span></li>
+          <li>AI 처리 비용 — 미정</li>
+          <li>인건비 합계: <span class="num">월 72만 원</span> <span class="tag">가정값</span> (시급 12,000원 가정)</li>
+        </ul>
+      </section>
+
+      <section class="cell revenue">
+        <h2><span class="no">5</span>수익원</h2>
+        <ul>
+          <li>상인회 <b>정액 구독</b>: 매대 1곳당 <span class="num">월 5천~1만 원</span> <span class="tag">가정값</span><br><small>사용자 설문 보고, 원자료 미확인</small></li>
+          <li>기준값 <span class="num">월 7,500원</span> × 매대 <span class="num">80곳</span> = <span class="num">월 60만 원</span> <span class="tag">가정값</span></li>
+          <li>손익(80곳): <span class="num neg">-12만 원</span> <span class="tag">가정값</span></li>
+          <li>손익분기: <span class="num">96곳</span> (7,500원) · <span class="num">72곳</span> (1만 원) <span class="tag">가정값</span></li>
+        </ul>
+        <div class="note">제외: 상단 노출 광고 (편향 리스크) · 매대 등록비 · 보류: 방문객 유료 알림 · 상권 데이터 판매</div>
+      </section>
+    </div>
+
+    <section class="axblock">
+      <h2>AX 블록 · 학습 루프 데이터 흐름 (흐름은 결정, 재료 없음)</h2>
+      <div class="flow">
+        <div class="step"><b>① 데이터 원천</b>상인 입력 사진 · 한마디 (D5)<br>사무국 수정 기록 (학습 데이터)<br>신고 내역 · 방문객 열람 로그</div>
+        <div class="arrow">→</div>
+        <div class="step"><b>② 이용</b>카드 열람 · 신고 · 입력 응답<br><span class="tag">추천</span> 영업 중 우선 정렬</div>
+        <div class="arrow">→</div>
+        <div class="step"><b>③ 데이터</b>AI 추출 결과 저장<br>사무국 수정률 계산 (정답 데이터)</div>
+        <div class="arrow">→</div>
+        <div class="step"><b>④ 개선</b>추출 규칙 · 프롬프트 · 안내 문구 수정<br><span class="tag">생성</span> 수정안 작성 (최종 반영은 사람)</div>
+        <div class="arrow">→</div>
+        <div class="step"><b>⑤ 결과</b>신고 건수 · 확인 시간 · 헛걸음 건수<br>다음 이용에 반영 (주 1회 `가정`)</div>
+      </div>
+      <div class="loopback">⑤ → ① 루프: 결과가 다음 주의 데이터 원천(입력 · 수정 기록)을 바꿈</div>
+    </section>
+    <div class="legend">◎ AI가 자동 처리 · ○ AI 보조 후 사람 확인 · 결정 = 재료가 없어 Claude가 정함 · 근거 파일은 각 칸 하단 표기. 자세한 내용은 bm/bm_canvas.md</div>
+  </div>
+</div>
+</body>
+</html>
