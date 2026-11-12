@@ -17,7 +17,12 @@
   /* 16:9 슬라이드 (1920×1080) — 창 크기에 맞춰 축소 */
   .frame{position:relative;margin:0 auto;overflow:hidden}
   .slide{position:absolute;left:0;top:0;width:1920px;height:1080px;background:var(--bg);
-    transform-origin:0 0;padding:34px 44px 24px;display:flex;flex-direction:column;gap:14px;font-size:18px}
+    transform-origin:0 0;padding:34px 44px 24px;display:none;flex-direction:column;gap:14px;font-size:18px}
+  .slide.on{display:flex}
+  .nav{position:absolute;right:44px;top:8px;display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+  .nav button{font:inherit;border:1px solid var(--line);background:#fff;border-radius:7px;padding:1px 10px;cursor:pointer;color:var(--ink)}
+  .nav button[aria-current="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  @media print{ .nav{display:none} }
 
   .top{display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
   h1{font-size:32px;margin:0;letter-spacing:-.5px}
@@ -29,7 +34,7 @@
   .map{flex:1;display:grid;grid-template-columns:120px 76px repeat(5,1fr);background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
   .sh{background:var(--ink);color:#fff;font-weight:700;text-align:center;padding:10px 4px;font-size:19px}
   .corner{background:var(--ink)}
-  .lane{grid-row:span 6;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:19px;padding:6px}
+  .lane{grid-row:span 7;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:19px;padding:6px}
   .lane small{font-weight:400;font-size:13px;opacity:.85}
   .lane.nv{background:var(--nv-bg);color:var(--nv);border-left:6px solid var(--nv)}
   .lane.bt{background:var(--bt-bg);color:var(--bt);border-left:6px solid var(--bt)}
@@ -40,7 +45,6 @@
   .v.money{background:#fffbef;color:#6b4e00}
   .v.money.no{background:#f0faf2;color:#1f7a33}
   .v.act{font-weight:700}
-  .v.gap{background:repeating-linear-gradient(135deg,#fff 0 8px,#f4f5f8 8px 16px)}
   .sel{outline:3px solid var(--ink);outline-offset:-3px}
   .star{color:#b8860b;font-weight:700}
   .chk{color:var(--c);font-size:13px;font-weight:700;white-space:nowrap}
@@ -55,10 +59,24 @@
   .same{font-size:13px;color:#8a6a1a}
   .two{display:inline-block;font-size:12px;font-weight:600;color:var(--muted);border:1px dashed #999;border-radius:999px;padding:0 7px;line-height:18px;margin-left:4px}
   .meetb{display:inline-block;margin-left:8px;font-size:13px;font-weight:700;background:#7a4fd1;color:#fff;border-radius:999px;padding:1px 10px;vertical-align:2px}
+  .f.pain{color:#b03030;background:#fff6f6;line-height:1.15}
+  .v.pain{background:#fff6f6;color:#5a1d1d;font-size:15.5px}
+  .pl{display:inline-block;font-size:11.5px;font-weight:700;border-radius:4px;padding:0 5px;margin-right:6px;line-height:17px;vertical-align:1px;background:#fff}
+  .pl.ok{color:#1d5fa8;border:1.5px solid #1d5fa8}
+  .pl.pr{color:#7a4fd1;border:1.5px dashed #7a4fd1}
+  .st{font-size:13.5px;font-weight:700;border-radius:6px;padding:2px 9px}
+  .st.ok{color:#1d5fa8;border:1.5px solid #1d5fa8;background:#eef4fc}
+  .st.pr{color:#7a4fd1;border:1.5px dashed #7a4fd1;background:#f6f1fe}
+  .lane.bt ~ .v.money{}
+  .who{display:inline-block;font-size:12px;font-weight:700;border-radius:4px;padding:0 5px;margin-right:5px;line-height:18px;vertical-align:1px}
+  .who.u{background:#efe8fc;color:#5a35b0} .who.s{background:#fde3e3;color:#b03030} .who.o{background:#dff3f1;color:#137a74}
+  .ev{font-size:12px;color:#8a5a00;background:#fff2c6;border-radius:4px;padding:0 5px;margin-left:4px;white-space:nowrap}
   .usr{background:#efe8fc;color:#5a35b0;font-weight:700;border-radius:5px;padding:0 6px}
 
   /* 하단 4칸 */
-  .bottom{display:grid;grid-template-columns:1.2fr 1.1fr 1.6fr 0.9fr;gap:12px;flex:none}
+  .bottom{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:18px;flex:1;min-height:0}
+  .s3 .box{font-size:20px;padding:22px 28px} .s3 .box h3{font-size:24px;margin-bottom:14px} .s3 .box li{margin-bottom:10px}
+  .s3 .box td,.s3 .box th{padding:7px 14px 7px 0} .s3 .box.sup{font-size:18px}
   .box.sup{font-size:14.5px}
   .box.sup td{padding-right:14px}
   .nvh{color:var(--nv)!important} .bth{color:var(--bt)!important}
@@ -71,6 +89,36 @@
   .box th{color:var(--muted);white-space:nowrap}
   .src{color:var(--faint);font-size:13px}
   .legend{color:var(--muted);font-size:14.5px;display:flex;justify-content:space-between;gap:20px}
+
+
+  /* 2장 수익 */
+  .s2 .lead{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 18px;font-size:17px;max-width:1160px}
+  .rev{flex:1;min-height:0;display:grid;grid-template-columns:1.05fr 1fr;gap:16px}
+  .cmpt{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:flex;flex-direction:column}
+  .cmpt h3,.models h3{margin:0 0 8px;font-size:19px}
+  .cmpt table{width:100%;border-collapse:collapse;font-size:17px}
+  .cmpt th,.cmpt td{border-top:1px solid var(--line);padding:11px 8px;text-align:left;vertical-align:top}
+  .cmpt thead th{border-top:0;color:var(--muted);font-size:14.5px;background:#fafbfc}
+  .cmpt tbody th{white-space:nowrap;font-size:17.5px}
+  .cmpt tr.us td,.cmpt tr.us th{background:var(--bt-bg)}
+  .cmpt tr.grp td{background:#f3f4f7;color:var(--muted);font-size:12.5px;font-weight:700;padding:3px 7px}
+  .yes{color:#1f7a33;font-weight:700} .no{color:#b03030;font-weight:700} .mid{color:#8a5a00;font-weight:700}
+  .cmpt .insight{margin-top:auto;padding-top:10px;font-size:17px;color:var(--ink);border-top:2px solid var(--ink)}
+  .models{display:flex;flex-direction:column;gap:10px;min-height:0}
+  .mc{flex:1;background:#fff;border:1px solid var(--line);border-left:6px solid var(--bt);border-radius:12px;padding:10px 16px;
+    display:grid;grid-template-columns:1fr 1fr;gap:4px 22px;font-size:16.5px;align-content:center}
+  .mc .hd{grid-column:1/3;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .mc .no_{font-size:22px;font-weight:800;color:var(--bt)}
+  .mc .nm{font-size:21px;font-weight:700}
+  .mc .chips{margin-left:auto;display:flex;gap:3px}
+  .chip{font-size:15px;font-weight:700;border-radius:5px;padding:1px 7px;background:#eef0f4;color:#a0a7b4}
+  .chip.on{background:var(--ink);color:#fff}
+  .mc dl{margin:0;display:grid;grid-template-columns:78px 1fr;gap:6px 10px}
+  .mc dt{font-weight:700;color:var(--muted);font-size:14.5px;padding-top:2px;white-space:nowrap}
+  .mc dd{margin:0}
+  .mc .ok{color:#1f7a33}
+  .mc .risk{color:#9a3a3a}
+  .avoid{background:#fff6f6;border:1px dashed #d99;border-radius:10px;padding:9px 16px;font-size:16px;color:#5a1d1d}
 
   /* 상세 팝업 */
   .pop{position:absolute;inset:0;background:rgba(20,24,32,.35);display:none;align-items:center;justify-content:center}
@@ -85,7 +133,8 @@
 </head>
 <body>
 <div class="frame" id="frame">
-<div class="slide" id="slide">
+<div class="slide s1 on" id="s1" aria-label="1장 밸류체인 맵">
+  <div class="nav"></div>
   <div class="top">
     <div>
       <h1>밸류체인 맵 v3.3 — 네이버 플레이스 vs 버틴집</h1>
@@ -93,12 +142,91 @@
     </div>
     <div class="point">
       <span class="nv">네이버</span>는 식당의 돈이 <b>② 평가(리뷰 대행)</b>와 <b>③ 노출(광고)</b>에 닿는다.<br>
-      <span class="bt">버틴집</span>은 ②·③에 들어오는 돈이 없다. 대신 ⑤에서 돌아오는 데이터도 없다.
+      <span class="bt">버틴집</span>은 순위·평가에 식당 돈이 닿지 않는다. 수익은 순위와 분리한 광고 배너 <span class="pl ok">확정·MVP 이후</span> + 데이터·협업 <span class="pl pr">제안</span>
     </div>
   </div>
 
   <div class="map" id="map"></div>
 
+  <div class="legend">
+    <span>네이버 페인포인트 <span class="who u">이용자</span><span class="who s">식당</span> · <span class="pl ok">확정·MVP 이후</span> 기획서 결정 · <span class="pl pr">제안</span> 팀 결정 전(2장) · B 병목 · C 비용 · O 기회 · <span class="star">*</span> 가정값 · [U] 근거 없음 · 노랑 = 돈이 오감·비용 가능 · 틸 = 버틴집 자산 · 칸 누르면 상세</span>
+    <span>출처: P 기획서 · W v2 맵 · N1 보도자료(2021) · N2 업계 글 · N3 고객센터·공지 · N4 네이버애즈 · N5 언론 · T 팀 문서(11/12)</span>
+  </div>
+
+  <div class="pop" id="pop"><div class="card" id="card" tabindex="-1" role="dialog" aria-modal="true"></div></div>
+</div>
+
+<div class="slide s2" id="s2" aria-label="2장 수익 구조">
+  <div class="nav"></div>
+  <div class="top">
+    <div><h1>수익 구조 비교 — 지도 앱 vs 버틴집, 그리고 수익 모델 3안</h1>
+      <p class="meta">2026-11-12 · 비교 자료는 Aside가 공개 페이지에서 조사 (M1~M5) · 금액은 원문 숫자 · 확정 = 기획서 결정 · 제안 = 팀 결정 전</p></div>
+    <div class="lead"><b>공통점:</b> 지도 앱은 <b>등록은 무료</b>, 돈은 <b>광고·거래 수수료</b>로 번다.<br>
+      <b>버틴집 원칙:</b> 가게가 <b>순위·배지를 돈으로 사는 구조는 만들지 않는다</b> (P 11-1).</div>
+  </div>
+
+  <div class="rev">
+    <div class="cmpt">
+      <h3>① 지금 수익 구조 비교</h3>
+      <table>
+        <thead><tr><th></th><th>가게 등록</th><th>광고 (자연 순위와 분리?)</th><th>거래 수수료·기타 수입</th><th>순위를 돈으로?</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="5">지도 앱</td></tr>
+          <tr><th style="color:var(--nv)">네이버 플레이스</th><td>[U]</td><td>CPC 입찰 50~5,000원 · 광고 표시 <span class="mid">(별도 영역)</span></td><td>Npay 예약 1.80~2.90%</td><td class="mid">광고 자리만</td></tr>
+          <tr><th>카카오맵</th><td class="yes">무료</td><td>CPM 1,000회 500원 · 맵광고 일정액(7~90일) <span class="mid">(표시 여부 미확인)</span></td><td>예약 무료+결제 수수료</td><td class="mid">광고 자리만</td></tr>
+          <tr><th>구글 지도</th><td class="yes">무료</td><td>CPC 경매 · 사각 핀·Sponsored <span class="yes">(분리 명시)</span></td><td>예약 대행사 몫</td><td class="yes">불가 명시</td></tr>
+          <tr><th>캐치테이블</th><td>첫 달 무료</td><td>신규오픈 노출 지원</td><td>월 3.3~9.9만원 (2023 언론)</td><td>[U]</td></tr>
+          <tr class="grp"><td colspan="5">순위·인증 서비스 (참고)</td></tr>
+          <tr><th>블루리본</th><td class="no">웹 등록 심사비 15만원</td><td>—</td><td>책 1.9만원 · 지자체 협업</td><td class="mid">책 수록은 따로</td></tr>
+          <tr><th>미쉐린</th><td class="yes">식당 돈 안 받음</td><td>—</td><td>관광청·지자체 협찬 (서울 5년 약 20억)</td><td class="yes">영향 없다고 밝힘</td></tr>
+          <tr class="us"><th style="color:var(--bt)">버틴집 (지금)</th><td class="yes">무료 (공공데이터)</td><td>광고 배너 MVP 제외</td><td>없음 (예약 없음)</td><td class="yes">안 함</td></tr>
+        </tbody>
+      </table>
+      <p class="insight">🔍 <b>빈자리:</b> 소진공 상가정보(무료)에는 <b>폐업 이력이 없고</b>, 폐업·생존율 데이터를 파는 민간 상품은 <b>못 찾음</b> (M5). 상권 보고서는 건당 1.1만~5.5만원, 기업용은 월 82.5만원부터.</p>
+    </div>
+
+    <div class="models">
+      <h3>② 버틴집 수익 모델 3안 <span class="src">— 확정은 광고 배너 하나, 1·2는 Aside 조사 기반 제안</span></h3>
+      <div class="mc">
+        <div class="hd"><span class="no_">1</span><span class="nm">생존 상권 데이터 리포트 (B2B)</span><span class="st pr">제안 · 팀 결정 전</span><span class="chips"><span class="chip on">①</span><span class="chip on">②</span><span class="chip">③</span><span class="chip">④</span><span class="chip">⑤</span></span></div>
+        <dl><dt>누가→누구</dt><dd>창업 예정자·프랜차이즈 본사·금융사 → 버틴집</dd>
+          <dt>과금</dt><dd>건당 리포트 + 기업 구독 <span class="src">(비교: 1.1만~5.5만원/건, 월 82.5만원~)</span></dd>
+          <dt>쓰는 자산</dt><dd>①② 인허가 97,575행 · 폐업 이력 · 생존배수</dd></dl>
+        <dl><dt>풀리는 페인</dt><dd class="ok">⑤ 운영: 수익 0원 → 이용자는 계속 무료</dd>
+          <dt>원칙</dt><dd class="ok">✓ 식당에게 돈 안 받음, 순위와 무관</dd>
+          <dt>리스크</dt><dd class="risk">수요 미확인(물어본 적 없음) · 공개 데이터라 차별화 약함 · 인허가 데이터 가공 판매 조건 미확인 · B2·B3 정확도</dd></dl>
+      </div>
+      <div class="mc">
+        <div class="hd"><span class="no_">2</span><span class="nm">지자체·관광 협업 "오래 버틴 가게" 지도 (B2G)</span><span class="st pr">제안 · 팀 결정 전</span><span class="chips"><span class="chip">①</span><span class="chip">②</span><span class="chip on">③</span><span class="chip">④</span><span class="chip on">⑤</span></span></div>
+        <dl><dt>누가→누구</dt><dd>대구시·관광공사 → 버틴집 (위탁·협찬)</dd>
+          <dt>과금</dt><dd>연 단위 계약 <span class="src">(비교: 미쉐린 서울 5년 약 20억, 블루리본–세종시 협업)</span></dd>
+          <dt>쓰는 자산</dt><dd>③ 지도·배지 · ⑤ 백년가게 참고 비교</dd></dl>
+        <dl><dt>풀리는 페인</dt><dd class="ok">③ 이용자: '오래됨=믿을 만?' 근거 보강 · ⑤ 배지 스티커 비용(C2)</dd>
+          <dt>원칙</dt><dd class="ok">✓ 선정 기준 공개, 협찬이 순위에 영향 없음 명시</dd>
+          <dt>리스크</dt><dd class="risk">대구시와 논의한 적 없음 · 예산 주기 · 공공 협업 시 독립성 의심</dd></dl>
+      </div>
+      <div class="mc">
+        <div class="hd"><span class="no_">3</span><span class="nm">순위와 분리한 광고 배너</span><span class="st ok">기획서 확정 (P 11-2) · MVP 이후</span><span class="chips"><span class="chip">①</span><span class="chip">②</span><span class="chip on">③</span><span class="chip on">④</span><span class="chip">⑤</span></span></div>
+        <dl><dt>누가→누구</dt><dd>지역 가게·관광 상품 → 버틴집</dd>
+          <dt>과금</dt><dd>노출당(CPM)·기간 정액 <span class="src">(비교: 카카오 1,000회 500원, 맵광고 7~90일)</span></dd>
+          <dt>쓰는 자산</dt><dd>③④ 지도·가게 카드 화면, 방문자 수</dd></dl>
+        <dl><dt>풀리는 페인</dt><dd class="ok">⑤ 운영: 수익 0원</dd>
+          <dt>원칙</dt><dd class="ok">✓ 구글처럼 "광고" 표시 + 순위·배지와 분리 (P 11-2-1)</dd>
+          <dt>리스크</dt><dd class="risk">B1처럼 신뢰 훼손 우려 · 방문자 적으면 수익 작음 → 방문자 쌓인 뒤 (P 11-4)</dd></dl>
+      </div>
+      <div class="avoid">✕ <b>하지 않을 것:</b> 블루리본식 <b>식당 등록비</b>, 배지 유료화 — 가게가 돈을 내면 "버틴 시간" 지표의 신뢰가 무너짐 (네이버 B1과 같은 문제)</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span>①~⑤ 칩 = 그 모델이 쓰는 밸류체인 단계 · [U] 확인 못 함 · 캐치테이블 요금은 2023 언론 기준</span>
+    <span>출처: M1 카카오비즈니스 · M2 Google 도움말 · M3 캐치테이블 약관·언론 · M4 블루리본·미쉐린(언론) · M5 소진공·나이스비즈맵·오픈업 · N3·N4 네이버</span>
+  </div>
+</div>
+
+<div class="slide s3" id="s3" aria-label="3장 우선순위와 결정">
+  <div class="nav"></div>
+  <div class="top"><div><h1>우선순위 · 병목 · 지원활동 · 결정</h1><p class="meta">2026-11-12 · 밸류체인 맵 v3.3 이어서</p></div></div>
   <div class="bottom">
     <div class="box">
       <h3>우선 기회 <span class="src">(점수는 가정값)</span></h3>
@@ -133,16 +261,13 @@
         <li><b>③ 표현</b> A / <b>B (임시)</b> / C</li>
         <li><b>우선순위</b> O1→O2→O3 확정</li>
         <li><b>네이버 [U]</b> 순위 가중치·광고 단가</li>
+        <li><b>수익 모델</b> 광고 배너(확정) 외에 제안 1 데이터 리포트 · 2 지자체 협업을 검토할지 (2장)</li>
+        <li><b>공공데이터 재판매</b> 인허가 데이터 이용 조건 확인 (모델 1 전제)</li>
       </ul>
     </div>
   </div>
 
-  <div class="legend">
-    <span>B 병목 · C 비용 · O 기회 · <span class="star">*</span> 가정값 · [U] 근거 없음 · 노랑 = 돈이 오감·비용 가능, 초록 = 돈 없음 · 빗금 = 단절 · 틸 = 버틴집 자산 · 칸 누르면 상세</span>
-    <span>출처: P 기획서 · W v2 맵 · N1 보도자료(2021) · N2 업계 글 · N3 고객센터·공지 · N4 네이버애즈 · N5 언론</span>
-  </div>
-
-  <div class="pop" id="pop"><div class="card" id="card" tabindex="-1" role="dialog" aria-modal="true"></div></div>
+  <div class="legend"><span>점수는 가정값 · [U] 근거 없음</span><span>출처: P 기획서 · N3 고객센터·공지 · N5 언론</span></div>
 </div>
 </div>
 
@@ -157,16 +282,27 @@ const ROWS = {
     ["방문 후 리뷰 작성 → ②", "식당, 이용자, 네이버(신고 처리)", "식당 매출 (체인 밖)", "신고 12만 2천·삭제 9만 1,800건 <span class=\"chk\">확인 필요</span>", ""]
   ],
   bt: [
-    ["인허가 97,575행 → 정제 → 좌표 변환"+S, '행정안전부, 버틴집 팀 <span class="inf">영향: 재인허가·명의 변경</span>', "공공데이터 무료", "인허가일·폐업일·좌표 → 가공 폴더", '<span class="m b">B3 개업일·좌표 결측</span>'],
-    ["생존배수(주변 10곳 중앙값"+S+") → 상위 % <span class=\"two\">업종 기준 2차</span>", '버틴집 팀 <span class="inf">영향: 중도절단·시기 차이</span>', "들어오는 돈 없음", "생존배수·상위 % → 결과 JSON", '<span class="m b">B2 중도절단 편향</span>'],
-    ["지도에 상위 % 순 정렬 + 배지", '버틴집 사이트, 카카오맵 <span class="inf">영향: 카카오 약관·공정위 지침</span>', "들어오는 돈 없음", "핀·배지·카드, 방문자 수 → 버틴집", '<span class="m o">O1 ★우선</span>'],
-    ["지도·카드 → 카카오맵 길찾기", '<span class="usr">이용자</span> (가상)', "카카오 API 무료로 시작 <span class=\"same\">(이후 비용 가능)</span>", "지도 조회·길찾기 → 카카오만"+S, '<span class="m o">O2 지도</span><span class="m c">C1 API 비용</span>'],
-    ["재방문 정보 없음 (단절) · 월 1회 갱신 → ①", '식당(배지 수령), 이용자 <span class="inf">영향: 백년가게와 혼동</span>', "버틴집 → 식당 배지 무료 (돈 안 받음)", "재방문 없음 · 백년가게 참고 비교", '<span class="m o">O3 신뢰 근거</span><span class="m c">C2 스티커</span>']
+    ["인허가 97,575행 → 정제 → 좌표 변환"+S, '행정안전부, 버틴집 팀 <span class="inf">영향: 재인허가·명의 변경</span>', "<span class=\"pl pr\">제안</span>가공 데이터 리포트 판매 <span class=\"same\">(모델 1)</span>", "인허가일·폐업일·좌표 → 가공 폴더", '<span class="m b">B3 개업일·좌표 결측</span>'],
+    ["생존배수(주변 10곳 중앙값"+S+") → 상위 % <span class=\"two\">업종 기준 2차</span>", '버틴집 팀 <span class="inf">영향: 중도절단·시기 차이</span>', "<span class=\"pl pr\">제안</span>생존 상권 리포트 수익 <span class=\"same\">(모델 1)</span>", "생존배수·상위 % → 결과 JSON", '<span class="m b">B2 중도절단 편향</span>'],
+    ["지도에 상위 % 순 정렬 + 배지", '버틴집 사이트, 카카오맵 <span class="inf">영향: 카카오 약관·공정위 지침</span>', "<span class=\"pl ok\">확정·MVP 이후</span>광고 배너 수익 — 순위와 분리, '광고' 표시 <span class=\"same\">(모델 3)</span>", "핀·배지·카드, 방문자 수 → 버틴집", '<span class="m o">O1 ★우선</span>'],
+    ["지도·카드 → 카카오맵 길찾기", '<span class="usr">이용자</span> (가상)', "<span class=\"pl ok\">확정·MVP 이후</span>지도·카드 화면 광고 배너 <span class=\"same\">(모델 3)</span><br><span class=\"same\">비용: 카카오 API (무료로 시작)</span>", "지도 조회·길찾기 → 카카오만"+S, '<span class="m o">O2 지도</span><span class="m c">C1 API 비용</span>'],
+    ["재방문 정보 없음 (단절) · 월 1회 갱신 → ①", '식당(배지 수령), 이용자 <span class="inf">영향: 백년가게와 혼동</span>', "<span class=\"pl pr\">제안</span>지자체·관광 협업 수익 <span class=\"same\">(모델 2)</span><br><span class=\"same\">배지는 식당에 무료</span>", "재방문 없음 · 백년가게 참고 비교", '<span class="m o">O3 신뢰 근거</span><span class="m c">C2 스티커</span>']
   ]
 };
 /* 돈 칸 색: true = 초록(돈이 오가지 않음), false = 노랑(돈이 오가거나 비용이 생길 수 있음) */
-const FREE = {bt:[true,true,true,false,true], nv:[false,false,false,false,false]};
-const FIELDS = ["활동","사람","돈","데이터","마커","출처"];
+const FREE = {bt:[false,false,false,false,false], nv:[false,false,false,false,false]};
+/* 버틴집 돈 줄은 아직 없는 '계획' 수익 → 점선 표시 */
+const FIELDS = ["활동","사람","돈","데이터","페인<br>포인트","마커","출처"];
+const U='<span class="who u">이용자</span>', SK='<span class="who s">식당</span>', OP='<span class="who o">운영</span>';
+/* 페인포인트: [표에 보이는 짧은 글, 팝업용 설명] */
+const PAIN = {
+  nv0:[SK+"정보를 직접 등록·관리해야 함"+S, "식당이 스마트플레이스 정보를 직접 등록·수정해야 노출과 광고가 가능 (부담 정도는 가정값)"],
+  nv1:[U+"\"리뷰가 광고 같아서 못 믿겠다\"<span class=\"ev\">실제 발언 4건</span>", "이용자: 리뷰가 광고 같아 못 믿겠다(팀 수집 실제 발언 4건, T). 식당: 리뷰 대행 유혹과 대가성 리뷰 적발 시 업체 단위 제재 위험(N3)"],
+  nv2:[U+"광고·자연 결과 구분 어려움"+S+"<br>"+SK+"클릭당 광고비 경쟁", "이용자: 같은 영역에 광고와 자연 결과가 섞여 구분이 어려움(가정값). 식당: 입찰가 50~5,000원 클릭당 광고비 경쟁(N4)"],
+  nv3:[SK+"예약·주문마다 Npay 수수료", "식당: 예약 1.80~2.90%, 주문·매장결제 0.80~2.90% Npay 수수료(N3)"],
+  nv4:[SK+"리뷰 신고·삭제 분쟁", "식당·이용자: 권리침해 신고 12만 2,000건 중 9만 1,800건(약 75%) 삭제 — 리뷰를 둘러싼 분쟁이 많음(P 2-2, 원문 확인 필요)"],
+};
+const SRC_EXTRA = {nv1:" · T"};
 
 const D = {
   nv0:{t:"① 네이버 — 식당 정보 원천", a:"업주가 스마트플레이스에 업체·영업 정보 등록(광고하려면 등록 필요). 이용자의 '신규 장소 등록' 제보, 제휴사(NOL, 여기어때, 세스코, 소상공인진흥원, 다이닝코드 등) 정보도 반영. 도로명주소는 정부 도로명주소 안내시스템 기준", p:"식당 사업자, 네이버, 제휴사", m:"스마트플레이스 등록 비용 — 자료 없음 [U]", d:"업체·영업 정보 → 네이버. 업체명·주소·전화번호를 정기 모니터링하고 부재중·결번·폐업이 확인되면 검색 노출 일시정지", s:"P 10-3, N2, N3(고객센터 20381·5637/20140·5637/9000)"},
@@ -174,11 +310,11 @@ const D = {
   nv2:{t:"③ 네이버 — 노출·정렬", a:"플레이스 영역·지도에 자연 결과 + 플레이스 광고(통합검색·지도 등에 1~12개). 자연 순위 요소는 공개: 유사도(적합도·연관도), 인기도, 거리, 정보의 충실성 + 어뷰징 모니터링. 요소별 가중치·계산식은 비공개 [U]", p:"네이버 플레이스 (영향: 공정위 추천·보증 심사지침)", m:"식당 → 네이버 광고비. 등록·노출 무료, 클릭할 때만 과금(CPC). 입찰가 50~5,000원(VAT 별도, 광고그룹 단위), 일 예산 상한 광고그룹당 10만원. 업체 페이지 이동·전화·예약·저장·길찾기·리뷰 클릭에 과금. 실제 평균 클릭 단가는 [U]. 광고 표시 있음", d:"자연 순위(요소 공개·가중치 비공개) / 광고 클릭 통계 → 네이버", s:"N3(고객센터 23472, 스마트플레이스 정책), N4(네이버애즈 FAQ 1044·1353·400, 2026 수정). N1(2021 출시 당시 '하루 50원~2만원·균등형')은 현재와 다름"},
   nv3:{t:"④ 네이버 — 탐색·선택", a:"별점·리뷰를 보고 식당 선택 → 네이버 예약·주문 (페르소나, 가상)", p:"이용자", m:"예약·주문 결제 시 식당 → 네이버 Npay 수수료(부가세 별도): 예약 1.80~2.90%, 주문·매장결제 0.80~2.90%(사업자 규모별). 네이버 예약 이용료 없음, 네이버 주문 서비스 사용료 '현재 부과 안 함'(2025-02). 광고 클릭 과금은 ③과 같은 돈", d:"검색·지도 조회, 예약·길찾기 클릭 → 네이버. 광고주는 클릭·예약·길찾기 횟수를 리포트로 봄", s:"P 4-1, N1, N3(고객센터 20558·20749, 스마트플레이스 공지 836). 중소3 주문 요율 1.75% vs 예전 도움말 1.80% 불일치 — 확인 필요"},
   nv4:{t:"⑤ 네이버 — 방문·피드백", a:"방문 후 리뷰 작성 → ②로 돌아감 (가정값)", p:"식당, 이용자, 네이버(신고 처리)", m:"식당 매출 (체인 밖)", d:"권리침해 신고 12만 2,000건, 삭제 9만 1,800건(약 75%) — 원문 수치 확인 필요", s:"P 2-2"},
-  bt0:{t:"① 버틴집 — 식당 정보 원천", a:"행안부 인허가 CSV 97,575행 → 정제(중복 837그룹, 결측 14건 제외) → 좌표 자체 변환 EPSG5174→WGS84 (가정값)", p:"행정안전부, 버틴집 팀 (영향: 재인허가·명의 변경)", m:"공공데이터 무료", d:"인허가일·폐업일·영업상태·X,Y → 가공 폴더 (원본 읽기 전용)", s:"P 6-1, 3-6, 6-3, 9-1", k:"B3 인허가일≠개업일 · 좌표 결측 약 4.1%"},
-  bt1:{t:"② 버틴집 — 평가 생성", a:"생존배수(주변 기준) = 영업연수 ÷ 가까운 폐업 10곳의 중앙값 (가정값). 30일 하한 · ε 미정 · 최소 표본 5곳 (가정값) → 상위 %. 업종 기준은 2차", p:"버틴집 팀 (영향: 중도절단·시기 차이, 백년가게 참고 비교)", m:"들어오는 돈 없음 — 가게가 순위를 사는 구조를 피함", d:"생존배수·상위 % → 결과 JSON (버틴집 보유)", s:"P 7-2, 7-3, 7-4, 11-1", k:"B2 중도절단 편향 (영업 중 점포 배수 과대)"},
-  bt2:{t:"③ 버틴집 — 노출·정렬", a:"지도 중심 화면, 상위 % 순 정렬. \"버틴집 기준 상위 N%\" + 설명 문구, 배지(지도 핀·가게 카드), 중도절단 한계 문구", p:"버틴집 사이트, 카카오맵 (영향: 카카오 약관, 공정위 표시·광고 지침)", m:"들어오는 돈 없음 · 이용자 무료 · 광고 배너는 MVP 제외", d:"지도 핀·배지·카드, 방문자 수 → 버틴집", s:"P 8-2, 11-2-1, 14-2", k:"O1 돈이 들어가지 않는 지표 표시 ★우선"},
-  bt3:{t:"④ 버틴집 — 탐색·선택", a:"지도·목록 → 가게 카드(영업시간·메뉴는 \"없음\" 표시) → 카카오맵 길찾기. 예약 없음", p:"이용자", m:"카카오 API 무료로 시작", d:"지도 조회·길찾기 → 카카오만 (가정값)", s:"P 8-1, 11-3", k:"O2 지도 탐색 · C1 지도 API 비용"},
-  bt4:{t:"⑤ 버틴집 — 방문·피드백", a:"방문(체인 밖). 재방문 정보 없음(단절). 돌아오는 것: 방문자 수, 공개 후 반응, 오류 신고(창구 미정). 월 1회 갱신 → ① 다시 실행", p:"식당(배지 수령), 이용자 (영향: 백년가게와 혼동 위험)", m:"버틴집 → 식당 배지·스티커 무료 · 스티커 제작비(추정)", d:"재방문 없음 · 백년가게와 겹치는지 참고 비교 (목록 미확보)", s:"P 3-3, 9-1, 11-3, 14-2, 14-5", k:"O3 신뢰 근거 · C2 배지 스티커"}
+  bt0:{t:"① 버틴집 — 식당 정보 원천", a:"행안부 인허가 CSV 97,575행 → 정제(중복 837그룹, 결측 14건 제외) → 좌표 자체 변환 EPSG5174→WGS84 (가정값)", p:"행정안전부, 버틴집 팀 (영향: 재인허가·명의 변경)", m:"지금: 공공데이터 무료(비용 없음). 제안(팀 결정 전): 가공한 폐업·영업 이력 데이터를 리포트로 판매(2장 모델 1) — 행안부 데이터 이용 조건 확인 필요", d:"인허가일·폐업일·영업상태·X,Y → 가공 폴더 (원본 읽기 전용)", s:"P 6-1, 3-6, 6-3, 9-1", k:"B3 인허가일≠개업일 · 좌표 결측 약 4.1%"},
+  bt1:{t:"② 버틴집 — 평가 생성", a:"생존배수(주변 기준) = 영업연수 ÷ 가까운 폐업 10곳의 중앙값 (가정값). 30일 하한 · ε 미정 · 최소 표본 5곳 (가정값) → 상위 %. 업종 기준은 2차", p:"버틴집 팀 (영향: 중도절단·시기 차이, 백년가게 참고 비교)", m:"지금: 들어오는 돈 없음 — 가게가 순위를 사는 구조를 피함. 제안(팀 결정 전): 생존배수·상권 생존 리포트를 창업 예정자·프랜차이즈 본사·금융사에 판매(2장 모델 1). 식당에게는 받지 않음", d:"생존배수·상위 % → 결과 JSON (버틴집 보유)", s:"P 7-2, 7-3, 7-4, 11-1", k:"B2 중도절단 편향 (영업 중 점포 배수 과대)"},
+  bt2:{t:"③ 버틴집 — 노출·정렬", a:"지도 중심 화면, 상위 % 순 정렬. \"버틴집 기준 상위 N%\" + 설명 문구, 배지(지도 핀·가게 카드), 중도절단 한계 문구", p:"버틴집 사이트, 카카오맵 (영향: 카카오 약관, 공정위 표시·광고 지침)", m:"지금: 이용자 무료, 광고 배너는 MVP 제외. 확정(기획서 P 11-2, MVP 이후): 순위·배지와 분리하고 \"광고\"로 표시한 영역에서 광고 수익(2장 모델 3, P 11-2-1). 방문자 수가 쌓인 뒤 시작(P 11-4)", d:"지도 핀·배지·카드, 방문자 수 → 버틴집", s:"P 8-2, 11-2-1, 14-2", k:"O1 돈이 들어가지 않는 지표 표시 ★우선"},
+  bt3:{t:"④ 버틴집 — 탐색·선택", a:"지도·목록 → 가게 카드(영업시간·메뉴는 \"없음\" 표시) → 카카오맵 길찾기. 예약 없음", p:"이용자", m:"지금: 카카오 API 무료로 시작(이후 비용 가능, C1). 확정(기획서 P 11-2, MVP 이후): 가게 카드·지도 화면의 \"광고\" 표시 영역 수익(2장 모델 3)", d:"지도 조회·길찾기 → 카카오만 (가정값)", s:"P 8-1, 11-3", k:"O2 지도 탐색 · C1 지도 API 비용"},
+  bt4:{t:"⑤ 버틴집 — 방문·피드백", a:"방문(체인 밖). 재방문 정보 없음(단절). 돌아오는 것: 방문자 수, 공개 후 반응, 오류 신고(창구 미정). 월 1회 갱신 → ① 다시 실행", p:"식당(배지 수령), 이용자 (영향: 백년가게와 혼동 위험)", m:"지금: 버틴집 → 식당 배지·스티커 무료, 스티커 제작비(추정). 제안(팀 결정 전): 대구시·관광공사와 '오래 버틴 가게' 지도 협업 수익(2장 모델 2) — 협찬이 순위에 영향 없음을 공개", d:"재방문 없음 · 백년가게와 겹치는지 참고 비교 (목록 미확보)", s:"P 3-3, 9-1, 11-3, 14-2, 14-5", k:"O3 신뢰 근거 · C2 배지 스티커"}
 };
 
 const map = document.getElementById('map');
@@ -187,20 +323,22 @@ function stages(){
   h += '<div class="corner"></div><div class="corner"></div>';
   ["① 정보 원천","② 평가 생성","③ 노출·정렬","④ 탐색·선택 <span class=\"meetb\">↕ 이용자가 만나는 곳</span>","⑤ 방문·피드백"].forEach(s => h += `<div class="sh">${s}</div>`);
 }
+const HAS_PAIN = {nv:true, bt:false};
 function lane(key, name, sub){
-  h += `<div class="lane ${key}">${name}<small>${sub}</small></div>`;
+  h += `<div class="lane ${key}" style="grid-row:span ${HAS_PAIN[key] ? 7 : 6}">${name}<small>${sub}</small></div>`;
   FIELDS.forEach((f, fi) => {
-    const isMoney = fi === 2, isSrc = fi === 5;
-    h += `<div class="f${isMoney?' money':''}${isSrc?' srcf':''}">${f}</div>`;
+    if (fi === 4 && !HAS_PAIN[key]) return;
+    const isMoney = fi === 2, isPain = fi === 4, isMark = fi === 5, isSrc = fi === 6;
+    h += `<div class="f${isMoney?' money':''}${isSrc?' srcf':''}${isPain?' pain':''}">${f}</div>`;
     for (let s = 0; s < 5; s++){
       let cls = 'v';
       if (fi === 0) cls += ' act';
       if (isMoney) cls += ' money' + (FREE[key][s] ? ' no' : '');
       if (isSrc) cls += ' srcv';
-      if (key === 'bt' && s === 4) cls += ' gap';
+      if (isPain) cls += ' pain';
       const k = key + s;
       const SHORT = {nv0:"P 10-3, N2, N3", nv1:"P 10-3, W5·W6, P 2-2, N3", nv2:"N3, N4 · N1(2021)은 현재와 다름", nv3:"P 4-1, N1, N3 · 요율 1건 확인 필요"};
-      const txt = isSrc ? (SHORT[k] || D[k].s) :(ROWS[key][s][fi] || '<span style="color:#c5cad3">—</span>');
+      const txt = isSrc ? (SHORT[k] || D[k].s) + (SRC_EXTRA[k] || '') : isPain ? PAIN[k][0] : (ROWS[key][s][isMark ? 4 : fi] || '<span style="color:#c5cad3">—</span>');
       h += `<div class="${cls}" data-k="${k}" role="button" tabindex="0" aria-label="${D[k].t} 상세 보기"><div>${txt}</div></div>`;
     }
   });
@@ -221,6 +359,7 @@ function openDetail(c){
   card.innerHTML = `<h3>${x.t}<span>바깥을 누르거나 Esc로 닫힘</span></h3><dl>
     <dt>활동</dt><dd>${x.a}</dd><dt>사람</dt><dd>${x.p}</dd>
     <dt>돈</dt><dd>${x.m}</dd><dt>데이터</dt><dd>${x.d}</dd>
+    ${PAIN[k] ? `<dt>페인<br>포인트</dt><dd>${PAIN[k][1]}</dd>` : ''}
     ${x.k ? `<dt>마커</dt><dd>${x.k}</dd>` : ''}
     <dt>출처</dt><dd class="src">${x.s}</dd></dl>`;
   pop.classList.add('on');
@@ -241,14 +380,30 @@ pop.addEventListener('click', e => { if (e.target === pop) closeDetail(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
 
 /* 창 크기에 맞춰 16:9 슬라이드 축소 — 너무 작아지면 0.6배에서 멈추고 스크롤 */
-const slide = document.getElementById('slide'), frame = document.getElementById('frame');
+const frame = document.getElementById('frame');
+const slides = [...document.querySelectorAll('.slide')];
+let cur = Math.min(Math.max(parseInt(location.hash.slice(1)) || 1, 1), slides.length);
+function show(n){
+  cur = n;
+  slides.forEach((sl, i) => sl.classList.toggle('on', i === n - 1));
+  document.querySelectorAll('.nav').forEach(nv => nv.innerHTML = slides.map((_, i) =>
+    `<button type="button" data-n="${i+1}" aria-current="${i+1 === n}">${i+1}</button>`).join('') + '<span>← → 로 넘기기</span>');
+  history.replaceState(null, '', '#' + n);
+}
+document.addEventListener('click', e => { const b = e.target.closest('.nav button'); if (b) show(+b.dataset.n); });
+document.addEventListener('keydown', e => {
+  if (pop.classList.contains('on')) return;
+  if (e.key === 'ArrowRight' && cur < slides.length) show(cur + 1);
+  if (e.key === 'ArrowLeft' && cur > 1) show(cur - 1);
+});
+show(cur);
 function fit(){
   const w = document.documentElement.clientWidth, hh = document.documentElement.clientHeight;
   const s = Math.max(Math.min(w/1920, hh/1080), 0.6);
   frame.style.width = 1920*s + 'px';
   frame.style.height = 1080*s + 'px';
   frame.style.marginTop = Math.max(0, (hh - 1080*s)/2) + 'px';
-  slide.style.transform = `scale(${s})`;
+  slides.forEach(sl => sl.style.transform = `scale(${s})`);
 }
 addEventListener('resize', fit); fit();
 </script>
