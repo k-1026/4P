@@ -74,14 +74,14 @@
 
   /* 발표 순서 */
   .steps{flex:1;display:grid;grid-template-columns:repeat(5,1fr);align-items:stretch;min-height:0}
-  .stp{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px 22px;margin-right:38px;display:flex;flex-direction:column;gap:14px}
+  .stp{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:32px 26px;margin-right:38px;display:flex;flex-direction:column;gap:22px}
   .stp:last-child{margin-right:0}
   .stp:not(:last-child)::after{content:"→";position:absolute;right:-32px;top:50%;transform:translateY(-50%);font-size:28px;color:var(--faint);font-weight:700}
-  .stp .n{font-size:15px;font-weight:800;color:var(--bt)}
-  .stp .t{font-size:27px;font-weight:800;line-height:1.2}
-  .stp .qq{font-size:19px;background:var(--bt-bg);border-radius:8px;padding:9px 13px;font-weight:700}
+  .stp .n{font-size:18px;font-weight:800;color:var(--bt)}
+  .stp .t{font-size:36px;font-weight:800;line-height:1.2}
+  .stp .qq{font-size:26px;line-height:1.45;background:var(--bt-bg);border-radius:10px;padding:16px 18px;font-weight:700}
   .stp .fl{font-size:16px;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px;line-height:1.55}
-  .stp .ans{margin-top:auto;font-size:18px;border-top:2px solid var(--ink);padding-top:12px}
+  .stp .ans{margin-top:auto;font-size:24px;line-height:1.5;border-top:2px solid var(--ink);padding-top:16px}
   .stp.data{border:2px solid var(--bt)}
   .bridge{background:#fff;border:2px solid var(--bt);border-radius:12px;padding:14px 24px;font-size:20px}
 
@@ -281,7 +281,6 @@
     고객여정지도에서 같은 자리에 이용자의 페인 <b>P1 광고 리뷰 · P2 노포 근거 없음</b>이 있음을 확인했습니다.<br>
     지금 데이터는 <b>대구 124,394곳</b>을 모아 <b>생존배수 v1.0</b>까지 계산한 상태입니다.
   </div>
-  <div class="foot">밸류체인 → 고객여정지도 → 페인포인트 → 데이터 진척 → 다음 단계 &nbsp;·&nbsp; ← → 키로 넘김</div>
 </section>
 
 <!-- 2 발표 순서 -->
@@ -291,23 +290,18 @@
   <div class="steps">
     <div class="stp"><div class="n">PART 1 · 3~6장</div><div class="t">밸류체인 맵</div>
       <div class="qq">식당의 돈과 데이터는 어디로 흐르나?</div>
-      <div class="fl">네이버 플레이스 vs 버틴집<br>5단계 × 활동·사람·돈·데이터<br>병목 B · 비용 C · 기회 O</div>
       <div class="ans">네이버는 식당 돈이 <b>② 평가 · ③ 노출</b>에 닿음</div></div>
     <div class="stp"><div class="n">PART 2 · 7~8장</div><div class="t">고객여정지도</div>
       <div class="qq">이용자는 어느 단계에서 막히나?</div>
-      <div class="fl">외지인 여행자 정하준<br>대구 거주자 윤미래<br>한 사람 · 한 시나리오씩</div>
       <div class="ans">감정 최저점은 둘 다 <b>식사</b>, 원인은 그 앞 <b>후보 비교</b></div></div>
     <div class="stp"><div class="n">PART 3 · 9장</div><div class="t">페인포인트</div>
       <div class="qq">여정의 페인은 밸류체인 어디서 생기나?</div>
-      <div class="fl">P1~P5 × 밸류체인 단계<br>× 버틴집 기회</div>
       <div class="ans">공통 페인 <b>P1 · P2</b> → 기회 <b>O1</b>로 함께 해결</div></div>
     <div class="stp data"><div class="n">PART 4 · 10~12장</div><div class="t">데이터 진척</div>
       <div class="qq">풀 데이터는 어디까지 모였고 분석됐나?</div>
-      <div class="fl">수집 124,394곳<br>파이프라인 · 생존배수 v1.0<br>페인별 데이터 준비 상태</div>
       <div class="ans">계산·화면까지 됨. <b>메뉴·검증</b>은 아직</div></div>
     <div class="stp"><div class="n">PART 5 · 13장</div><div class="t">결정 · 다음 할 일</div>
       <div class="qq">무엇을 정하고 무엇을 할까?</div>
-      <div class="fl">먼저 만들 기능 순서<br>수익 모델 검토<br>분류 · 계산 · 검증</div>
       <div class="ans">기회와 수익 모델을 <b>팀 결정</b>으로 확정</div></div>
   </div>
   <div class="bridge"><b>한 줄 논리:</b> 이용자가 가장 불편한 곳은 네이버에서 <b>식당 돈이 닿는 곳</b>과 겹칩니다. 버틴집은 그 자리에 <b>돈으로 살 수 없는 데이터(영업 이력)</b>를 놓습니다. 그 데이터가 지금 얼마나 준비됐는지가 4부입니다.</div>
