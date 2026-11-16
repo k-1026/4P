@@ -1,0 +1,322 @@
+<title>버틴집 대표 페르소나</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* 레이아웃: 프로필(왼쪽 인물 카드 + 오른쪽 근거) → 페인포인트 순위(1순위 크게) → 행동 → 원하는 것 · 버틴집 → 여정 → 가져온 것 · 뺀 것 → 확인할 것 */
+:root {
+  --bg: #f4f6f4;
+  --surface: #ffffff;
+  --fg: #19231f;
+  --muted: #5b6862;
+  --line: #d9e0dc;
+  --accent: #1d6b56;
+  --accent-soft: #e2efe9;
+  --pain: #9b3b32;
+  --pain-soft: #f5e1de;
+  --hi: #1d6b56;  --hi-bg: #dcefe6;
+  --mid: #8a5a00; --mid-bg: #f6ebd2;
+  --lo: #9b3b32;  --lo-bg: #f5e1de;
+  --na: #5b6862;  --na-bg: #e8ecea;
+  --bar: #9b3b32;
+  --bar-dim: #d4aaa4;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, "Consolas", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111715; --surface: #18201d; --fg: #e4ebe7; --muted: #9aa8a1; --line: #2c3833;
+    --accent: #5fc2a2; --accent-soft: #1d2f29; --pain: #ee9488; --pain-soft: #3d2421;
+    --hi: #6fd0ae; --hi-bg: #1c3a30; --mid: #e3b55b; --mid-bg: #3a2f17; --lo: #ee9488; --lo-bg: #3d2421; --na: #9aa8a1; --na-bg: #252e2a;
+    --bar: #ee9488; --bar-dim: #6b3a35;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111715; --surface: #18201d; --fg: #e4ebe7; --muted: #9aa8a1; --line: #2c3833;
+  --accent: #5fc2a2; --accent-soft: #1d2f29; --pain: #ee9488; --pain-soft: #3d2421;
+  --hi: #6fd0ae; --hi-bg: #1c3a30; --mid: #e3b55b; --mid-bg: #3a2f17; --lo: #ee9488; --lo-bg: #3d2421; --na: #9aa8a1; --na-bg: #252e2a;
+  --bar: #ee9488; --bar-dim: #6b3a35;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.65; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header.top { background: var(--surface); border-bottom: 1px solid var(--line); }
+header.top .wrap { padding-block: 26px 20px; display: grid; gap: 8px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+h1 { font-size: clamp(26px, 4vw, 34px); line-height: 1.25; margin: 0; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); max-width: 72ch; }
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+nav.toc .wrap { display: flex; gap: 6px; overflow-x: auto; padding-block: 10px; }
+nav.toc a { flex: 0 0 auto; text-decoration: none; color: var(--fg); font-size: 13px; padding: 5px 11px; border: 1px solid var(--line); border-radius: 999px; }
+nav.toc a:hover, nav.toc a:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+main .wrap { padding-block: 28px 64px; display: grid; gap: 48px; }
+section { display: grid; gap: 16px; min-width: 0; scroll-margin-top: 70px; }
+h2 { font-size: 21px; margin: 0; line-height: 1.35; text-wrap: balance; }
+h2 small { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin-top: 4px; }
+h3 { font-size: 16px; margin: 0; }
+p { margin: 0; max-width: 72ch; }
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+.note { font-size: 13px; color: var(--muted); }
+
+/* 프로필 */
+.profile { display: grid; gap: 16px; grid-template-columns: minmax(260px, 340px) 1fr; align-items: start; }
+.idcard { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: grid; gap: 14px; }
+.idcard .name { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.idcard .name b { font-size: 26px; }
+.idcard .name span { color: var(--muted); font-size: 14px; }
+.facts { display: grid; grid-template-columns: 64px 1fr; gap: 6px 12px; font-size: 14px; margin: 0; }
+.facts dt { color: var(--muted); font-weight: 600; }
+.facts dd { margin: 0; }
+.quote { margin: 0; padding: 12px 14px; background: var(--pain-soft); color: var(--fg); border-radius: 8px; font-weight: 600; }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: var(--na-bg); color: var(--na); }
+
+/* 표 */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); min-width: 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+thead th { font-size: 12.5px; color: var(--muted); font-weight: 600; background: var(--bg); white-space: nowrap; }
+tbody tr:last-child td, tbody tr:last-child th { border-bottom: none; }
+tbody th { font-weight: 600; }
+.wide { min-width: 680px; }
+.xwide { min-width: 900px; }
+tr.pain td, tr.pain th { background: var(--pain-soft); }
+
+.chip { display: inline-block; text-align: center; font-size: 12.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.hi { color: var(--hi); background: var(--hi-bg); }
+.mid { color: var(--mid); background: var(--mid-bg); }
+.lo { color: var(--lo); background: var(--lo-bg); }
+.na { color: var(--na); background: var(--na-bg); }
+
+/* 페인포인트 순위 */
+.rank { display: grid; gap: 12px; }
+.pp { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; }
+.pp.main { border: 2px solid var(--pain); }
+.pp .ph { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.pp .rk { font-family: var(--font-num); font-size: 13px; color: var(--pain); font-weight: 500; }
+.pp .ph b { font-size: 18px; }
+.pp.sub .ph b { font-size: 16px; }
+.pp ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; font-size: 14px; }
+
+.bars { display: grid; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: minmax(150px, 240px) 1fr; gap: 12px; align-items: center; }
+.bar-row .lab { font-size: 13.5px; }
+.track { height: 24px; }
+.fill { height: 100%; border-radius: 4px; background: var(--bar-dim); display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; min-width: 2.5em; }
+.fill.top { background: var(--bar); }
+.fill span { font-family: var(--font-num); font-size: 12.5px; color: var(--surface); }
+
+.two { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.two > div { min-width: 0; display: grid; gap: 8px; align-content: start; }
+ol.todo { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; font-size: 14.5px; max-width: 80ch; }
+.warnbox { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 14px 16px; display: grid; gap: 6px; font-size: 14px; }
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+footer .wrap { padding-block: 20px 40px; display: grid; gap: 4px; }
+code { font-family: var(--font-num); font-size: .9em; background: var(--na-bg); padding: 1px 5px; border-radius: 4px; }
+@media (max-width: 760px) { .profile { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .bar-row { grid-template-columns: 1fr; gap: 4px; } }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">팀 4P · 버틴집 · 2026-11-16 · 초안</div>
+    <h1>버틴집 대표 페르소나</h1>
+    <p class="lede">페르소나를 <b>하나로</b> 정하고, 가장 큰 페인포인트를 <b>리뷰 문제</b>로 두었습니다. 지금까지 나온 7명에서 필요한 것을 모았고, 근거는 2022년 이후 자료만 씁니다.</p>
+  </div>
+</header>
+
+<nav class="toc" aria-label="목차">
+  <div class="wrap">
+    <a href="#who">누구인가</a>
+    <a href="#pain">페인포인트</a>
+    <a href="#act">행동</a>
+    <a href="#want">원하는 것 · 버틴집</a>
+    <a href="#journey">여정</a>
+    <a href="#from">가져온 것 · 뺀 것</a>
+    <a href="#verify">확인할 것</a>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+<section id="who">
+  <h2>누구인가<small>이름은 기획서 · 여정지도와 이어지도록 "정하준"을 그대로 쓰고, 설정은 새로 정함. 이름은 팀이 바꿀 수 있음</small></h2>
+  <div class="profile">
+    <div class="idcard">
+      <div class="name"><b>정하준</b><span>33세 · 가상 인물</span></div>
+      <dl class="facts">
+        <dt>사는 곳</dt><dd>경북 구미</dd>
+        <dt>일</dt><dd>회사원 <span class="tag">가정</span></dd>
+        <dt>누구와</dt><dd>아내</dd>
+        <dt>어떻게</dt><dd>자가용, 주말 당일</dd>
+        <dt>어디로</dt><dd>신세계백화점 · 아쿠아리움, 동성로</dd>
+        <dt>찾는 법</dt><dd>네이버 지도 → 카카오맵에서 한 번 더</dd>
+      </dl>
+      <p class="quote">"별점 5점인데 리뷰마다 '서비스 받고 씀'이야. 뭘 믿고 골라?"</p>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>설정</th><th>왜 (근거)</th></tr></thead>
+        <tbody>
+          <tr><th>30대</th><td>30대는 여행 정보를 <b>인터넷 <span class="num">43.5%</span> · 앱 <span class="num">33.1%</span></b>로 얻어 전 연령 중 가장 높고, SNS도 <span class="num">60.6%</span> → <b>리뷰를 가장 많이 보는 나이라 리뷰 문제에 가장 많이 노출됨</b> <span class="tag">해석</span><br><span class="note">2023 대구관광 실태조사. 외지 방문 19.7% · 관광 소비 21.2% (한국관광 데이터랩, 계산)</span></td></tr>
+          <tr><th>경북 구미</th><td>외지 방문객 <span class="num">50.6%</span>가 경북. 생활권이 겹치는 경산 다음이 구미 <span class="num">6.3%</span> <span class="note">(데이터랩)</span></td></tr>
+          <tr><th>아내와</th><td>30대 동반자 배우자/연인 <span class="num">68.1%</span> <span class="note">(실태조사)</span></td></tr>
+          <tr><th>자가용 · 당일</th><td>30대 자가용 <span class="num">81.5%</span>, 숙박 방문 <span class="num">15.7%</span> → 당일 84%대 <span class="note">(실태조사 · 데이터랩, 계산)</span></td></tr>
+          <tr><th>백화점 · 동성로</th><td>외지인 방문 1 · 2위 <span class="note">(대구관광 데이터랩 2023)</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="pain">
+  <h2>페인포인트<small>1순위 리뷰 문제, 나머지 둘은 1순위와 이어지는 보조</small></h2>
+  <div class="rank">
+    <div class="pp main">
+      <div class="ph"><span class="rk">1순위</span><b>리뷰를 믿을 수 없다</b></div>
+      <div class="tbl">
+        <table class="wide">
+          <thead><tr><th>무엇이 문제인가</th><th>근거 (2022년 이후)</th></tr></thead>
+          <tbody>
+            <tr><th>리뷰 이벤트가 별점을 부풀림</th><td>리뷰 작성자 <span class="num">65.2%</span>가 이벤트 때문에 씀, 이벤트 참여자 <span class="num">79.6%</span>가 별점에 영향, 그중 <span class="num">98.3%</span>가 실제보다 높게 줌 <span class="note">(소비자원 2024, 배달앱)</span><br>고기가 나오기도 전에 "별 5개 + 사진이면 계란찜 공짜" 안내 <span class="note">(브런치 2024-04)</span><br>일행 모두 리뷰를 쓰게 하려고 영수증을 나눠 발급 <span class="note">(경기일보 2026-04, 용인 25세)</span></td></tr>
+            <tr><th>별점과 실제가 다름</th><td>별점 5점 가게에서 리뷰와 정반대인 양과 맛 → 지금은 "리뷰 이벤트를 하지 않는 곳의 리뷰를 찾아본다" <span class="note">(경기일보 2026-04, 수원 26세)</span><br>배달앱 평점 4.8 식당 품질 민원, 서울시가 공정위에 공문 <span class="note">(2025-08)</span></td></tr>
+            <tr><th>리뷰를 사고파는 시장</th><td>5년간 허위 후기 <span class="num">28,886</span>건, 약 19억 원, 의뢰업체 707곳에 음식점 포함 <span class="note">(머니투데이 2026-07)</span><br>리뷰 1건에 최대 7,000원, 사업주끼리 리뷰를 주고받는 단체방 <span class="note">(머니투데이 2025-12)</span></td></tr>
+            <tr><th>광고 표시를 지운 후기</th><td>인플루언서에게 "협찬" 표시를 지우게 한 음식 · 숙박 광고 <span class="num">2,337</span>건 <span class="note">(공정위 2025-09)</span></td></tr>
+            <tr><th>앱 사용자 불만</th><td>"한 아이디로 하루에 음식점 10개 넘게 평점 매기고 … 평점 자체를 믿을 수가 없네" <span class="note">(카카오맵 리뷰 2026-09)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bars" role="img" aria-label="앱 리뷰 129건 중 광고 또는 리뷰 조작 불만 71건, 리뷰 조작·이벤트 불신 39건, 폐업·영업정보 43건">
+        <div class="note">지도 · 맛집 앱 리뷰 129건 중 (직접 셈, 2023-04 ~ 2026-11)</div>
+        <div class="bar-row"><div class="lab"><b>광고 또는 리뷰 조작 · 이벤트</b></div><div class="track"><div class="fill top" style="width:55.0%"><span>71</span></div></div></div>
+        <div class="bar-row"><div class="lab">그중 리뷰 조작 · 이벤트만</div><div class="track"><div class="fill top" style="width:30.2%"><span>39</span></div></div></div>
+        <div class="bar-row"><div class="lab">폐업 · 영업정보 (2순위)</div><div class="track"><div class="fill" style="width:33.3%"><span>43</span></div></div></div>
+      </div>
+      <p class="note">막대 길이는 전체 129건 대비 비율. 71건 중 일부는 앱 화면 광고가 거슬린다는 불만이라, 식당 리뷰만 본 숫자는 39건입니다.</p>
+    </div>
+
+    <div class="two">
+      <div class="pp sub">
+        <div class="ph"><span class="rk">2순위 · 보조</span><b>문 닫은 집에 헛걸음</b></div>
+        <ul>
+          <li>앱 리뷰에서 가장 많은 단일 주제 43건, 공감 349 <span class="note">(직접 셈)</span></li>
+          <li>품절 · 휴무 헛걸음 현장 취재 <span class="note">(한국경제 2025-11)</span></li>
+          <li>리뷰 많은 집을 골랐는데 이미 문을 닫음 → 1순위와 이어짐 <span class="tag">해석</span></li>
+        </ul>
+      </div>
+      <div class="pp sub">
+        <div class="ph"><span class="rk">3순위 · 보조</span><b>줄 서고 실망</b></div>
+        <ul>
+          <li>SNS 유명 집 웨이팅 최대 180분 <span class="note">(한국경제 2025-11)</span></li>
+          <li>"2시간 기다릴 정도는 아님" <span class="note">(루리웹 2025)</span></li>
+          <li>리뷰 · SNS를 믿고 줄을 섰다가 실망 → 1순위와 이어짐</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="act">
+  <h2>행동<small>리뷰를 못 믿어서 하는 일</small></h2>
+  <div class="tbl">
+    <table class="wide">
+      <thead><tr><th>행동</th><th>근거</th></tr></thead>
+      <tbody>
+        <tr><th>네이버에서 찾고 카카오맵에서 별점을 한 번 더 확인</th><td>카카오맵 이용자 <span class="num">88.4%</span>가 다른 지도 앱도 같이 씀 <span class="note">(IGAWorks 2026-07)</span> · "네이버는 리뷰이벤트 때문에 별점이 후한데 카카오맵은 믿고 갈 만함" <span class="note">(카카오맵 리뷰 2026-04)</span></td></tr>
+        <tr><th>별점 낮은 리뷰부터 읽음</th><td>서울시 민원인이 평점 낮은 순으로 리뷰를 다시 봄 <span class="note">(2025-08)</span> <span class="tag">해석</span></td></tr>
+        <tr><th>그래도 결국 그 자리에서 빨리 정함</th><td>그때그때 정함 <span class="num">59%</span> <span class="note">(한국리서치 2025-03)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="want">
+  <h2>원하는 것과 버틴집이 줄 것<small>무엇이 근거로 받쳐지고, 무엇이 아직 가정인지</small></h2>
+  <div class="tbl">
+    <table class="wide">
+      <thead><tr><th>원하는 것</th><th>버틴집이 줄 것</th><th>확인 상태</th></tr></thead>
+      <tbody>
+        <tr><th>돈이나 이벤트로 바꿀 수 없는 기준</th><td><b>인허가 기록</b>(개업일 · 폐업일)은 리뷰 이벤트로 바뀌지 않음 → 업력 · 생존배수</td><td><span class="chip hi">근거 있음</span> 63%가 별점 리뷰 개선이 필요하다고 답하고, 대안으로 행동 기반 지표를 꼽음 <span class="note">(소비자원 2024)</span></td></tr>
+        <tr class="pain"><th>그 기준이 "업력"인가</th><td>"이 자리에서 N년째 영업 중"</td><td><span class="chip lo">가정</span> 직접 근거 없음 → <b>인터뷰 핵심</b></td></tr>
+        <tr><th>헛걸음하지 않기</th><td>매일 갱신하는 영업/폐업 판정</td><td><span class="chip hi">근거 있음</span> 단, 휴무 · 영업시간은 없음</td></tr>
+        <tr><th>아내와의 한 끼를 실패하지 않기</th><td>같은 메뉴 주변 가게와 비교</td><td><span class="chip na">가정</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warnbox">
+    <b>업력도 완벽한 기준은 아님</b>
+    <p>가게를 넘겨받으면 인허가일이 처음 날짜 그대로라 업력이 길게 잡힙니다 (서비스 대상 중 주인 바뀜 의심 <span class="num">3,511</span>곳, 우리 데이터 2026-11-12 기준). 발표에서는 "리뷰는 돈으로 바뀌지만 인허가 기록은 안 바뀐다. 주인이 바뀐 곳은 따로 표시한다"로 설명합니다.</p>
+  </div>
+</section>
+
+<section id="journey">
+  <h2>여정<small>초안 · 가정. 리뷰를 읽는 단계에서 감정이 가장 크게 떨어진다고 봄</small></h2>
+  <div class="tbl">
+    <table class="xwide">
+      <thead><tr><th></th><th>나들이</th><th>네이버에서 맛집 검색</th><th>리뷰 읽기</th><th>카카오에서 다시 확인</th><th>결정 · 이동</th><th>식사</th></tr></thead>
+      <tbody>
+        <tr><th>생각</th><td>"점심 어디서 먹지?"</td><td>"상위가 다 광고 같네"</td><td>"별 5개인데 다 서비스 받고 쓴 거네"</td><td>"카카오는 3점대네, 뭐가 맞아?"</td><td>"그냥 리뷰 많은 데 가자"</td><td>"리뷰만큼은 아니네"</td></tr>
+        <tr class="pain"><th>페인포인트</th><td>—</td><td>광고 우선 노출</td><td><b>리뷰 이벤트 · 조작 (1순위)</b></td><td>앱마다 별점이 다름</td><td>헛걸음 · 줄 서기</td><td>기대 대비 실망</td></tr>
+        <tr><th>버틴집 기회</th><td>—</td><td>광고 없는 공공데이터 지표</td><td><b>이벤트로 못 바꾸는 인허가 업력</b></td><td>제3의 기준으로 교차 확인</td><td>지금 영업 중인지 확인</td><td>같은 메뉴 주변 가게와 비교</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="from">
+  <h2>다른 페르소나에서 가져온 것 · 뺀 것<small>7명을 하나로 합친 방식</small></h2>
+  <div class="two">
+    <div class="tbl">
+      <table>
+        <thead><tr><th>가져온 것</th><th>어디서</th></tr></thead>
+        <tbody>
+          <tr><td>외지 · 경북 · 차 · 당일 · 동반</td><td>박성민 (빅데이터)</td></tr>
+          <tr><td>광고 · 이벤트 리뷰를 못 믿음</td><td>민지, 윤미래 v2</td></tr>
+          <tr><td>네이버 · 카카오 교차 확인</td><td>준호</td></tr>
+          <tr><td>헛걸음 (보조)</td><td>수진</td></tr>
+          <tr><td>줄 서고 실망 (보조)</td><td>정하준 v2, 정우진</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>뺀 것</th><th>이유</th></tr></thead>
+        <tbody>
+          <tr><td>대구 주민</td><td>근거 없음 (관광 통계는 주민을 빼고 조사)</td></tr>
+          <tr><td>1박 2일</td><td>숙박 방문 15.7%로 소수</td></tr>
+          <tr><td>20대 · 친구</td><td>리뷰를 가장 많이 보는 나이는 30대. 20대는 관광 소비 7.8%</td></tr>
+          <tr><td>아이 동반</td><td>단순하게 하려고 뺌. 30대 자녀 동반 51.3%라 넣어도 근거는 있음 → 팀 선택</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="verify">
+  <h2>확인할 것<small>인터뷰: 30대 외지 방문객 5명 이상. 지난 경험을 묻고 답을 유도하지 않음</small></h2>
+  <ol class="todo">
+    <li>최근 여행지에서 식당을 고를 때 리뷰를 어떻게 봤나요? 믿지 못한 리뷰가 있었나요? 왜?</li>
+    <li>"리뷰 쓰면 서비스"를 보면 그 가게 별점을 어떻게 받아들이나요?</li>
+    <li>리뷰 말고 무엇을 보고 결정했나요?</li>
+    <li><b>"이 가게는 이 자리에서 23년째 영업 중"이라는 정보가 있었다면 결정이 달라졌을까요?</b> (핵심 가정)</li>
+    <li>갔는데 문이 닫혀 있었던 적이 있나요?</li>
+  </ol>
+  <div class="warnbox">
+    <b>한계</b>
+    <p>리뷰 문제 사례는 대구 밖(수원 · 용인 · 서울)이고, 2022년 이후 대구 사례는 0건입니다. 소비자원 조사는 배달앱 대상이라 식당 방문과 다르다고 밝혀야 합니다. 빅데이터 값은 데이터랩 화면 차트에서 읽은 값이라 발표 전 공식 다운로드로 확인해야 합니다. 앱 리뷰는 불만 쓰러 온 사람이 많은 표본(별점 1점 47%)이라 "이런 불만이 있다"로만 씁니다.</p>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>원본: <code>09_기록/1116/버틴집_대표페르소나.md</code> · 근거 모음: <code>버틴집_페르소나_취합</code></span>
+  </div>
+</footer>
