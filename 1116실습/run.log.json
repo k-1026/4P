@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "title": "단계별 실행 로그",
+    "playbook": "1116 실습/playbook.md",
+    "rules": "CLAUDE.md '단계별 실행 로그 (run.log.json)' 섹션",
+    "created": "2026-11-16",
+    "append_only": true,
+    "note": "runs 배열에는 단계를 마칠 때마다 기록을 추가만 한다. 기존 기록은 지우거나 고치지 않는다. 고쳐야 하면 새 기록에 supersedes로 이전 id를 적는다."
+  },
+  "schema": {
+    "id": "기록 번호. run-001부터 순서대로",
+    "step": "playbook 단계. 예: '5 손익'",
+    "agent": "researcher | model-simulator | competitor-analyzer | reviewer",
+    "timestamp": "ISO 8601 시각. 예: 2026-11-16T15:30:00+09:00",
+    "status": "통과 | 미통과 | 보류",
+    "inputs": "읽은 파일·시트·셀 주소, 앞 단계 기록의 id",
+    "outputs": "바꾼 셀과 수식, 새로 만든 파일, 핵심 결과값. 값은 {cell, value, note} 형태로 셀 주소와 함께 적는다",
+    "checks": "playbook ③ 타당성 확인 항목별 결과. {item, result, evidence}",
+    "assumptions": "쓴 가정(구분이 '가정'인 값)과 보수/기준/낙관 값",
+    "issues": "불리한 숫자(적자, 도달 불가), 미확인, 확인내용, 출처 충돌. 빼지 않는다",
+    "next": "다음 단계와 필요한 입력, 검증 계획",
+    "supersedes": "(선택) 이 기록이 대체하는 이전 기록의 id"
+  },
+  "example_not_a_record": {
+    "id": "run-000",
+    "step": "5 손익",
+    "agent": "model-simulator",
+    "timestamp": "2026-11-16T15:30:00+09:00",
+    "status": "통과",
+    "inputs": ["단위경제!B12:G12", "시장규모!B16:D16", "run-004"],
+    "outputs": [
+      { "cell": "손익!F12", "value": 0, "note": "형식 예시일 뿐 실제 값이 아님" }
+    ],
+    "checks": [
+      { "item": "필요 인원이 계단식으로 계산됨", "result": "통과", "evidence": "손익!B9:G9 수식 확인" }
+    ],
+    "assumptions": ["선택 비율(가정): 보수/기준/낙관 값"],
+    "issues": ["예: 보수 시나리오 손익분기 도달 불가"],
+    "next": "6 계단표"
+  },
+  "runs": []
+}

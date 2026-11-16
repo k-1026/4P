@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>에이전트 대시보드</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --panel2: #1c232d; --line: #2d3541;
+    --text: #e6edf3; --muted: #8b98a8; --neon: #39ff14;
+    --warn: #ffb454; --bad: #ff6b6b; --ok: #5ad6a0; --blue: #6ea8fe; --teal: #4fd1c5; --amber: #f6c85f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; line-height: 1.5; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 20px 16px 48px; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+  h1 { font-size: 22px; margin: 0; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .banner { display: none; background: #3a2a10; border: 1px solid var(--warn); color: var(--warn);
+    padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 14px; }
+  .banner.show { display: block; }
+
+  /* 가운데 실행·중지 */
+  .control { display: flex; flex-direction: column; align-items: center; gap: 10px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  button { font: inherit; font-weight: 700; font-size: 16px; padding: 10px 28px; border-radius: 10px;
+    border: 2px solid var(--line); background: var(--panel2); color: var(--text); cursor: pointer; }
+  button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  #btn-start { border-color: var(--neon); color: var(--neon); }
+  #btn-start:not(:disabled):hover { background: rgba(57,255,20,.12); }
+  #btn-stop { border-color: var(--bad); color: var(--bad); }
+  #btn-stop:not(:disabled):hover { background: rgba(255,107,107,.12); }
+  .modes { display: flex; gap: 18px; font-size: 14px; color: var(--muted); flex-wrap: wrap; justify-content: center; }
+  .modes label { cursor: pointer; }
+  .modes input { accent-color: var(--neon); }
+  #status-line { font-size: 14px; color: var(--muted); min-height: 21px; text-align: center; }
+
+  /* 에이전트 카드 */
+  .agents { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px; }
+  @media (max-width: 1000px) { .agents { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .agents { grid-template-columns: 1fr; } }
+  .agent { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; display: flex;
+    flex-direction: column; min-width: 0; transition: border-color .2s, box-shadow .2s; }
+  .agent-top { padding: 14px 14px 10px; display: flex; align-items: center; gap: 10px; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; background: #3b4452; flex: none; }
+  .agent-name { font-weight: 700; font-size: 15px; word-break: break-all; }
+  .agent-role { color: var(--muted); font-size: 12px; }
+  .badge { margin-left: auto; font-size: 12px; padding: 2px 10px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .agent.working { border-color: var(--neon); box-shadow: 0 0 14px rgba(57,255,20,.45); animation: glow 1s ease-in-out infinite; }
+  .agent.working .dot { background: var(--neon); box-shadow: 0 0 10px var(--neon), 0 0 22px var(--neon); animation: blink 1s ease-in-out infinite; }
+  .agent.working .badge { color: var(--neon); border-color: var(--neon); animation: blink 1s ease-in-out infinite; }
+  .agent.done .dot { background: var(--ok); }
+  .agent.done .badge { color: var(--ok); border-color: var(--ok); }
+  .agent.error .dot, .agent.stopped .dot { background: var(--bad); }
+  .agent.error .badge, .agent.stopped .badge { color: var(--bad); border-color: var(--bad); }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
+  @keyframes glow { 0%, 100% { box-shadow: 0 0 6px rgba(57,255,20,.25); } 50% { box-shadow: 0 0 20px rgba(57,255,20,.7); } }
+  @media (prefers-reduced-motion: reduce) {
+    .agent.working, .agent.working .dot, .agent.working .badge { animation: none; }
+  }
+  .log { border-top: 1px solid var(--line); padding: 10px 12px 12px; font-size: 12.5px; max-height: 340px; overflow: auto; flex: 1; }
+  .log h3 { margin: 0 0 6px; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .ev { color: var(--muted); font-family: Consolas, monospace; font-size: 12px; margin: 0 0 2px; word-break: break-all; }
+  .ev b { color: var(--text); font-weight: 400; }
+  .rec { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 6px 0; }
+  .rec .head { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; }
+  .rec .id { font-family: Consolas, monospace; color: var(--blue); }
+  .tag { font-size: 11px; padding: 1px 8px; border-radius: 99px; border: 1px solid var(--line); }
+  .tag.ok { color: var(--ok); border-color: var(--ok); } .tag.bad { color: var(--bad); border-color: var(--bad); }
+  .tag.hold { color: var(--warn); border-color: var(--warn); }
+  .rec ul { margin: 4px 0 0; padding-left: 16px; color: var(--muted); }
+  .empty { color: var(--muted); font-size: 12.5px; }
+
+  /* 하단 패널 */
+  .bottom { display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; }
+  @media (max-width: 900px) { .bottom { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+  .panel h2 { margin: 0 0 4px; font-size: 16px; }
+  .panel .hint { color: var(--muted); font-size: 12.5px; margin-bottom: 10px; }
+  svg text { fill: var(--text); font-family: inherit; }
+  svg .axis { stroke: var(--line); } svg .zero { stroke: var(--muted); }
+  .legend { display: flex; gap: 14px; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; margin-top: 4px; }
+  .legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  table.pt { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 10px; }
+  table.pt th, table.pt td { border-top: 1px solid var(--line); padding: 4px 6px; text-align: right; }
+  table.pt th:first-child, table.pt td:first-child { text-align: left; }
+  table.pt th { color: var(--muted); font-weight: 600; }
+  .neg { color: var(--bad); }
+  .issues { list-style: none; margin: 0; padding: 0; max-height: 420px; overflow: auto; }
+  .issues li { border-top: 1px solid var(--line); padding: 8px 2px; font-size: 13.5px; }
+  .issues li:first-child { border-top: 0; }
+  .issues .src { color: var(--muted); font-size: 11.5px; font-family: Consolas, monospace; }
+  .verdict { margin-top: 10px; padding: 8px 10px; background: var(--panel2); border-radius: 8px; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>에이전트 대시보드</h1>
+    <div class="sub">로그 파일: <span id="logfile">-</span> · 엑셀: <span id="xlfile">-</span> · 마지막 갱신 <span id="updated">-</span></div>
+  </header>
+
+  <div class="banner" id="banner"></div>
+
+  <section class="control" aria-label="실행 제어">
+    <div class="btns">
+      <button id="btn-start" type="button">▶ 실행</button>
+      <button id="btn-stop" type="button" disabled>■ 중지</button>
+    </div>
+    <div class="modes" role="radiogroup" aria-label="실행 방식">
+      <label><input type="radio" name="mode" value="demo" checked> 시연 (엑셀 값으로 흉내, run.log.demo.json에 기록)</label>
+      <label><input type="radio" name="mode" value="real"> 실제 (claude 에이전트 실행, run.log.json에 기록)</label>
+    </div>
+    <div id="status-line">대기 중</div>
+  </section>
+
+  <section class="agents" id="agents" aria-label="에이전트"></section>
+
+  <section class="bottom">
+    <div class="panel">
+      <h2>시나리오별 월 영업손익</h2>
+      <div class="hint">출처: 엑셀 손익 시트 12행 (단위: 만원). 0선 아래 막대는 적자입니다.</div>
+      <div id="chart"></div>
+      <div class="legend">
+        <span><i style="background:var(--blue)"></i>보수</span>
+        <span><i style="background:var(--teal)"></i>기준</span>
+        <span><i style="background:var(--amber)"></i>낙관</span>
+      </div>
+      <table class="pt" id="pnl-table"></table>
+    </div>
+    <div class="panel">
+      <h2>검토 지적사항</h2>
+      <div class="hint" id="issue-hint">reviewer 기록의 issues 항목입니다.</div>
+      <ul class="issues" id="issues"></ul>
+      <div class="verdict" id="verdict" hidden></div>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const won = (v) => (typeof v === "number") ? Math.round(v).toLocaleString("ko-KR") : String(v);
+const man = (v) => (typeof v === "number") ? Math.round(v / 10000).toLocaleString("ko-KR") : "-";
+let last = null;
+
+async function api(path, body) {
+  const opt = body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  const r = await fetch(path, opt);
+  return r.json();
+}
+
+/* ---------- 에이전트 카드 ---------- */
+const STATUS_CLASS = { "작업 중": "working", "완료": "done", "오류": "error", "중지됨": "stopped" };
+
+function renderAgents(s) {
+  const box = $("#agents");
+  if (!box.children.length) {
+    s.agents.forEach((a) => {
+      const card = el("article", "agent"); card.id = "ag-" + a.name;
+      const top = el("div", "agent-top");
+      top.append(el("span", "dot"));
+      const t = el("div");
+      t.append(el("div", "agent-name", a.name), el("div", "agent-role", a.label + " · 단계 " + a.step));
+      top.append(t, el("span", "badge", "대기"));
+      const log = el("div", "log");
+      card.append(top, log);
+      box.append(card);
+    });
+  }
+  s.agents.forEach((a) => {
+    const card = $("#ag-" + a.name);
+    card.className = "agent " + (STATUS_CLASS[a.status] || "");
+    card.querySelector(".badge").textContent = a.status;
+    const log = card.querySelector(".log");
+    const atBottom = log.scrollTop + log.clientHeight >= log.scrollHeight - 30;
+    log.replaceChildren();
+    // 실시간 진행
+    log.append(el("h3", null, "진행 상황"));
+    if (!a.events.length) log.append(el("div", "empty", "아직 시작 전입니다."));
+    a.events.slice(-6).forEach((e) => {
+      const p = el("div", "ev"); const b = el("b", null, e.text); p.append(e.t + "  ", b); log.append(p);
+    });
+    // run.log 기록
+    log.append(el("h3", null, "run.log 기록 (" + s.log_file + ")"));
+    const mine = s.runs.filter((r) => r.agent === a.name);
+    if (!mine.length) log.append(el("div", "empty", "이 에이전트의 기록이 없습니다."));
+    mine.slice().reverse().forEach((r) => log.append(recNode(r)));
+  });
+}
+
+function recNode(r) {
+  const d = el("div", "rec");
+  const h = el("div", "head");
+  const cls = r.status === "통과" ? "ok" : (r.status === "미통과" ? "bad" : "hold");
+  h.append(el("span", "id", r.id || "-"), el("span", null, "단계 " + (r.step || "-")), el("span", "tag " + cls, r.status || "-"));
+  d.append(h);
+  if (r.timestamp) d.append(el("div", "empty", r.timestamp));
+  (r.checks || []).slice(0, 3).forEach((c) => d.append(el("div", "empty", "✓ " + c.item + " — " + c.result + (c.evidence ? " (" + c.evidence + ")" : ""))));
+  if ((r.issues || []).length) {
+    d.append(el("div", "empty", "issues " + r.issues.length + "건"));
+    const ul = el("ul"); r.issues.slice(0, 3).forEach((i) => ul.append(el("li", null, i)));
+    if (r.issues.length > 3) ul.append(el("li", null, "… 외 " + (r.issues.length - 3) + "건 (아래 지적사항 참고)"));
+    d.append(ul);
+  }
+  if (r.next) d.append(el("div", "empty", "다음: " + r.next));
+  return d;
+}
+
+/* ---------- 막대그래프 (SVG) ---------- */
+const SCN = { "보수": "var(--blue)", "기준": "var(--teal)", "낙관": "var(--amber)" };
+function renderChart(x) {
+  const box = $("#chart"); box.replaceChildren();
+  const tbl = $("#pnl-table"); tbl.replaceChildren();
+  if (!x || x.error) { box.append(el("div", "empty", x && x.error ? x.error : "엑셀 값을 읽지 못했습니다.")); return; }
+  const data = x.pnl.map((p) => {
+    const m = p.label.match(/(A안|B안)\s*(보수|기준|낙관)/);
+    return { plan: m ? m[1] : p.label, scn: m ? m[2] : "", v: p.monthly_profit, be: p.breakeven_daily, cell: p.cell, day: p.daily_orders };
+  });
+  const W = 640, H = 300, L = 54, R = 10, T = 22, B = 44;
+  const vals = data.map((d) => d.v).filter((v) => typeof v === "number");
+  const max = Math.max(0, ...vals), min = Math.min(0, ...vals);
+  const pad = (max - min) * 0.12 || 1;
+  const hi = max + pad, lo = min - pad;
+  const y = (v) => T + (hi - v) / (hi - lo) * (H - T - B);
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "시나리오별 월 영업손익 막대그래프");
+  svg.style.width = "100%"; svg.style.height = "auto";
+  const mk = (n, a, t) => { const e = document.createElementNS("http://www.w3.org/2000/svg", n); for (const k in a) e.setAttribute(k, a[k]); if (t != null) e.textContent = t; return e; };
+  // 눈금
+  const step = niceStep((hi - lo) / 5);
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) {
+    svg.append(mk("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), class: v === 0 ? "zero" : "axis", "stroke-width": v === 0 ? 1.4 : 1, "stroke-dasharray": v === 0 ? "" : "3 3" }));
+    svg.append(mk("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end", "font-size": 11 }, man(v)));
+  }
+  const plans = ["A안", "B안"], gw = (W - L - R) / plans.length, bw = 44, gap = 14;
+  plans.forEach((pl, gi) => {
+    const items = data.filter((d) => d.plan === pl);
+    const total = items.length * bw + (items.length - 1) * gap;
+    let x0 = L + gi * gw + (gw - total) / 2;
+    items.forEach((d) => {
+      if (typeof d.v === "number") {
+        const y0 = y(0), y1 = y(d.v);
+        svg.append(mk("rect", { x: x0, y: Math.min(y0, y1), width: bw, height: Math.max(1, Math.abs(y1 - y0)), rx: 3, fill: SCN[d.scn] || "var(--blue)" }));
+        svg.append(mk("text", { x: x0 + bw / 2, y: d.v >= 0 ? y1 - 5 : y1 + 14, "text-anchor": "middle", "font-size": 11.5, "font-weight": 700 }, man(d.v)));
+      }
+      svg.append(mk("text", { x: x0 + bw / 2, y: H - B + 16, "text-anchor": "middle", "font-size": 12 }, d.scn));
+      x0 += bw + gap;
+    });
+    svg.append(mk("text", { x: L + gi * gw + gw / 2, y: H - 8, "text-anchor": "middle", "font-size": 13, "font-weight": 700 }, pl));
+  });
+  box.append(svg);
+  // 표
+  const thead = el("tr"); ["시나리오", "월 영업손익(원)", "일 주문", "손익분기 일 주문"].forEach((h) => thead.append(el("th", null, h)));
+  tbl.append(thead);
+  data.forEach((d) => {
+    const tr = el("tr");
+    tr.append(el("td", null, d.plan + " " + d.scn));
+    const c = el("td", typeof d.v === "number" && d.v < 0 ? "neg" : null, won(d.v)); tr.append(c);
+    tr.append(el("td", null, typeof d.day === "number" ? d.day.toFixed(0) : "-"));
+    tr.append(el("td", null, typeof d.be === "number" ? d.be.toFixed(0) : String(d.be)));
+    tbl.append(tr);
+  });
+}
+function niceStep(raw) {
+  const p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p;
+}
+
+/* ---------- 지적사항 ---------- */
+function renderIssues(s) {
+  const ul = $("#issues"); ul.replaceChildren();
+  const list = s.review_issues;
+  if (!list.length) {
+    const li = el("li"); li.append(el("span", "empty", "reviewer 기록이 아직 없습니다. 실행을 누르면 채워집니다.")); ul.append(li);
+  }
+  list.forEach((i) => {
+    const li = el("li"); li.append(el("div", null, i.text), el("div", "src", i.run || ""));
+    ul.append(li);
+  });
+  if (s.other_issues.length) {
+    const li = el("li"); li.append(el("div", "empty", "다른 에이전트가 남긴 issues " + s.other_issues.length + "건"));
+    ul.append(li);
+    s.other_issues.forEach((i) => { const l = el("li"); l.append(el("div", null, i.text), el("div", "src", (i.agent || "") + " · " + (i.run || ""))); ul.append(l); });
+  }
+  const v = $("#verdict"); const rev = s.runs.filter((r) => r.agent === "reviewer").slice(-1)[0];
+  const out = rev && (rev.outputs || []).find((o) => ["가", "부", "조건부 시행"].includes(o.value));
+  if (out) { v.hidden = false; v.textContent = "결론: " + out.value + " — " + (out.note || ""); } else v.hidden = true;
+  $("#issue-hint").textContent = s.log_mode === "demo" ? "시연 로그의 reviewer issues입니다. 실제 검토가 아닙니다." : "run.log.json의 reviewer issues입니다.";
+}
+
+/* ---------- 제어 ---------- */
+function renderControl(s) {
+  $("#btn-start").disabled = s.running;
+  $("#btn-stop").disabled = !s.running;
+  document.querySelectorAll("input[name=mode]").forEach((r) => (r.disabled = s.running));
+  const working = s.agents.find((a) => a.status === "작업 중");
+  let t = "대기 중";
+  if (s.running) t = (s.mode === "demo" ? "시연" : "실제") + " 실행 중 — " + (working ? working.name + " 작업 중" : "준비 중");
+  else if (s.agents.some((a) => a.status === "중지됨")) t = "중지됨";
+  else if (s.agents.every((a) => a.status === "완료")) t = "모두 완료 — 승인은 사용자가 합니다";
+  if (s.message) t += " · " + s.message;
+  $("#status-line").textContent = t;
+}
+
+async function tick() {
+  try {
+    const s = await api("/api/state");
+    last = s;
+    $("#banner").classList.remove("show");
+    $("#logfile").textContent = s.log_file;
+    $("#xlfile").textContent = s.excel && s.excel.file ? s.excel.file : "-";
+    $("#updated").textContent = new Date().toLocaleTimeString("ko-KR");
+    renderControl(s); renderAgents(s); renderIssues(s);
+    const sig = JSON.stringify(s.excel);
+    if (tick.sig !== sig) { tick.sig = sig; renderChart(s.excel); }
+  } catch (e) {
+    const b = $("#banner");
+    b.textContent = "서버에 연결되지 않았습니다. 터미널에서 'python dashboard_server.py' 를 실행한 뒤 http://127.0.0.1:8766 으로 여세요. (파일을 직접 열면 동작하지 않습니다)";
+    b.classList.add("show");
+  }
+}
+
+$("#btn-start").addEventListener("click", async () => {
+  const mode = document.querySelector("input[name=mode]:checked").value;
+  if (mode === "real" && !confirm("실제 모드는 claude 에이전트 4개를 순서대로 실행합니다.\n사용량이 소모되고 run.log.json에 기록이 추가됩니다.\n계속할까요?")) return;
+  const r = await api("/api/start", { mode });
+  if (!r.ok) $("#status-line").textContent = r.message;
+  tick();
+});
+$("#btn-stop").addEventListener("click", async () => { await api("/api/stop", {}); tick(); });
+
+tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
