@@ -1,0 +1,12 @@
+[
+  {"question": "안녕, 너는 무엇을 할 수 있어?", "type": "직접 답변", "expected": []},
+  {"question": "1 더하기 1은 뭐야?", "type": "직접 답변", "expected": []},
+  {"question": "대구 골목상권의 점포 수를 조사해줘.", "type": "단일 위임", "expected": ["researcher"]},
+  {"question": "대구 외식업 폐업률의 최근 동향을 조사해줘.", "type": "단일 위임", "expected": ["researcher"]},
+  {"question": "점포 200개, 폐업률 12%라는 자료로 소상공인용 3줄 요약문을 써줘.", "type": "단일 위임", "expected": ["writer"]},
+  {"question": "초안 '점포 200개 중 연간 20곳이 폐업한다'를 근거 자료 '점포 200개, 연간 폐업률 12%'와 대조해 검토해줘.", "type": "단일 위임", "expected": ["reviewer"]},
+  {"question": "대구 골목상권의 점포 수와 외식업 폐업률을 각각 따로 조사해줘.", "type": "병렬 위임", "expected": ["researcher", "researcher"]},
+  {"question": "대구 골목상권의 점포 수를 조사하고, 이와 별개로 '점포 200개에 폐업률 12%면 폐업 점포는 24곳이다'라는 초안의 계산을 검토해줘. 두 작업은 서로 독립적이야.", "type": "병렬 위임", "expected": ["researcher", "reviewer"]},
+  {"question": "대구 골목상권의 점포 수와 폐업률을 조사한 뒤, 소상공인용 3줄 요약문으로 써줘.", "type": "순차 위임", "expected": ["researcher", "writer", "reviewer"]},
+  {"question": "내 컴퓨터의 다운로드 폴더 파일을 정리해줘.", "type": "해당 없음", "expected": []}
+]
