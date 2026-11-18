@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>버틴집 고객 여정 지도</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:"Malgun Gothic",sans-serif;color:#222;background:#fff}
+.w{width:1280px;height:940px;padding:12px 20px;position:relative}
+h1{font-size:18px;margin:0 0 2px}.sub{font-size:10.5px;color:#666;margin-bottom:5px}
+h2{font-size:13.5px;margin:8px 0 2px}
+table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:10.5px}
+th,td{border:1px solid #ccc;padding:3px 5px;vertical-align:top;line-height:1.3}
+th.s{background:#e8e8f4;font-size:11.5px}th.l{width:64px;background:#eee;font-size:10.5px}
+.as{color:#2a62b8}.low{background:#fff3e0}.pos{background:#EEF7E2}
+.top{border:3px solid #E8603C;background:#FCEBE5}
+.n{display:inline-block;background:#E8603C;color:#fff;border-radius:3px;padding:0 4px;font-size:10px;font-weight:bold;margin-right:3px}
+.bar{display:flex;gap:6px;margin:6px 0 4px}
+.p{flex:1;border:3px solid #E8603C;background:#FCEBE5;border-radius:6px;padding:4px 8px;font-size:10.5px;line-height:1.35}
+.p b{font-size:11.5px}
+.lgd{font-size:10.5px;margin:2px 0 0 64px;color:#444}
+.lgd i{display:inline-block;width:22px;height:0;border-top:3px solid;vertical-align:middle;margin:0 4px 0 10px}
+svg.cv{display:block;margin-left:64px}
+.note{position:absolute;left:20px;right:20px;bottom:6px;font-size:10px;color:#555;line-height:1.4;border-top:1px solid #ddd;padding-top:4px}
+</style></head><body><div class="w">
+<h1>버틴집 고객 여정 지도 — 기획서 페르소나 A·B (지표를 받는 쪽 = 이용자)</h1>
+<div class="sub">기획서 4번 문구 기준 · 근거 id는 Day11.md의 VOC(V01~V14) · <span class="as">파란 글씨 (미정)</span> = 기획서·VOC에 없어 제가 임의로 채운 칸 · 코랄 = 페인포인트</div>
+<div class="bar">
+<div class="p"><b>P1 믿을 수 없는 리뷰·선정 (30, 미정)</b><br>리뷰가 많은 곳이 광고처럼 보이고 진짜 평가와 섞여 후보를 못 정함 · VOC 4<br><i>기존 추천 서비스로는: 확인된 바 없음 (미정)</i></div>
+<div class="p"><b>P2 관광객 쏠림 (18, 미정)</b><br>관광객이 몰려 대기가 길어지고 단골이 발길을 끊음 · VOC 6(같은 글 4)<br><i>기존 추천 서비스로는: 확인된 바 없음 (미정)</i></div>
+<div class="p"><b>P3 오래된 가게를 못 구분함 (5, 잠정·미정)</b><br>검색 결과가 최근 SNS 맛집뿐, 영업 기간을 모름 · 기획서 근거, VOC 직접 0<br><i>기존 추천 서비스: 영업 기간을 근거로 쓴다는 서술은 못 찾음 (미정)</i></div>
+</div>
+
+<h2>A. 정하준 — 외지인 여행자 (30대 회사원, 수도권)</h2>
+<svg class="cv" id="cvA" width="1176" height="96"></svg>
+<table id="tA">
+<tr><th class="l"></th><th class="s">1 찾기</th><th class="s">2 비교하기</th><th class="s">3 확인하기</th><th class="s">4 방문하기</th><th class="s">5 공유하기</th></tr>
+<tr><th class="l">행동</th><td>숙소에서 "대구 노포" 검색</td><td>플레이스 별점·리뷰, 인스타그램 확인 (V01)</td><td>간판·소개에서 영업 기간 확인 <span style="color:#888">(기획서 핵심 행동, VOC 없음)</span></td><td>줄을 서서 기다림 (V04, V08, V10)</td><td class="as">(미정) 친구들과 식사하고 후기를 남김</td></tr>
+<tr><th class="l">생각</th><td>"진짜진짜 현지인 맛집 추천좀" (V07)</td><td>"진짜 리뷰라고 느껴지는 후기도 보기 어려워서" (V01) · "그정도로 맛집인가요??" (V09)</td><td class="as">(미정) "정말 오래된 집이 맞는지 어디서 확인하지?"</td><td>"난 웨이팅 알러지가 있어" (V06)</td><td>"노포 그 자체" (V11)</td></tr>
+<tr><th class="l">터치포인트</th><td>화면: 검색·숙소 추천</td><td>화면: 네이버 플레이스·인스타그램, 캐치테이블 등 <span class="as">(미정)</span></td><td>화면: 버틴집 카드·지도 / 장소: 간판</td><td>장소: 대기 줄·식당</td><td class="as">화면: SNS (미정)</td></tr>
+<tr><th class="l">감정<br>해결 전</th><td class="as">−1 (미정)</td><td class="low"><b>−2</b> (부정 3)</td><td class="as">−1 (미정)</td><td class="low"><b>−2 최저점</b> (부정 5)</td><td class="pos">+1 (근거 부족)</td></tr>
+<tr><th class="l">감정<br>해결 후</th><td class="as">−1 (미정)</td><td class="as">0 (미정)</td><td class="as">+1 (미정)</td><td class="as">+1 (미정)</td><td class="pos"><b>+2</b> (미정)</td></tr>
+<tr><th class="l">페인포인트</th><td>—</td><td class="top"><span class="n">P1</span>리뷰가 광고처럼 보임</td><td class="top"><span class="n">P3</span>노포인지 알기 어려움</td><td class="top"><span class="n">P2</span>관광객용 식당에 줄을 서고 실망</td><td>—</td></tr>
+<tr><th class="l">버틴집</th><td>F2 노포 목록</td><td>F1 상위 %</td><td>F3 가게 카드(영업연수)</td><td>직접 해결 못함</td><td>—</td></tr>
+</table>
+
+<h2>B. 윤미래 — 대구 거주자 (40대, 수성구, 가족과 생활)</h2>
+<svg class="cv" id="cvB" width="1176" height="96"></svg>
+<table id="tB">
+<tr><th class="l"></th><th class="s">1 찾기</th><th class="s">2 비교하기</th><th class="s">3 확인하기</th><th class="s">4 방문하기</th><th class="s">5 공유하기</th></tr>
+<tr><th class="l">행동</th><td>가족 모임·주말 저녁 장소를 찾음</td><td>지인 추천, 동네 커뮤니티, 네이버 검색</td><td>동네 지도에서 오래된 가게를 찾고 지인에게 "오래된 집이야?"라고 물음</td><td class="as">(미정) 가족과 방문해 식사</td><td>지인에게 공유</td></tr>
+<tr><th class="l">생각</th><td class="as">(미정) "가족이 만족할 믿을 만한 곳이 어디지?"</td><td>"광고 리뷰가 섞여 있음" · V01, V02, V09 (주민 여부 [U])</td><td>"새로 생긴 가게와 오래된 가게를 구분하기 어려움"</td><td>"노포 그 자체" (V11) · "되게 유명하고 오래 됐어" (V12)</td><td>"현지인보다 관광객이 더 많아진" (V03)</td></tr>
+<tr><th class="l">터치포인트</th><td>사람: 가족</td><td>사람: 지인 / 화면: 커뮤니티·네이버, 캐치테이블 등 <span class="as">(미정)</span></td><td>화면: 동네 지도(버틴집)</td><td>장소: 식당</td><td>사람: 지인</td></tr>
+<tr><th class="l">감정<br>해결 전</th><td class="as">−1 (미정)</td><td class="low">−2 (부정 3 · 주민 여부 불확실)</td><td class="as">−1 (미정)</td><td class="pos">+1 (근거 부족)</td><td class="low">−2 (1건 · 근거 부족)</td></tr>
+<tr><th class="l">감정<br>해결 후</th><td class="as">−1 (미정)</td><td class="as">0 (미정)</td><td class="as">+1 (미정)</td><td class="as">+1 (미정)</td><td class="pos"><b>+1</b> (미정)</td></tr>
+<tr><th class="l">페인포인트</th><td>—</td><td class="top"><span class="n">P1</span>광고 리뷰가 섞임</td><td class="top"><span class="n">P3</span>새 가게와 오래된 가게 구분 어려움</td><td>—</td><td class="top"><span class="n">P2</span>단골집이 붐벼서 발길을 줄임 (V03)</td></tr>
+<tr><th class="l">버틴집</th><td>—</td><td>F1 상위 %</td><td>F4 지도 탐색 · F3 카드</td><td>—</td><td>F8 즐겨찾기·공유(2차)</td></tr>
+</table>
+<div class="lgd"><i style="border-color:#2f9e44"></i>버틴집으로 해결된 뒤(주 곡선, 전부 (미정), 목표를 그린 것)<i style="border-color:#bbb;border-top-style:dashed"></i>해결 전(회색 점선, 속 찬 점=VOC 있는 단계)</div>
+<div class="note"><b>한계</b>: VOC 14건(기준 20건 미달), 판정은 사람 대조 전. 파란 (미정) 칸과 초록 "해결 후" 곡선은 근거가 없는 목표선이다. A의 4 방문·대기(+1)는 P2(관광객 쏠림)가 완전히 풀렸다는 뜻이 아니라 낙관적 가정이다. B의 주민 시점 VOC는 V03 1건뿐이다.</div>
+</div>
+<script>
+function draw(id, before, vocIdx, after){
+  const s=document.getElementById(id), W=1176, n=before.length, cw=W/n, top=8, h=80;
+  const X=i=>cw*(i+0.5), Y=v=>top+(2-v)*(h/4);
+  let g='';
+  for(let v=2;v>=-2;v--){g+=`<line x1="0" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v==0?'#999':'#eee'}"/><text x="-2" y="${Y(v)+3}" font-size="9" fill="#888" text-anchor="end">${v>0?'+'+v:v}</text>`;}
+  const pts=a=>a.map((v,i)=>X(i)+','+Y(v)).join(' ');
+  g+=`<polyline points="${pts(before)}" fill="none" stroke="#bbb" stroke-width="2" stroke-dasharray="5 4"/>`;
+  before.forEach((v,i)=>{const f=vocIdx.includes(i);g+=`<circle cx="${X(i)}" cy="${Y(v)}" r="3.5" fill="${f?'#999':'#fff'}" stroke="#999" stroke-width="1.5"/>`;});
+  g+=`<polyline points="${pts(after)}" fill="none" stroke="#2f9e44" stroke-width="3.5"/>`;
+  after.forEach((v,i)=>{g+=`<circle cx="${X(i)}" cy="${Y(v)}" r="6" fill="#2f9e44" stroke="#fff" stroke-width="1.5"/><text x="${i==n-1?X(i)-12:X(i)+10}" y="${v>=2?Y(v)+17:Y(v)-7}" text-anchor="${i==n-1?'end':'start'}" font-size="11" font-weight="bold" fill="#2f9e44">${v>0?'+'+v:v}</text>`;});
+  s.setAttribute('viewBox','-20 0 '+(W+20)+' 96'); s.setAttribute('width',W+20); s.style.marginLeft='44px';
+  s.innerHTML=g;
+}
+draw('cvA',[-1,-2,-1,-2,1],[1,3,4],[-1,0,1,1,2]);
+draw('cvB',[-1,-2,-1,1,-2],[1,3,4],[-1,0,1,1,1]);
+</script>
+</body></html>

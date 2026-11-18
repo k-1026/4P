@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>캐치테이블 체인과 버틴집 체인 — 밸류체인 맵 v1</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:"Malgun Gothic",sans-serif;color:#222;background:#fff}
+.w{width:1280px;height:580px;position:relative;padding:12px 20px}
+h1{font-size:18px;margin:0 0 2px}.sub{font-size:11px;color:#666;margin-bottom:6px}
+.row{display:flex;gap:5px;margin-bottom:4px}
+.lb{width:92px;flex:none;background:#eee;font-weight:bold;font-size:11.5px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:4px;line-height:1.3}
+.who{width:62px;flex:none;font-size:10.5px;font-weight:bold;display:flex;align-items:center;justify-content:center;border-radius:4px}
+.wc{background:#e3e9f7;color:#2a4a8a}.wk{background:#D9F2EF;color:#136b66}
+.c{flex:1;border:1px solid #bbb;border-radius:6px;padding:4px 6px;font-size:10.5px;line-height:1.35;background:#fafafa}
+.st{background:#e8e8f4;font-weight:bold;font-size:12.5px;text-align:center;padding:5px}
+.team{background:#D9F2EF;border-color:#1F9E96}
+.bn{border:2px solid #E89B00;background:#FEF3DC}.co{border:2px solid #E8603C;background:#FCEBE5}.op{border:2px solid #9BD24B;background:#EEF7E2}
+.mk{display:block;font-size:10px;font-weight:bold;margin-top:2px}
+.money{background:#fff3e0;border-color:#f0a030}.data{background:#eaf3ff;border:1px dashed #3b7ddd}.fb{background:#eaf3ff;border:2px dashed #3b7ddd}.u{color:#888}
+.lg{position:absolute;right:20px;bottom:8px;font-size:10.5px;border:1px solid #bbb;padding:4px 10px;background:#fff;border-radius:6px;line-height:1.6}
+.lg i{display:inline-block;width:11px;height:11px;vertical-align:middle;margin-right:3px}
+.note{position:absolute;left:20px;bottom:8px;font-size:10px;color:#555;width:930px;line-height:1.45}
+</style></head><body><div class="w">
+<h1>캐치테이블 체인과 버틴집 체인 — 밸류체인 맵 v1 (두 체인은 ④ 이용자에서 만남)</h1>
+<div class="sub">출처: Day09_v2.md · Day10_v2.md · 금액·비율 없음 · 틸 = 버틴집 자산 · (미정) = 제가 임의로 적은 것 · [U] 미확인 · 버틴집은 식당을 추천하지 않고 지표를 이용자에게 보여 줌</div>
+<div class="row"><div class="lb">① 활동</div><div class="who" style="background:none"></div>
+<div class="c st">1 식당 정보 원천</div><div class="c st">2 평가·선정 생성</div><div class="c st">3 노출·추천</div><div class="c st">4 탐색·선택</div><div class="c st">5 방문·피드백</div></div>
+
+<div class="row"><div class="lb" style="flex-direction:column">② 이해관계자<br><span style="font-weight:normal;font-size:10px">하는 사람 (영향)</span></div><div class="who wc">캐치테이블</div>
+<div class="c"><b>식당 사업자</b>, <b>와드</b><br>(이용료 구간)</div>
+<div class="c bn"><b>블루리본 서베이</b><br>(서베이 참여자)<span class="mk" style="color:#B87400">병목 B1 돈·마케팅 영향 보도(정도 미정)</span></div>
+<div class="c"><b>캐치테이블 앱</b><br>(선정 파트너십)</div>
+<div class="c"><b>이용자</b> 예약·웨이팅 (캐치테이블)</div>
+<div class="c"><b>식당</b>, <b>이용자</b><br>(캐치테이블페이)</div></div>
+<div class="row"><div class="lb"></div><div class="who wk">버틴집</div>
+<div class="c team"><b>행정안전부</b>, <b>버틴집 팀</b><br>(인허가 기준)<span class="mk" style="color:#9a6200">병목 B2 인허가일≠개업일</span></div>
+<div class="c team op"><b>버틴집 팀</b><br>(중도절단 한계)<span class="mk" style="color:#4a7a10">기회 O1 생존배수 ★(미정)</span></div>
+<div class="c team"><b>버틴집 사이트·카카오맵</b><br>(공정위 지침, 카카오 약관)</div>
+<div class="c op"><b>이용자</b> (정하준·윤미래) 지도 탐색<span class="mk" style="color:#4a7a10">기회 O2 지도 탐색</span><span class="mk" style="color:#b8431f">비용 C2 카카오 지도 API</span></div>
+<div class="c op"><b>식당</b>, <b>이용자</b><br>(백년가게 인증)<span class="mk" style="color:#4a7a10">기회 O3 재방문 검증</span></div></div>
+
+<div class="row"><div class="lb">③ 돈 흐름</div><div class="who wc">캐치테이블</div>
+<div class="c money">끝점: 식당 매출(체인 밖)</div>
+<div class="c u">블루리본 제휴 대가 [U]</div>
+<div class="c money">식당 → 와드: 월 이용료·광고·수수료 (확인, W1·W2)</div>
+<div class="c money">이용자 예약 결제: 고객예약금 계정만 확인, 구조 [U]</div>
+<div class="c u">[U] 미확인</div></div>
+<div class="row"><div class="lb"></div><div class="who wk">버틴집</div>
+<div class="c money">공공데이터 무료</div>
+<div class="c money">팀 작업(금액 [U])</div>
+<div class="c money">광고 배너(계획, 광고주 [U])</div>
+<div class="c money">이용자 무료 → 돈의 시작점 없음</div>
+<div class="c money">식당 매출(체인 밖)</div></div>
+<div class="row"><div class="lb" style="font-size:10.5px">지원활동 비용</div><div class="who wc">캐치테이블</div><div class="c co"><b>비용 C1</b> 급여 17,067,761,372원 · 지급수수료 10,440,964,001원 (영업비용 38,750,486,201원의 대부분, 전 단계 공통) — 출처 W1</div></div>
+
+<div class="row"><div class="lb">④ 데이터 흐름<br><span style="font-weight:normal;font-size:10px">이름·생성·보유</span></div><div class="who wc">캐치테이블</div>
+<div class="c data">식당 정보·예약 시간 · 연동 시 · 와드 (미정)</div>
+<div class="c data">블루리본 등급 · 서베이 · 블루리본서베이</div>
+<div class="c data">검색·노출 로그 · 앱 이용 · 와드 (미정)</div>
+<div class="c data">예약·웨이팅·결제 · 예약 시 · 와드, 캐치테이블페이</div>
+<div class="c fb u">방문 후 데이터 [U]</div></div>
+<div class="row"><div class="lb"></div><div class="who wk">버틴집</div>
+<div class="c data">인허가일·폐업일 · 행정 인허가 · 행안부(공개)</div>
+<div class="c data">생존배수·상위 % · KNN 계산 · <b>버틴집</b></div>
+<div class="c data">클릭·방문자 · 사이트 이용 · 버틴집</div>
+<div class="c data">지도 조회·길찾기 · 카카오맵 · 카카오·버틴집 (미정)</div>
+<div class="c fb">재방문 정보 ✗ <b>단절</b></div></div>
+
+<div class="note">마커 7개(병목 2·비용 2·기회 3), 단계당 최대 2개 · 우선 기회 O1(영향3·실현3)은 미정·제 판단 · 인허가 영업기간을 추천에 쓴다는 근거는 캐치테이블 쪽에서 찾지 못함 [U] · 이용자가 두 서비스를 병행해 쓴다는 연결은 (미정)</div>
+<div class="lg"><b>범례</b><br><i style="background:#FEF3DC;border:2px solid #E89B00"></i>병목 <i style="background:#FCEBE5;border:2px solid #E8603C"></i>비용 <i style="background:#EEF7E2;border:2px solid #9BD24B"></i>기회 <i style="background:#D9F2EF;border:1px solid #1F9E96"></i>버틴집 자산</div>
+</div></body></html>
