@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 채팅 (RAG · Agentic RAG · 멀티에이전트)</title>
+<style>
+  :root {  /* 검정 배경 (OS 설정과 관계없이 항상 검정) */
+    color-scheme: dark;
+    --bg: #000000; --fg: #ececec; --muted: #9b9b9b; --bubble: #1c1c1c;
+    --line: #333333; --btn: #ececec; --btn-fg: #000000; --err: #ff8a80;
+    --neon: #d4ff00; --neon-soft: #f3ffa8; --neon-edge: #9fbf00;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--fg);
+         font: 16px/1.6 -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; }
+
+  /* 전체 레이아웃: 처음에는 채팅만, 입력하면 오른쪽 패널이 열려 좌우로 나뉜다 */
+  #app { display: flex; height: 100%; }
+  #left { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  #right { width: 0; overflow: hidden; border-left: 0 solid var(--line);
+           transition: width .45s ease; background: var(--bg); }
+  .split #right { width: min(500px, 46%); border-left-width: 1px; }
+  #right-inner { width: 360px; min-width: 100%; height: 100%; display: flex; flex-direction: column; }
+  @media (max-width: 480px) {  /* 휴대폰처럼 아주 좁을 때만 위아래로 쌓는다 */
+    #app { flex-direction: column; }
+    #right { width: 100%; height: 0; transition: height .45s ease; border-left: 0; }
+    .split #right { width: 100%; height: 48%; border-left-width: 0; border-top: 1px solid var(--line); }
+  }
+
+  header { display: flex; align-items: center; justify-content: space-between;
+           padding: 10px 16px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  header button { background: none; border: 1px solid var(--line); color: var(--fg);
+                  border-radius: 8px; padding: 6px 12px; cursor: pointer; font: inherit; font-size: 14px; }
+  #chat { flex: 1; overflow-y: auto; padding: 24px 16px; }
+  .col { max-width: 768px; margin: 0 auto; }
+  .empty { text-align: center; color: var(--muted); margin-top: 18vh; }
+  .empty h2 { color: var(--fg); font-size: 26px; margin-bottom: 8px; }
+  .row { display: flex; margin-bottom: 22px; }
+  .row.user { justify-content: flex-end; }
+  .row.user .bubble { background: var(--bubble); border-radius: 18px; padding: 8px 16px;
+                      max-width: 80%; white-space: pre-wrap; word-break: break-word; }
+  .row.assistant .bubble { width: 100%; word-break: break-word; }
+  .text p { margin: 0 0 10px; } .text ul { margin: 0 0 10px; padding-left: 22px; }
+  .text h3 { margin: 14px 0 6px; font-size: 17px; }
+  .text.err { color: var(--err); }
+  .loading { color: var(--muted); animation: pulse 1.2s infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  details.progress { border: 1px solid var(--line); border-radius: 10px; padding: 6px 12px;
+                     margin-bottom: 10px; font-size: 14px; color: var(--muted); }
+  details.progress summary { cursor: pointer; }
+  details.progress ul { margin: 6px 0 2px; padding-left: 18px; }
+  details.progress li { margin: 4px 0; }
+  details.progress pre { white-space: pre-wrap; margin: 4px 0; font: inherit; color: var(--fg); }
+  footer { padding: 8px 16px 18px; }
+  .composer { max-width: 768px; margin: 0 auto; display: flex; align-items: flex-end; gap: 8px;
+              background: var(--bubble); border-radius: 26px; padding: 8px 8px 8px 18px; }
+  textarea { flex: 1; border: none; outline: none; resize: none; background: none; color: var(--fg);
+             font: inherit; max-height: 200px; padding: 6px 0; }
+  #send { width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer;
+          background: var(--btn); color: var(--btn-fg); font-size: 18px; flex: none; }
+  #send:disabled { opacity: .3; cursor: default; }
+  .hint { text-align: center; color: var(--muted); font-size: 12px; margin-top: 8px; }
+
+  .mode { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .mode button { border: none; border-radius: 0; background: none; color: var(--fg); padding: 6px 12px; cursor: pointer; font: inherit; font-size: 14px; }
+  .mode button.on { background: var(--btn); color: var(--btn-fg); }
+  .cards { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+  .card { display: flex; flex-direction: column; justify-content: flex-start; width: 210px; text-align: left; background: var(--bubble); border: 1px solid var(--line); color: var(--fg);
+          border-radius: 12px; padding: 12px 14px; cursor: pointer; font: inherit; font-size: 13px; line-height: 1.5; }
+  .card b { display: block; font-size: 15px; margin-bottom: 4px; }
+  .card span { color: var(--muted); }
+  .card.on { border-color: var(--neon-edge); box-shadow: 0 0 0 1px var(--neon-edge); }
+  .modetag { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+
+  /* 오른쪽 패널: 조직도 + 작업 내역 */
+  .panel-title { display: flex; align-items: center; justify-content: space-between; gap: 8px;
+                 padding: 12px 16px 4px; font-size: 14px; font-weight: 600; }
+  .legend { font-weight: 400; font-size: 12px; color: var(--muted); display: flex; gap: 10px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px;
+              vertical-align: -1px; background: var(--bubble); border: 1px solid var(--line); }
+  .legend i.on { background: var(--neon); border-color: var(--neon-edge); }
+  #org { position: relative; height: 292px; margin: 0 12px; flex: none; }
+  #org svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #org line { stroke: var(--line); stroke-width: 2; }
+  #org line.on { stroke: var(--neon-edge); stroke-width: 3; }
+  .node { position: absolute; width: 104px; transform: translateX(-50%); text-align: center;
+          padding: 7px 6px; border: 1px solid var(--line); border-radius: 10px;
+          background: var(--bubble); color: var(--fg); line-height: 1.3; }
+  .node b { display: block; font-size: 14px; }
+  .node small { display: block; font-size: 11px; color: var(--muted); }
+  .node .cnt { position: absolute; top: -9px; right: -6px; min-width: 20px; height: 20px; border-radius: 10px;
+               background: var(--btn); color: var(--btn-fg); font-size: 11px; line-height: 20px; display: none; }
+  .node.active { background: var(--neon); border-color: var(--neon-edge); color: #1a1a1a;
+                 animation: blink 1s ease-in-out infinite; }
+  .node.active small { color: #3d4a00; }
+  .node.active .cnt { display: block; }
+  @keyframes blink {
+    0%, 100% { background: var(--neon); box-shadow: 0 0 16px 4px rgba(212,255,0,.75); }
+    50% { background: var(--neon-soft); box-shadow: 0 0 3px 0 rgba(212,255,0,.2); }
+  }
+  @media (prefers-reduced-motion: reduce) { .node.active { animation: none; box-shadow: 0 0 12px 3px rgba(212,255,0,.7); } }
+  #log { flex: 1; overflow-y: auto; padding: 4px 12px 16px; font-size: 13px; border-top: 1px solid var(--line); }
+  .item { display: grid; grid-template-columns: 58px 54px 1fr; gap: 6px; padding: 5px 4px;
+          border-bottom: 1px dashed var(--line); cursor: pointer; align-items: start; }
+  .item .t { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; }
+  .item .tag { text-align: center; border-radius: 6px; font-size: 12px; padding: 0 4px; color: #1a1a1a; }
+  .item .m { word-break: break-word; white-space: pre-wrap; }
+  .item.sep { grid-template-columns: 1fr; color: var(--muted); font-size: 12px; cursor: default; padding-top: 10px; }
+  .tag.orchestrator { background: #CECBF6; } .tag.researcher { background: #9FE1CB; }
+  .tag.writer { background: #F5C4B3; } .tag.reviewer { background: #B5D4F4; }
+  .tag.doc_search { background: #F4E3A1; } .tag.web_search { background: #E7B8E8; } .tag.data_analyst { background: #A9E3EE; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="left">
+    <header>
+      <h1>AI 채팅</h1>
+      <div class="mode" id="mode"><button type="button" data-mode="rag" class="on">RAG</button><button type="button" data-mode="agentic">Agentic RAG</button><button type="button" data-mode="agent">멀티에이전트</button><button type="button" data-mode="multirag">Multi Agentic RAG</button></div>
+      <button id="new">새 대화</button>
+    </header>
+    <div id="chat"><div class="col" id="col"></div></div>
+    <footer>
+      <form class="composer" id="form">
+        <textarea id="input" rows="1" placeholder="메시지를 입력하세요" autofocus></textarea>
+        <button id="send" type="submit" disabled aria-label="전송">↑</button>
+      </form>
+      <div class="hint">Enter 전송 · Shift+Enter 줄바꿈</div>
+    </footer>
+  </div>
+
+  <aside id="right">
+    <div id="right-inner">
+      <div class="panel-title">
+        <span>에이전트 작동 현황</span>
+        <span class="legend"><span><i class="on"></i>작업 중</span><span><i></i>대기</span></span>
+      </div>
+      <div id="org">
+        <svg aria-hidden="true">
+          <line x1="50%" y1="70" x2="50%" y2="104"></line>
+          <line x1="2%" y1="104" x2="83%" y2="104"></line>
+          <line x1="2%" y1="104" x2="2%" y2="207"></line>
+          <line x1="2%" y1="207" x2="83%" y2="207"></line>
+          <line id="line-researcher" x1="17%" y1="104" x2="17%" y2="140"></line>
+          <line id="line-writer" x1="50%" y1="104" x2="50%" y2="140"></line>
+          <line id="line-reviewer" x1="83%" y1="104" x2="83%" y2="140"></line>
+          <line id="line-doc_search" x1="17%" y1="207" x2="17%" y2="222"></line>
+          <line id="line-web_search" x1="50%" y1="207" x2="50%" y2="222"></line>
+          <line id="line-data_analyst" x1="83%" y1="207" x2="83%" y2="222"></line>
+        </svg>
+        <div class="node" id="node-orchestrator" style="left:50%;top:10px"><b>오케스트레이터</b><small>orchestrator</small><span class="cnt"></span></div>
+        <div class="node" id="node-researcher" style="left:17%;top:140px"><b>조사</b><small>researcher</small><span class="cnt"></span></div>
+        <div class="node" id="node-writer" style="left:50%;top:140px"><b>작성</b><small>writer</small><span class="cnt"></span></div>
+        <div class="node" id="node-reviewer" style="left:83%;top:140px"><b>검토</b><small>reviewer</small><span class="cnt"></span></div>
+        <div class="node" id="node-doc_search" style="left:17%;top:222px"><b>문서 검색</b><small>doc_search</small><span class="cnt"></span></div>
+        <div class="node" id="node-web_search" style="left:50%;top:222px"><b>웹 검색</b><small>web_search</small><span class="cnt"></span></div>
+        <div class="node" id="node-data_analyst" style="left:83%;top:222px"><b>표 분석</b><small>data_analyst</small><span class="cnt"></span></div>
+      </div>
+      <div class="panel-title"><span>작업 내역</span><span class="legend">줄을 누르면 전체 내용</span></div>
+      <div id="log"></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const app = $('#app'), col = $('#col'), chat = $('#chat'), input = $('#input'), send = $('#send');
+let sessionId = crypto.randomUUID();  // 새 대화를 누르면 새 세션 id로 바뀐다
+let busy = false, questionNo = 0;
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text) e.textContent = text;
+  return e;
+}
+const scrollDown = () => { chat.scrollTop = chat.scrollHeight; };
+
+let mode = 'rag';  // 현재 모드: rag / agentic(Agentic RAG) / agent(멀티에이전트) / multirag(Multi Agentic RAG)
+const MODE_NAME = { rag: 'RAG', agentic: 'Agentic RAG', agent: '멀티에이전트', multirag: 'Multi Agentic RAG' };
+const MODE_TAG = { rag: 'RAG · 문서 기반', agentic: 'Agentic RAG · 스스로 검색', agent: '멀티에이전트',
+                   multirag: 'Multi Agentic RAG · 문서·표·웹 에이전트' };
+const MODE_HINT = { rag: '질문으로 문서를 한 번 검색해 근거 조각으로 답하고 출처를 보여줍니다.',
+                    agentic: '에이전트가 검색어를 직접 정해 여러 번 검색하고, 문장마다 출처를 적어 답합니다.',
+                    agent: '조사 · 작성 · 검토 에이전트가 함께 답합니다.',
+                    multirag: '오케스트레이터가 질문을 다시 써서 문서 검색 · 표 분석 · 웹 검색 에이전트에게 맡깁니다.' };
+// 첫 화면: 사용할 모드를 고르는 카드 (위쪽 스위치와 같이 움직인다)
+function showEmpty() {
+  const cards = Object.keys(MODE_NAME).map((k) =>
+    `<button type="button" class="card${k === mode ? ' on' : ''}" data-mode="${k}"><b>${MODE_NAME[k]}</b><span>${MODE_HINT[k]}</span></button>`).join('');
+  col.innerHTML = '<div class="empty"><h2>무엇을 도와드릴까요?</h2>먼저 사용할 모드를 선택하세요.<div class="cards">' + cards + '</div></div>';
+  col.querySelectorAll('.card').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+}
+// 모드 바꾸기: 답하는 중에는 바꾸지 않는다
+function setMode(m) {
+  if (busy || m === mode) return;
+  mode = m;
+  document.querySelectorAll('#mode button').forEach((x) => x.classList.toggle('on', x.dataset.mode === mode));
+  if (mode !== 'agent' && mode !== 'multirag') app.classList.remove('split');  // 오케스트레이터를 쓰는 모드만 오른쪽 패널을 쓴다
+  if (col.querySelector('.empty')) showEmpty();  // 아직 대화가 없으면 첫 화면의 선택 표시를 바꾼다
+}
+
+// ---------- 조직도: 작업 중인 에이전트를 형광색으로 깜빡이게 한다 ----------
+const NAMES = { orchestrator: '오케스트레이터', researcher: '조사', writer: '작성', reviewer: '검토',
+                doc_search: '문서검색', web_search: '웹검색', data_analyst: '표분석' };
+const running = Object.fromEntries(Object.keys(NAMES).map((k) => [k, 0]));  // 에이전트별 동시에 작업 중인 개수
+
+function paintNode(name) {
+  const n = running[name], node = $('#node-' + name);
+  if (!node) return;
+  node.classList.toggle('active', n > 0);
+  node.querySelector('.cnt').textContent = n > 1 ? '×' + n : '';  // 병렬 위임이면 개수 표시
+  $('#line-' + name)?.classList.toggle('on', n > 0);  // 연결선도 함께 강조
+}
+function addRunning(name, delta) {
+  if (!(name in running)) return;
+  running[name] = Math.max(0, running[name] + delta);
+  paintNode(name);
+}
+function resetRunning() {
+  Object.keys(running).forEach((k) => { running[k] = 0; paintNode(k); });
+}
+
+// ---------- 작업 내역: 에이전트가 움직일 때마다 한 줄씩 쌓는다 ----------
+const logBox = $('#log');
+const clock = () => new Date().toLocaleTimeString('ko-KR', { hour12: false });
+const clip = (v, n = 110) => { const s = String(v).replace(/\s+/g, ' '); return s.length > n ? s.slice(0, n) + '…' : s; };
+
+function describe(ev) {
+  const u = ev.usage;
+  switch (ev.event) {
+    case 'agent_start': return [(ev.agent === 'orchestrator' ? '시작 · 사용자 요청: ' : '시작 · 지시서: ') + ev.task, ev.task];
+    case 'llm_call': return [`턴${ev.turn} 모델 호출 · 토큰 ${u.input}/${u.output} · ${ev.elapsed}s`, null];
+    case 'tool_call': { const a = JSON.stringify(ev.arguments); return [`도구 요청 ${ev.name}(${a})`, `${ev.name}(${a})`]; }
+    case 'tool_result': return ['도구 결과 ' + ev.result, ev.result];
+    case 'agent_end': return [`종료(${ev.stop_reason}, ${ev.turns}턴, ${ev.elapsed}s) · 결과: ${ev.result}`, ev.result];
+    default: return null;
+  }
+}
+
+function addLog(ev) {
+  const d = describe(ev);
+  if (!d) return;
+  const item = el('div', 'item');
+  item.append(el('span', 't', clock()), el('span', 'tag ' + ev.agent, NAMES[ev.agent] || ev.agent));
+  const m = el('span', 'm', clip(d[0]));
+  item.append(m);
+  if (d[1]) {  // 긴 내용은 줄을 누르면 전체를 펼친다
+    let open = false;
+    item.addEventListener('click', () => { open = !open; m.textContent = open ? d[0] : clip(d[0]); });
+  }
+  const atBottom = logBox.scrollHeight - logBox.scrollTop - logBox.clientHeight < 40;
+  logBox.append(item);
+  if (atBottom) logBox.scrollTop = logBox.scrollHeight;
+}
+
+function addSeparator(text) {
+  logBox.append(el('div', 'item sep', '── ' + text + ' ──'));
+  logBox.scrollTop = logBox.scrollHeight;
+}
+
+// 진행 이벤트 하나를 조직도와 작업 내역에 반영
+function orgEvent(ev) {
+  if (ev.event === 'agent_start') addRunning(ev.agent, +1);
+  if (ev.event === 'agent_end') addRunning(ev.agent, -1);
+  addLog(ev);
+}
+
+// ---------- 채팅 ----------
+// 답변 텍스트를 간단히 렌더링 (HTML은 먼저 이스케이프해서 안전하게)
+function render(text) {
+  const esc = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const inline = (s) => s.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const out = []; let inList = false;
+  for (const line of esc.split('\n')) {  // 줄 단위로 목록·제목·문단을 나눈다
+    const li = line.match(/^\s*[*-] (.*)/), h = line.match(/^#{1,4} (.*)/);
+    if (li) {
+      if (!inList) { out.push('<ul>'); inList = true; }
+      out.push('<li>' + inline(li[1]) + '</li>');
+      continue;
+    }
+    if (inList) { out.push('</ul>'); inList = false; }
+    if (h) out.push('<h3>' + inline(h[1]) + '</h3>');
+    else if (/^-{3,}$/.test(line.trim())) out.push('<hr>');
+    else if (line.trim()) out.push('<p>' + inline(line) + '</p>');
+  }
+  if (inList) out.push('</ul>');
+  return out.join('');
+}
+
+function addRow(role) {
+  col.querySelector('.empty')?.remove();
+  const row = el('div', 'row ' + role), bubble = el('div', 'bubble');
+  row.append(bubble); col.append(row);
+  return bubble;
+}
+
+// 위임 지시서와 결과 도착을 채팅창의 "에이전트 진행" 목록에 추가
+function addProgress(list, ev) {
+  const li = el('li');
+  if (ev.event === 'delegate') {
+    li.append(el('div', '', `→ ${ev.agent} 에게 지시서 전달`), el('pre', '', ev.task));
+  } else {
+    li.append(el('div', '', `← ${ev.agent} 결과 도착`), el('pre', '', ev.result));
+  }
+  list.append(li);
+}
+
+async function ask(text) {
+  busy = true; send.disabled = true;
+  if (mode === 'agent' || mode === 'multirag') app.classList.add('split');  // 오케스트레이터 모드는 입력하는 즉시 화면을 좌우로 나눈다
+  const askedMode = mode;
+  questionNo++;
+  addSeparator(`질문 ${questionNo}: ${clip(text, 40)}`);
+  addRow('user').textContent = text;
+  const bot = addRow('assistant');
+  bot.append(el('div', 'modetag', MODE_TAG[askedMode]));
+  const prog = el('details', 'progress'); prog.hidden = true;
+  const summary = el('summary', '', '에이전트 진행'), list = el('ul');
+  prog.append(summary, list);
+  const body = el('div', 'text loading', '생각하는 중…');
+  bot.append(prog, body); scrollDown();
+
+  let calls = 0;
+  const handle = (ev) => {
+    if (ev.type === 'progress') {
+      orgEvent(ev);  // 조직도 깜빡임과 작업 내역
+      if (askedMode === 'agentic' && ev.event === 'tool_call') {  // 검색할 때마다 검색어를 보여준다
+        prog.hidden = false; prog.open = true; calls++;
+        list.append(el('li', '', `검색 ${calls}: ${ev.arguments.query}`));
+      }
+      if (ev.event === 'delegate' || ev.event === 'agent_result') {
+        prog.hidden = false; prog.open = true;  // 진행 중에는 펼쳐서 보여준다
+        if (ev.event === 'delegate') calls++;
+        addProgress(list, ev);
+      }
+    } else if (ev.type === 'final') {
+      body.className = 'text'; body.innerHTML = render(ev.text);
+      prog.open = false;
+      summary.textContent = askedMode === 'agentic' ? `검색 ${calls}번` : `에이전트 진행 (위임 ${calls}건)`;
+    } else if (ev.type === 'error') {
+      body.className = 'text err'; body.textContent = '오류: ' + ev.message;
+    }
+    scrollDown();
+  };
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, message: text, mode: askedMode }),
+    });
+    // 서버가 한 줄씩 보내는 JSON을 도착하는 대로 읽는다
+    const reader = res.body.getReader(), dec = new TextDecoder();
+    let buf = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let i;
+      while ((i = buf.indexOf('\n')) >= 0) { handle(JSON.parse(buf.slice(0, i))); buf = buf.slice(i + 1); }
+    }
+  } catch (e) {
+    body.className = 'text err'; body.textContent = '연결 오류: ' + e.message;
+  }
+  resetRunning();  // 끝나면 모든 에이전트를 대기 상태로 되돌린다 (오류로 끝나도 깜빡임이 남지 않게)
+  busy = false; send.disabled = !input.value.trim(); input.focus();
+}
+
+$('#form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text || busy) return;
+  input.value = ''; input.style.height = 'auto';
+  ask(text);
+});
+input.addEventListener('input', () => {
+  input.style.height = 'auto'; input.style.height = input.scrollHeight + 'px';
+  send.disabled = busy || !input.value.trim();
+});
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('#form').requestSubmit(); }
+});
+$('#new').addEventListener('click', () => {
+  if (busy) return;
+  sessionId = crypto.randomUUID(); questionNo = 0;
+  logBox.innerHTML = ''; resetRunning();
+  app.classList.remove('split');  // 처음처럼 채팅창만 보이게 되돌린다
+  showEmpty();
+});
+document.querySelectorAll('#mode button').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+showEmpty();
+</script>
+</body>
+</html>
