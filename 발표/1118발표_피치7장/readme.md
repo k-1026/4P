@@ -6,6 +6,8 @@
 이 폴더 하나만 보면 일곱 장을 모두 채울 수 있도록, 흩어져 있던 브랜치(main · 이재훈 · 손효민 · 이건협 · CHANYOUNG)의 자료를 모으고 빈칸을 채웠습니다.
 표기: **[확인]** 원자료에서 센 값 · **[계산]** 원자료로 계산 · **[가정]** 출처 없는 값(바꿔도 됨) · **[팀결정]** 회의에서 정한 것
 
+> 📋 **점검표**: [점검표.md](점검표.md) · [점검표.html](점검표.html) · 웹 링크 https://claude.ai/artifact/TLbBbAGRKsqpymNdZy9q5R
+> 📝 초안: [spec.md](spec.md) · [results.md](results.md) · [bm_canvas.md](bm_canvas.md) · [unit_economics.md](unit_economics.md)
 > ⚠️ 아직 부족한 것과 채울 방법: **[부족한점_README.md](부족한점_README.md)**
 > ✅ 피치 슬라이드 기준 충족/미충족 판정: **[피치기준_충족판정.md](피치기준_충족판정.md)** — 근거 산출물 19개 중 충족 14 · 부분 충족 5 · 미충족 0
 

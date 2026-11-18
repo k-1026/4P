@@ -1,0 +1,205 @@
+<title>버틴집 피치 점검표</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 판정 요약 → 평가 기준 4개 → 장별 점검 카드(필터) → 추천 데이터 → 초안 파일. 인허가 서류 같은 차분한 행정 톤 */
+:root{
+  --bg:#f6f7f5; --surface:#ffffff; --fg:#1c2421; --muted:#5d6a65; --line:#dde3df;
+  --accent:#2f6b5a; --accent-soft:#e3efea;
+  --ok:#2e7d4f; --ok-bg:#e4f3ea; --part:#9a6a00; --part-bg:#fbf1d9; --no:#b03a2e; --no-bg:#f8e3e0;
+  --font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --surface:#1c2320; --fg:#e6ece9; --muted:#9aa8a2; --line:#2e3834;
+  --accent:#7cc4ab; --accent-soft:#1f3a31;
+  --ok:#7fd3a0; --ok-bg:#1d3527; --part:#e6bf62; --part-bg:#3a3019; --no:#f08f84; --no-bg:#3e2220; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --surface:#1c2320; --fg:#e6ece9; --muted:#9aa8a2; --line:#2e3834;
+  --accent:#7cc4ab; --accent-soft:#1f3a31;
+  --ok:#7fd3a0; --ok-bg:#1d3527; --part:#e6bf62; --part-bg:#3a3019; --no:#f08f84; --no-bg:#3e2220; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.6;margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-block:32px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:40px}
+header{display:grid;gap:8px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--accent);text-transform:uppercase}
+h1{font-size:30px;line-height:1.25;margin:0;text-wrap:balance;font-weight:700}
+h2{font-size:20px;margin:0 0 4px;font-weight:700;text-wrap:balance}
+.sub{color:var(--muted);margin:0;max-width:68ch}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tally{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+.tally div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px;min-width:120px}
+.tally b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+.tally span{font-size:13px;color:var(--muted)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.ok{color:var(--ok);background:var(--ok-bg)} .part{color:var(--part);background:var(--part-bg)} .no{color:var(--no);background:var(--no-bg)}
+.criteria{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.crit{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:8px;align-content:start;min-width:0}
+.crit h3{margin:0;font-size:16px}
+.crit .ch{font-size:13px;color:var(--muted)}
+.crit p{margin:0;font-size:14px}
+.k{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.03em}
+code,.f{font-family:var(--font-mono);font-size:12.5px;background:var(--accent-soft);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.filters button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:5px 12px;border-radius:999px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.rows{display:grid;gap:10px}
+.row{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:14px 16px;display:grid;grid-template-columns:150px 1fr;gap:6px 18px;min-width:0}
+.row.s-ok{border-left-color:var(--ok)} .row.s-part{border-left-color:var(--part)} .row.s-no{border-left-color:var(--no)}
+.row .head{display:grid;gap:6px;align-content:start}
+.row .ch{font-size:12px;color:var(--muted);font-family:var(--font-mono)}
+.row .name{font-weight:700}
+.row dl{margin:0;display:grid;grid-template-columns:120px 1fr;gap:6px 12px;min-width:0}
+.row dt{font-size:12px;font-weight:600;color:var(--muted);padding-top:2px}
+.row dd{margin:0;font-size:14px;min-width:0}
+.need{color:var(--no);font-weight:500}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.n{font-variant-numeric:tabular-nums;font-family:var(--font-mono)}
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.links a{display:grid;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--fg)}
+.links a:hover{border-color:var(--accent)}
+.links small{color:var(--muted)}
+footer{font-size:13px;color:var(--muted)}
+@media (max-width:640px){
+  .row{grid-template-columns:1fr}
+  .row dl{grid-template-columns:1fr}
+  .row dt{padding-top:6px}
+  h1{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">팀 4P · 버틴집 · 2026-11-18</div>
+  <h1>버틴집 피치 점검표</h1>
+  <p class="sub">수업 슬라이드 「피치 구조 — 일곱 장, 장마다 증명할 것 하나」를 기준으로, <code>k-1026/4P</code> 저장소 <code>발표</code> 브랜치의 자료가 각 장의 근거 산출물을 채우는지 판정했습니다. 파일 이름을 누르면 GitHub에서 열립니다.</p>
+  <div class="tally" aria-label="판정 집계">
+    <div><b>14</b><span><span class="pill ok">충족</span> 근거 산출물</span></div>
+    <div><b>5</b><span><span class="pill part">부분 충족</span> 근거 산출물</span></div>
+    <div><b>0</b><span><span class="pill no">미충족</span> 근거 산출물</span></div>
+    <div><b>1 / 4</b><span>평가 기준 부합</span></div>
+  </div>
+</header>
+
+<section>
+  <h2>평가 기준 4개</h2>
+  <p class="sub">미달인 기준은 아래에 더 필요한 파일을 적었습니다.</p>
+  <div class="criteria" id="criteria" style="margin-top:12px"></div>
+</section>
+
+<section>
+  <h2>장별 점검</h2>
+  <p class="sub">근거 산출물마다 판정, 충족으로 보는 데이터 기준, 지금 파일 위치, 추가로 필요한 파일, 더 모을 데이터입니다.</p>
+  <div class="filters" role="group" aria-label="장 필터" id="filters"></div>
+  <div class="rows" id="rows"></div>
+</section>
+
+<section>
+  <h2>더 필요한 데이터 · 추천 순서</h2>
+  <div class="tbl" style="margin-top:12px"><table>
+    <thead><tr><th>순위</th><th>데이터</th><th>채우는 곳</th><th>어디서 얻나</th><th>예상 시간</th></tr></thead>
+    <tbody id="data"></tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>초안 파일</h2>
+  <div class="links" id="drafts" style="margin-top:12px"></div>
+</section>
+
+<footer>원본: <span class="f">발표/1118발표_피치7장/점검표.md</span> · 판정 표시는 2026-11-18 기준이며 파일이 바뀌면 다시 확인해야 합니다.</footer>
+</div>
+
+<script>
+const BASE="https://github.com/k-1026/4P/blob/"+encodeURIComponent("발표")+"/";
+const DIR="발표/1118발표_피치7장/";
+const gh=p=>BASE+p.split("/").map(encodeURIComponent).join("/");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// 파일 표기: "@경로"는 피치 폴더 기준 링크, "!경로"는 저장소 루트 기준 링크, "http"는 그대로
+function fmt(t){
+  return esc(t).replace(/`([^`]+)`/g,(m,p)=>{
+    if(p.startsWith("http"))return `<a href="${p}" target="_blank" rel="noopener">${p.replace("https://","")}</a>`;
+    if(p.startsWith("!"))return `<a class="f" href="${gh(p.slice(1))}" target="_blank" rel="noopener">${p.slice(1)}</a>`;
+    if(p.startsWith("@"))return `<a class="f" href="${gh(DIR+p.slice(1))}" target="_blank" rel="noopener">${p.slice(1)}</a>`;
+    return `<span class="f">${p}</span>`;
+  });
+}
+const PILL={ok:'<span class="pill ok">충족</span>',part:'<span class="pill part">부분 충족</span>',no:'<span class="pill no">미충족</span>'};
+
+const CRIT=[
+ {n:"문제-해결 논리",ch:"1 문제 · 2 해결 · 7 요청사항",s:"ok",v:"부합",note:"조건: 페르소나 사는 곳 확정",files:"`@01_문제.md` `@근거/고객여정_페인포인트/journey_map.md` `@근거/고객여정_페인포인트/painpoint_def.md` `@02_해결.md` `@spec.md` `@07_요청사항.md`",need:"persona_final.md"},
+ {n:"시장·BM 근거",ch:"3 시장 · 4 BM",s:"no",v:"미달",note:"구조는 있으나 핵심 숫자가 가정 (이용자 SOM · 단가 · B2G)",files:"`@03_시장.md` `@bm_canvas.md` `@unit_economics.md` `@04_BM.md`",need:"competitors.md · positioning.html · market_sizing.md · payer_interview.md"},
+ {n:"MVP 동작",ch:"5 MVP",s:"part",v:"미달 (부분)",note:"동작은 증명, 사용자 반응 근거 없음",files:"`https://daegu-survival-fegw.vercel.app/` `@05_MVP.md` `@results.md` `@근거/백년가게_검증_결과.json`",need:"test_plan.md · test_sessions/P1.md ~ P5.md · 길찾기 클릭 기록"},
+ {n:"발표·데모 완성도",ch:"6 팀",s:"part",v:"미달 (부분)",note:"문서는 있으나 슬라이드와 리허설이 없음",files:"`@06_팀.md` `@05_MVP.md`",need:"pitch_deck.html · demo_rehearsal.md · screens/"}
+];
+const ROWS=[
+ ["1 문제","VOC 인용","ok","출처 2종 이상 · 원문 링크 · 2022년 이후 · 대구 사례 포함","`@근거/고객여정_페인포인트/voc_classified.csv` (564건) · `!페르소나/설문조사 결과.md` (81명) · `@근거/앱리뷰_129건_태그.csv`","sources_check.md","기사 원문 재확인 · 30대 외지 방문객 인터뷰 3명"],
+ ["1 문제","고객 여정","ok","단계 5~7 · 칸마다 근거 id · 감정 최저점 표시","`@근거/고객여정_페인포인트/journey_map.md` · `@근거/고객여정_페인포인트/journey_map.html`","persona_final.md","4단계 화면 터치포인트"],
+ ["1 문제","밸류체인 병목","ok","병목마다 돈 · 데이터 흐름 근거","`!1111실습/11월 11일 밸류체인.md` · `!1111실습/Day10_v3.3_밸류체인_발표용.html`","—","—"],
+ ["2 해결","AX 기회 정의","ok","대상 페인 · AI 역할 · 사람 검토 지점 · 하지 않는 것","`@spec.md` 3절 · `!발표/1113발표/1113발표자료_v2.html`","—","—"],
+ ["2 해결","spec.md","ok","유저 스토리 3~5 · 인수 조건 · 완료 기준 5개 이상 · 제약 · open questions","`@spec.md` (초안 v2)","userflow.md","—"],
+ ["2 해결","As-Is → To-Be","ok","1장 여정 단계와 1:1 대응","`@spec.md` 4절 · `@02_해결.md`","screens/","—"],
+ ["3 시장","경쟁 비교표","ok","대안 5개 이상 · 대체재 포함 · 칸마다 출처","`@03_시장.md` ①","competitors.md","지인 추천(설문 64%) 대체재 행"],
+ ["3 시장","포지셔닝 맵","part","두 축 · 서비스마다 1~5점과 근거 · 그림","`@03_시장.md` ② (글자 그림)","positioning.html","서비스별 \"식당 돈이 순위에 닿나\" 근거 링크"],
+ ["3 시장","SOM","part","숫자마다 원문 문장 · 연도 · 단위 · 계산식","`@03_시장.md` ③","market_sizing.md","대구 연간 외지 방문객 수 · 대구 창업 상담 건수"],
+ ["4 BM","BM 캔버스","ok","9블록 + AI 역할 · 데이터 원천 · 학습 루프, 블록마다 근거 파일","`@bm_canvas.md` (초안) · `@04_BM.md`","—","공공누리 유형"],
+ ["4 BM","단위 경제","part","단가 중 최소 1개가 확인값 · 손익분기 계산식","`@unit_economics.md` 1~3절 (초안)","payer_interview.md","나라장터 유사 용역 낙찰가 · 상권 보고서 가격표"],
+ ["4 BM","시나리오","part","비관 · 기준 · 낙관 + 민감도 1위","`@unit_economics.md` 4~5절 (초안)","—","관광공사 예산 주기 · 시범 사업 규모"],
+ ["5 MVP","v1 URL 라이브 데모","ok","URL 접속 · 핵심 흐름 끝까지 · 휴대폰 확인","`https://daegu-survival-fegw.vercel.app/` · `@05_MVP.md` ①","demo_rehearsal.md","—"],
+ ["5 MVP","가설 판정","part","가설마다 지지 · 기각 · 보류 + 근거 숫자 · 사용자 반응 1개 이상","`@results.md` 0절 (H1~H5 판정, H6 보류)","test_plan.md · test_sessions/P1.md ~ P5.md","사용자 3~5명 행동 기록 · 길찾기 클릭 수 · 방문 수"],
+ ["6 팀","역할","ok","이름 · 맡은 일 · 대표 산출물","`@06_팀.md` ①","—","—"],
+ ["6 팀","사용 도구","ok","작업마다 AI 도구 + 사람이 한 일","`@06_팀.md` ②","—","—"],
+ ["6 팀","작업 흔적 (저장소)","ok","브랜치 · 커밋 · 날짜별 흐름","`@06_팀.md` ③","pitch_deck.html","—"],
+ ["7 요청사항","results.md 계획 칸","ok","할 일 · 끝 기준 · 담당 · 기한","`@results.md` 6절 (초안)","관광공사_제안_1p.md","대구 관광 공공기관 정확한 이름 · 담당 부서"],
+ ["7 요청사항","민감도 1위 가정","ok","바꿨을 때 결과가 가장 크게 바뀌는 가정 + 숫자","`@results.md` 2절 (데이터: k) · `@unit_economics.md` 5절 (사업: B2G)","—","—"]
+];
+const DATA=[
+ ["사용자 3~5명 행동 기록 (카드 → 길찾기, 근거로 설명하나)","5장 가설 판정 H6","옆 팀 · 지인, test_plan.md 대로","2시간"],
+ ["길찾기 클릭 수 · 방문 수","5장 · 4장 광고 시나리오","사이트에 클릭 기록 추가, Vercel Analytics","1시간"],
+ ["대구 연간 외지 방문객 수","3장 SOM","대구관광 데이터랩 (원문 · 연도 · 단위)","30분"],
+ ["나라장터 지자체 \"맛집 지도 · 관광 콘텐츠\" 용역 낙찰가","4장 B2G 단가","나라장터 검색","1시간"],
+ ["공공누리 유형 (인허가 재가공 판매 가능 여부)","4장 리스크","data.go.kr 데이터 상세 페이지","10분"],
+ ["상권 보고서 · 기업용 상권 서비스 가격표","4장 리포트 단가","소진공 상권정보 · 민간 서비스 가격 페이지","30분"],
+ ["30대 외지 방문객 인터뷰 3명","1장 · 2장","지인 · 온라인","반나절"],
+ ["기사 원문 재확인 (리뷰 거래가 · 허위 후기 건수)","1장","원문 링크 열어 확인일 기록","30분"]
+];
+const DRAFTS=[["spec.md","유저 스토리 5 · MoSCoW · 완료 기준 6 · open questions 5"],["results.md","가설 판정 H1~H6 · 이슈 카드 · 영향×노력 · 계획"],["bm_canvas.md","9블록 + AI 역할 · 데이터 원천 · 학습 루프"],["unit_economics.md","비용 · 공헌이익 · 손익분기 · 시나리오 · 민감도"],["점검표.md","이 페이지의 원본"],["피치기준_충족판정.md","산출물별 채운 자료 · 스토리텔링 점검"]];
+
+document.getElementById("criteria").innerHTML=CRIT.map(c=>`
+ <article class="crit">
+  <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(c.n)}</h3><span class="pill ${c.s}">${esc(c.v)}</span></div>
+  <div class="ch">${esc(c.ch)}</div>
+  <p>${esc(c.note)}</p>
+  <div class="k">부합 근거 파일</div><p>${fmt(c.files)}</p>
+  ${c.s==="ok"?`<div class="k">보완하면 좋은 파일</div>`:`<div class="k">더 필요한 파일</div>`}<p class="${c.s==="ok"?"":"need"}">${esc(c.need)}</p>
+ </article>`).join("");
+
+const chapters=["전체",...new Set(ROWS.map(r=>r[0]))];
+let current="전체";
+try{const s=localStorage.getItem("btj-filter");if(s&&chapters.includes(s))current=s}catch(e){}
+function renderRows(){
+  document.getElementById("rows").innerHTML=ROWS.filter(r=>current==="전체"||r[0]===current).map(r=>`
+   <article class="row s-${r[2]}">
+    <div class="head"><div class="ch">${esc(r[0])}</div><div class="name">${esc(r[1])}</div><div>${PILL[r[2]]}</div></div>
+    <dl>
+     <dt>데이터 기준</dt><dd>${esc(r[3])}</dd>
+     <dt>지금 파일 위치</dt><dd>${fmt(r[4])}</dd>
+     <dt>추가 필요 파일</dt><dd class="${r[5]==="—"?"":"need"}">${esc(r[5])}</dd>
+     <dt>더 필요한 데이터</dt><dd>${esc(r[6])}</dd>
+    </dl>
+   </article>`).join("");
+  document.querySelectorAll("#filters button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.c===current));
+}
+document.getElementById("filters").innerHTML=chapters.map(c=>`<button type="button" data-c="${esc(c)}" aria-pressed="false">${esc(c)}</button>`).join("");
+document.getElementById("filters").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;current=b.dataset.c;try{localStorage.setItem("btj-filter",current)}catch(err){}renderRows()});
+renderRows();
+document.getElementById("data").innerHTML=DATA.map((d,i)=>`<tr><td class="n">${i+1}</td><td>${esc(d[0])}</td><td>${esc(d[1])}</td><td>${esc(d[2])}</td><td class="n">${esc(d[3])}</td></tr>`).join("");
+document.getElementById("drafts").innerHTML=DRAFTS.map(d=>`<a href="${gh(DIR+d[0])}" target="_blank" rel="noopener"><span class="f" style="justify-self:start">${esc(d[0])}</span><small>${esc(d[1])}</small></a>`).join("");
+</script>
