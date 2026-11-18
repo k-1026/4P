@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>버틴집 피치 한눈에</title>
+<style>
+:root{--bg:#f6f8f7;--card:#fff;--ink:#1c2b2a;--sub:#5b6b69;--line:#d9e2e0;--accent:#2a8b86;--ai:#17615d;--tint:#e3f1ef;--wait-bg:#f1f3f3;--wait-line:#aab5b3}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101a19;--card:#182423;--ink:#e8f1f0;--sub:#9db0ad;--line:#2c3f3d;--accent:#4cc3bc;--ai:#7fded8;--tint:#1a3533;--wait-bg:#1d2a29;--wait-line:#4b5f5c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;line-height:1.45;word-break:keep-all}
+main{max-width:1280px;margin:0 auto;padding:28px max(16px,4vw)}
+.bar{width:36px;height:4px;background:var(--accent);border-radius:2px;margin-bottom:10px}
+h1{font-size:clamp(24px,3.2vw,36px);margin:0 0 4px;letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{color:var(--sub);font-size:14px;margin:0 0 18px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);font-size:14px}
+th{background:var(--tint);color:var(--ai);text-align:left;padding:10px 12px;font-size:13px}
+td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}
+td.n{font-weight:800;white-space:nowrap;font-size:15px}
+td.msg{font-weight:700}
+.q{display:block;font-weight:400;color:var(--sub);font-size:12px}
+.ev{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--tint);color:var(--ai);font-weight:600}
+.chip.w{background:var(--wait-bg);color:var(--sub);border:1px dashed var(--wait-line);font-weight:500}
+.chip.w::after{content:" · 준비중"}
+.fl{font-size:12px;color:var(--sub)}
+.legend{margin-top:12px;font-size:12px;color:var(--sub)}
+.final{margin-top:16px;font-size:clamp(16px,2vw,22px);font-weight:800}
+.final em{font-style:normal;color:var(--accent)}
+@media(max-width:760px){th:nth-child(4),td:nth-child(4){display:none}td.n{font-size:13px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="bar"></div>
+  <h1>버틴집 피치 — <em>일곱 장, 한눈에</em></h1>
+  <p class="sub">장마다 증명할 것 하나 · 근거 산출물 · 상태 (점선 = 준비중)</p>
+  <table>
+    <tr><th>장</th><th>증명할 것</th><th>근거 산출물 (있음 / 준비중)</th><th>핵심 근거</th><th>근거 파일</th></tr>
+    <tr><td class="n">1 문제</td><td class="msg">리뷰가 돈으로 만들어져 믿을 가게를 고르기 어렵다<span class="q">“정말 있는 문제인가?”</span></td>
+      <td><div class="ev"><span class="chip">VOC 인용</span><span class="chip">고객 여정</span><span class="chip">밸류체인 병목</span></div></td>
+      <td>설문 84%가 리뷰 불신 경험 · 리뷰 1건 500~7,000원</td><td class="fl">문제사항 §1·§2<br>페르소나 확정본<br>발표 1113 (밸류체인·여정)</td></tr>
+    <tr><td class="n">2 해결</td><td class="msg">돈으로 살 수 없는 영업 이력(생존배수)으로 고른다<span class="q">“왜 이 방법인가?”</span></td>
+      <td><div class="ev"><span class="chip">AX 기회 O1~O3</span><span class="chip">As-Is → To-Be</span><span class="chip w">spec.md</span></div></td>
+      <td>영업 기간 ÷ 주변 폐업 점포 k곳 (예: 1.06)</td><td class="fl">readme §2<br>기획서 §3-2·§5<br>발표 1113 (밸류체인 맵·9장)</td></tr>
+    <tr><td class="n">3 시장</td><td class="msg">네이버·카카오·백년가게는 하지 않는 비교를 한다<span class="q">“충분히 큰가?”</span></td>
+      <td><div class="ev"><span class="chip">경쟁 비교표(일부)</span><span class="chip w">포지셔닝 맵</span><span class="chip w">SOM</span></div></td>
+      <td>대구 124,394곳 · 전국 788,862곳</td><td class="fl">기획서 §10<br>발표 1113 (10장·수익 구조 비교)</td></tr>
+    <tr><td class="n">4 BM</td><td class="msg">가게가 순위를 살 수 없는 수익 구조<span class="q">“지속 가능한가?”</span></td>
+      <td><div class="ev"><span class="chip">광고 배너 3안</span><span class="chip w">BM 캔버스</span><span class="chip w">단위 경제성</span><span class="chip w">시나리오</span></div></td>
+      <td>식당에게 돈 안 받음 · 현재 수익 0원</td><td class="fl">발표 1113 (수익 구조 3안)<br>기획서 §11</td></tr>
+    <tr><td class="n">5 MVP</td><td class="msg">수집 → 계산 → 화면, 한 바퀴는 돌았다<span class="q">“보여 줄 수 있나?”</span></td>
+      <td><div class="ev"><span class="chip">v1.0 (TOP 100·지도)</span><span class="chip">가설 판정(설문)</span><span class="chip w">v1 URL 라이브 데모</span><span class="chip w">검증 리포트</span></div></td>
+      <td>“23년째” 참고 81% · 업력은 별점을 보완</td><td class="fl">발표 1113 10~12장<br>문제사항 §1 (Q13·Q14)<br>기획서 §3-3</td></tr>
+    <tr><td class="n">6 팀</td><td class="msg">4명, 역할이 나뉘어 있고 클로드코드로 만들었다<span class="q">“이 팀이 할 수 있나?”</span></td>
+      <td><div class="ev"><span class="chip">역할</span><span class="chip">사용 도구</span><span class="chip">작업 흔적(저장소)</span><span class="chip w">발표 분담</span></div></td>
+      <td>이재훈·이건협·손효민·이찬영</td><td class="fl">기획서 §12-4<br>readme · 4P 저장소</td></tr>
+    <tr><td class="n">7 요청사항</td><td class="msg">다음 단계와 필요한 것을 요청한다<span class="q">“무엇을 해 주면 되나?”</span></td>
+      <td><div class="ev"><span class="chip">팀 결정·남은 일</span><span class="chip w">요청 한 문장</span><span class="chip w">results.md ‘계획’ 칸</span><span class="chip w">민감도 1위 가정</span></div></td>
+      <td>기능 순서 · 수익 모델 · 민감도 분석</td><td class="fl">발표 1113 13장<br>페르소나 확정본 §8</td></tr>
+  </table>
+  <div class="final">리뷰는 돈으로 살 수 있지만, <em>버틴 시간은 살 수 없습니다.</em></div>
+  <p class="legend">파일 약칭 — 발표 1113: 4P/발표/1113발표/1113발표자료_v2.html · 기획서: 4P/11월 10일 버틴집 사업기획서.md · 문제사항·페르소나 확정본: 버틴집_정리본/ · 자세한 위치는 버틴집_피치_근거파일_정리.md<br>근거: 팀 저장소 k-1026/4P 자료만 사용. 설문은 편의표본(n=81), 기사 수치는 원문 확인 필요.</p>
+</main>
+</body>
+</html>
