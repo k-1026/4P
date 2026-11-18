@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>버틴집 발표</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#e9edf2; --slide:#ffffff; --ink:#1c2733; --sub:#5b6878; --line:#cfd8e3;
+  --navy:#123c69; --tint:#eef3f8; --warn:#b4542f; --warn-t:#fbeee8; --ok:#1f7a5c; --ok-t:#e6f4ee;
+  --code-bg:#14202e; --code-ink:#dbe7f3;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1218; --slide:#161d26; --ink:#e8eef5; --sub:#9aa8b8; --line:#2b3644;
+    --navy:#7fb0e6; --tint:#1e2835; --warn:#e48a64; --warn-t:#3a2620; --ok:#5fc7a0; --ok-t:#17322a;
+    --code-bg:#0a1018; --code-ink:#dbe7f3;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1218; --slide:#161d26; --ink:#e8eef5; --sub:#9aa8b8; --line:#2b3644;
+  --navy:#7fb0e6; --tint:#1e2835; --warn:#e48a64; --warn-t:#3a2620; --ok:#5fc7a0; --ok-t:#17322a;
+  --code-bg:#0a1018; --code-ink:#dbe7f3;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif}
+.deck{display:flex;flex-direction:column;align-items:center;gap:28px;padding:28px 16px 90px}
+.slide{position:relative;width:min(1280px,100%);aspect-ratio:16/9;background:var(--slide);border-radius:8px;
+  box-shadow:0 2px 18px rgba(0,0,0,.08);display:flex;flex-direction:column;overflow:hidden;font-size:clamp(8px,1.25vw,16px)}
+.slide::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4%;background:#123c69}
+.head{position:relative;margin:2.6% 4% 0;padding-bottom:.7em;border-bottom:1.5px solid var(--navy);display:flex;justify-content:space-between;align-items:flex-end}
+.brand{font-weight:900;color:var(--navy);letter-spacing:.12em;font-size:.9em}
+.chip{font-size:.8em;font-weight:700;color:var(--navy);background:var(--tint);padding:.3em .9em;border-radius:99px}
+.sec{position:absolute;left:50%;bottom:0;transform:translate(-50%,50%);width:2.2em;height:2.2em;border-radius:50%;background:var(--slide);
+  border:1.5px solid var(--navy);color:var(--navy);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.9em}
+h1{margin:1.1em 4% 0;text-align:center;font-size:2.7em;font-weight:900;color:var(--navy);letter-spacing:-.02em;line-height:1.25}
+.body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 6%;gap:1.4em}
+.foot{margin:0 4% 5.2%;display:flex;justify-content:space-between;align-items:flex-end;color:var(--sub);font-size:.8em;min-height:1.4em}
+.pg{font-weight:700;color:var(--navy);font-size:1.15em}
+.lead{font-size:1.5em;color:var(--sub);text-align:center;margin:0;line-height:1.5}
+.row{display:flex;gap:1.6em;width:100%;justify-content:center;align-items:stretch}
+.card{flex:1;background:var(--tint);border-radius:.7em;padding:1.6em 1.2em;text-align:center;display:flex;flex-direction:column;justify-content:center;gap:.5em}
+.card b.t{font-size:1.55em;color:var(--navy);font-weight:900}
+.card p{margin:0;font-size:1.2em;line-height:1.5}
+.big{font-size:4.4em;font-weight:900;color:var(--navy);line-height:1.05}
+.big.w{color:var(--warn)}
+.hero{font-size:8em;font-weight:900;color:var(--navy);line-height:1}
+.cap{font-size:1.25em;color:var(--ink);line-height:1.45}
+.muted{color:var(--sub)}
+.steps{display:flex;width:100%;align-items:flex-start;justify-content:center}
+.st{flex:1;text-align:center;position:relative}
+.st i{display:flex;margin:0 auto .7em;width:3.4em;height:3.4em;border-radius:50%;background:#123c69;color:#fff;font-style:normal;font-weight:900;font-size:1.5em;align-items:center;justify-content:center;position:relative;z-index:1}
+.st:not(:last-child)::after{content:"";position:absolute;top:2.55em;left:50%;width:100%;height:2px;background:var(--navy)}
+.st b{display:block;font-size:1.6em;color:var(--navy);font-weight:900}
+.st span{display:block;font-size:1.15em;line-height:1.45;margin-top:.3em}
+table{border-collapse:collapse;width:100%;font-size:1.25em}
+th{background:#123c69;color:#fff;padding:.6em .8em;text-align:left;font-weight:700}
+td{padding:.58em .8em;border-bottom:1px solid var(--line);line-height:1.4}
+td.c,th.c{text-align:center}
+.tag{display:inline-block;border-radius:99px;padding:.15em .8em;font-weight:700;font-size:.9em;white-space:nowrap}
+.tag.ok{background:var(--ok-t);color:var(--ok)} .tag.ing{background:var(--warn-t);color:var(--warn)} .tag.no{background:var(--tint);color:var(--sub)}
+pre{margin:0;width:100%;background:var(--code-bg);color:var(--code-ink);border-radius:.6em;padding:1.3em 1.6em;font-family:"JetBrains Mono",monospace;font-size:1.3em;line-height:1.6;white-space:pre;overflow:hidden}
+pre .c{color:#8aa5bf} pre .k{color:#7fd8c6} pre .s{color:#f0c987}
+.vs{display:flex;width:100%;gap:1.4em;align-items:stretch}
+.vs .card{padding:1.8em 1.4em}
+.vs .card.dark{background:#123c69;color:#fff} .vs .card.dark b.t{color:#fff}
+.arrow{align-self:center;font-size:3em;color:var(--navy);font-weight:900}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1.6em;width:100%}
+.box{border-radius:.7em;padding:1.4em 1.6em;background:var(--tint)}
+.box.need{background:var(--warn-t)}
+.box h3{margin:0 0 .6em;font-size:1.5em;color:var(--navy)} .box.need h3{color:var(--warn)}
+.box ul{margin:0;padding-left:1.1em;font-size:1.3em;line-height:1.7}
+.url{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:2.2em;color:#fff;background:#123c69;border-radius:.4em;padding:.5em 1em;text-decoration:none}
+.cover h1{font-size:6.5em;margin:0}
+.cover .body{gap:1em}
+.pill{background:#123c69;color:#fff;font-weight:700;border-radius:99px;padding:.5em 1.6em;font-size:1.1em}
+.nav{position:fixed;bottom:14px;right:16px;display:flex;gap:6px;z-index:9}
+.nav button{border:1px solid var(--line);background:var(--slide);color:var(--ink);border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+body.present{overflow:hidden}
+body.present .deck{padding:0;gap:0;height:100vh;justify-content:center;background:#000}
+body.present .slide{display:none;width:min(100vw,177.78vh);border-radius:0;box-shadow:none;font-size:min(1.25vw,2.222vh)}
+body.present .slide.on{display:flex}
+body.present .nav{opacity:.25}
+@media print{@page{size:1280px 720px;margin:0}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}html,body{background:#fff}.slide{break-inside:avoid;height:720px;aspect-ratio:auto}.slide:last-child{page-break-after:auto}.nav{display:none}.deck{padding:0;gap:0}.slide{box-shadow:none;border-radius:0;page-break-after:always;width:1280px;font-size:16px}}
+
+/* v2 */
+.flow{position:absolute;left:50%;bottom:0;transform:translate(-50%,50%);display:flex;gap:.5em;background:var(--slide);padding:0 .8em;font-size:.82em;font-weight:700;color:var(--sub);white-space:nowrap;align-items:center}
+.flow span{padding:.25em .8em;border-radius:99px}
+.flow span.on{background:#123c69;color:#fff}
+.flow i{font-style:normal;opacity:.5}
+.sub{margin:.5em 6% 0;text-align:center;font-size:1.45em;color:var(--sub);line-height:1.4}
+.split{display:grid;grid-template-columns:1.25fr 1fr;gap:1.6em;width:100%;align-items:center}
+.pts{display:flex;flex-direction:column;gap:.8em}
+.pts div{background:var(--tint);border-radius:.6em;padding:.8em 1.1em;font-size:1.25em;line-height:1.45}
+.pts b{color:var(--navy)}
+.srcs{display:flex;gap:1em;width:100%;justify-content:center}
+.srcs span{background:var(--tint);border-radius:99px;padding:.45em 1.3em;font-size:1.25em;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide cover">
+  <div class="body">
+    <h1>버틴집</h1>
+    <p class="lead" style="color:var(--ink)">데이터 구축부터 피보팅까지 — 진행 상황 보고</p>
+    <span class="pill">팀 4P</span>
+    <p class="muted" style="margin:0;font-size:1.1em">2026. 11. 19</p>
+  </div>
+  <div class="foot"><span></span><span class="pg">1</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">목차</span></div>
+  <h1>목차 — 피치 일곱 장 조견표</h1>
+  
+  <div class="body">
+    <table style="font-size:1.12em">
+      <tr><th style="width:15%">피치 장</th><th>우리 팀 근거</th><th class="c" style="width:17%">오늘 발표</th><th class="c" style="width:11%">쪽</th></tr>
+      <tr><td><b>1 문제</b></td><td>페르소나 자료 · 리뷰 · VOC로 페인포인트 재확인</td><td class="c"><span class="tag ok">발표</span></td><td class="c">6 – 9</td></tr>
+      <tr><td><b>2 해결</b></td><td>피보팅 갈래 3가지 (후보)</td><td class="c"><span class="tag ing">후보 단계</span></td><td class="c">10 – 13</td></tr>
+      <tr><td><b>3 시장</b></td><td>갈래 확정 후 작성</td><td class="c"><span class="tag no">구체화 중</span></td><td class="c">—</td></tr>
+      <tr><td><b>4 BM</b></td><td>갈래 확정 후 작성</td><td class="c"><span class="tag no">구체화 중</span></td><td class="c">—</td></tr>
+      <tr><td><b>5 MVP</b></td><td>데이터 수집 · 매일 자동 판정 · v1 사이트</td><td class="c"><span class="tag ok">발표</span></td><td class="c">3 – 5</td></tr>
+      <tr><td><b>6 팀</b></td><td>작업 흔적 — 자동화 코드</td><td class="c"><span class="tag ok">코드로 대체</span></td><td class="c">4</td></tr>
+      <tr><td><b>7 요청사항</b></td><td>다음 단계 — 갈래별 추가 수집 데이터</td><td class="c"><span class="tag ok">발표</span></td><td class="c">14</td></tr>
+    </table></div>
+  <div class="foot"><span>발표 순서: 데이터 · 자동화 → 페르소나 → 발견 → 피보팅 갈래 → 다음 단계</span><span class="pg">2</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 5 · MVP</span><div class="flow"><span class="on">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
+  <h1>데이터 수집 · 판정 자동화</h1>
+  <p class="sub">공공데이터 수집부터 사이트 반영까지 매일 오전 9:30 자동 실행 (약 2분)</p>
+  <div class="body">
+    <div class="steps">
+      <div class="st"><i>1</i><b>수집</b><span>행안부 인허가<br>대구 음식점 13만 곳</span></div>
+      <div class="st"><i>2</i><b>판정</b><span>상가정보 · 카카오 검색으로<br>영업 / 폐업 확인</span></div>
+      <div class="st"><i>3</i><b>점검</b><span>전날과 차이가 크면<br>되돌리고 중단</span></div>
+      <div class="st"><i>4</i><b>반영</b><span>사이트에<br>자동 업로드</span></div>
+    </div>
+    <div class="srcs"><span>행안부 인허가</span><span>소상공인 상가정보</span><span>카카오 지도 검색</span></div></div>
+  <div class="foot"><span>판정이 애매한 가게만 팀원이 직접 확인 · 가게별 판정 근거 파일 보관</span><span class="pg">3</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 5 · MVP / 6 · 팀</span><div class="flow"><span class="on">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
+  <h1>자동화 코드</h1>
+  
+  <div class="body">
+    <div class="split">
+<pre style="font-size:1.08em"><span class="c"># daily_update.py — 하루 한 번 실행</span>
+run(<span class="s">"fetch_license.py"</span>)     <span class="c"># 수집</span>
+run(<span class="s">"rebuild_all.py"</span>)       <span class="c"># 판정</span>
+run(<span class="s">"export_team_page.py"</span>)  <span class="c"># 사이트용 파일</span>
+
+<span class="k">if</span> d_all &gt; <span class="s">0.01</span> <span class="k">or</span> d_open &gt; <span class="s">0.03</span>:
+    shutil.copyfile(backup, TEAM_JSON)
+    <span class="k">raise</span> RuntimeError(<span class="s">"중단"</span>)
+
+run(<span class="s">"publish_team_branch.py"</span>)</pre>
+      <div class="pts">
+        <div><b>단계별 실행</b><br>수집 → 판정 → 파일 생성</div>
+        <div><b>이상 감지 시 중단</b><br>전날 대비 전체 1% · 영업 3% 초과 변동</div>
+        <div><b>안전한 업로드</b><br>데이터 파일 1개만, 변경 없으면 생략</div>
+      </div>
+    </div></div>
+  <div class="foot"><span>00_스크립트/daily_update.py · GitHub k-1026/4P</span><span class="pg">4</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 5 · MVP</span><div class="flow"><span class="on">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
+  <h1>결과 — 대구 음식점 133,134곳 판정</h1>
+  
+  <div class="body">
+    <div class="row">
+      <div class="card"><div class="big">33,249</div><p>영업 중</p></div>
+      <div class="card"><div class="big" style="color:var(--sub)">98,332</div><p>폐업</p></div>
+      <div class="card"><div class="big w">1,553</div><p>확인 필요</p></div>
+    </div>
+    <a class="url" style="font-size:1.6em" href="https://daegu-survival-fegw.vercel.app/" target="_blank" rel="noopener">daegu-survival-fegw.vercel.app</a></div>
+  <div class="foot"><span>기준일 2026-11-18 · 표본 300곳 판정 정확도 98% · 피보팅 후에도 판정 자동화는 그대로 활용</span><span class="pg">5</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 1 · 문제</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="on">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
+  <h1>페르소나 근거 자료</h1>
+  
+  <div class="body">
+    <table>
+      <tr><th>자료</th><th class="c" style="width:22%">규모</th><th>확인한 내용</th></tr>
+      <tr><td><b>대구관광 실태조사 2025</b></td><td class="c">2,000명</td><td>대구 방문객의 특성 · 이동 방식</td></tr>
+      <tr><td><b>한국리서치 외식 조사 2025</b></td><td class="c">1,000명</td><td>식당 선택 기준</td></tr>
+      <tr><td><b>한국관광 데이터랩</b></td><td class="c">최근 1년</td><td>방문객 거주 지역</td></tr>
+      <tr><td><b>네이버 방문자 리뷰</b></td><td class="c">300곳 · 3,213개</td><td>만족 · 불편 요소</td></tr>
+      <tr><td><b>팀 설문 · 온라인 글(VOC)</b></td><td class="c">81명 · 공개 글</td><td>참고 자료 (편의 표본)</td></tr>
+    </table></div>
+  <div class="foot"><span>추가 설문 · 인터뷰 없이 공개 자료와 리뷰로 분석</span><span class="pg">6</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 1 · 문제</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="on">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
+  <h1>페르소나 — 30대 · 부산 · 울산 · 경남 당일 나들이객</h1>
+  
+  <div class="body">
+    <div class="row">
+      <div class="card"><div class="big">72.8%</div><p>자가용 이용</p></div>
+      <div class="card"><div class="big">85.5%</div><p>당일 여행</p></div>
+      <div class="card"><div class="big">63.2%</div><p>배우자 · 연인 동반</p></div>
+    </div></div>
+  <div class="foot"><span>출처: 2025 대구광역시 관광실태조사 (내국인 2,000명) · 나이와 거주지 통계를 결합한 설정</span><span class="pg">7</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 1 · 문제</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="on">발견</span> <i>›</i> <span class="">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
+  <h1>발견 — 예상과 다른 페인포인트</h1>
+  
+  <div class="body">
+    <div class="vs">
+      <div class="card"><b class="t">처음 가설</b><p>폐업한 가게로 인한 헛걸음</p><p>오래된 가게 = 믿을 수 있는 가게</p></div>
+      <div class="arrow">→</div>
+      <div class="card dark"><b class="t">데이터 확인 결과</b><p>헛걸음 원인은 <b>휴무 · 품절</b> (폐업 0건)</p><p>오래된 가게의 불만 리뷰 비율이 더 높음<br>(10년 이상 4.7% · 3년 미만 2.5%)</p></div>
+    </div></div>
+  <div class="foot"><span>출처: 대구 헛걸음 VOC · 네이버 리뷰 3,213개 (2026-11-18 수집)</span><span class="pg">8</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 1 · 문제</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="on">발견</span> <i>›</i> <span class="">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
+  <h1>피보팅 결정</h1>
+  
+  <div class="body">
+    <div class="hero">96%</div>
+    <p class="lead" style="color:var(--ink)">네이버 리뷰 긍정 비율 — 영업 정보 · 리뷰는 네이버가 이미 제공</p>
+    <p class="lead">→ 우리 데이터가 필요한 고객을 다시 탐색</p></div>
+  <div class="foot"><span>출처: 네이버 방문자 리뷰 3,213개</span><span class="pg">9</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 2 · 해결 (후보)</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="on">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
+  <h1>피보팅 갈래 3가지</h1>
+  
+  <div class="body">
+    <div class="row">
+      <div class="card"><div class="big">①</div><b class="t">창업 예정자</b><p>자리 · 동네별<br>가게 생존 이력</p></div>
+      <div class="card"><div class="big">②</div><b class="t">가성비 · 혼밥</b><p>혼자서 부담 없이<br>갈 수 있는 가게</p></div>
+      <div class="card"><div class="big">③</div><b class="t">대구 가성비 지도</b><p>리뷰로 검증한<br>가성비 가게</p></div>
+    </div>
+    <p class="lead">방향 미확정 — 갈래별 데이터 추가 수집 후 결정</p></div>
+  <div class="foot"><span></span><span class="pg">10</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 2 · 해결 (후보)</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="on">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
+  <h1>갈래 ① 창업 예정자</h1>
+  <p class="sub">고민: “망할까 봐 무섭다”</p>
+  <div class="body"><div class="two"><div class="box"><h3>보유 데이터</h3><ul><li>인허가 개업 · 폐업일 13만 곳</li><li>매일 영업 판정 결과</li><li>창업자 공개 글 54개 (직접 고민 20개)</li></ul></div><div class="box need"><h3>추가 수집 데이터</h3><ul><li>대구 창업자 글 (현재 6개)</li><li>층 · 호 단위의 같은 자리 이력</li><li>유사 서비스 화면 조사</li></ul></div></div></div>
+  <div class="foot"><span>출처: 자영업 카페 · 지식iN 공개 글 (2026-11-18 수집, 팀 검수 전)</span><span class="pg">11</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 2 · 해결 (후보)</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="on">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
+  <h1>갈래 ② 가성비 · 혼밥</h1>
+  <p class="sub">고민: 외식비 부담, 혼자 가기 눈치 보임</p>
+  <div class="body"><div class="two"><div class="box"><h3>보유 데이터</h3><ul><li>리뷰 태그 “혼밥하기 좋아요” 178개 (5.5%)</li><li>외식 물가 · 혼밥 불편 기사와 사례</li><li>혼밥 서비스 조사 (밥토리 등)</li></ul></div><div class="box need"><h3>추가 수집 데이터</h3><ul><li>1인 가구가 직접 쓴 글 · 댓글</li><li>1인 좌석 · 1인분 주문 가능 여부</li><li>대구 지역 근거</li></ul></div></div></div>
+  <div class="foot"><span>출처: 네이버 리뷰 3,213개 · 가성비·혼밥 자료조사 (2026-11-18)</span><span class="pg">12</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 2 · 해결 (후보)</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="on">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
+  <h1>갈래 ③ 대구 가성비 지도</h1>
+  <p class="sub">고민: 가격 대비 양 · 구성, 숨은 비용</p>
+  <div class="body"><div class="two"><div class="box"><h3>보유 데이터</h3><ul><li>네이버 리뷰 300곳 · 3,213개</li><li>리뷰 태그 “가성비가 좋아요” 21.9%</li><li>점수 산출 가능 가게 179곳</li></ul></div><div class="box need"><h3>추가 수집 데이터</h3><ul><li>메뉴 가격 (금액 언급 리뷰 49개뿐)</li><li>리뷰 표본 확대 (현재 300곳)</li><li>리뷰 데이터 활용 가능 여부 확인</li></ul></div></div></div>
+  <div class="foot"><span>출처: 네이버 리뷰 합본 (2026-11-18) · 대구 가성비 지도 기획</span><span class="pg">13</span></div>
+</section>
+<section class="slide">
+  <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 7 · 요청사항</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="">피보팅 갈래</span> <i>›</i> <span class="on">다음 단계</span></div></div>
+  <h1>다음 단계</h1>
+  
+  <div class="body">
+    <div class="steps">
+      <div class="st"><i>1</i><b>데이터 추가 수집</b><span>갈래별 부족한 데이터</span></div>
+      <div class="st"><i>2</i><b>같은 기준으로 비교</b><span>고객 근거 · 보유 데이터 ·<br>기존 서비스</span></div>
+      <div class="st"><i>3</i><b>방향 확정</b><span>새 페르소나 · 여정지도</span></div>
+    </div></div>
+  <div class="foot"><span>시장 · BM은 방향 확정 후 작성</span><span class="pg">14</span></div>
+</section>
+
+</div>
+<div class="nav"><button id="pm">발표 모드 (F)</button></div>
+<script>
+(function(){
+  var s=[].slice.call(document.querySelectorAll('.slide')),i=0,on=false;
+  function show(){s.forEach(function(e,k){e.classList.toggle('on',k===i)})}
+  function cur(){var m=0,b=1e9;s.forEach(function(e,k){var d=Math.abs(e.getBoundingClientRect().top);if(d<b){b=d;m=k}});return m}
+  function toggle(){if(!on)i=cur();on=!on;document.body.classList.toggle('present',on);show();
+    try{if(on&&document.documentElement.requestFullscreen)document.documentElement.requestFullscreen();else if(!on&&document.fullscreenElement)document.exitFullscreen()}catch(e){}
+    if(!on)s[i].scrollIntoView()}
+  document.getElementById('pm').onclick=function(e){e.stopPropagation();toggle()};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='f'||e.key==='F'){toggle();return}
+    if(!on)return;
+    if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].indexOf(e.key)>-1){i=Math.min(i+1,s.length-1);show();e.preventDefault()}
+    if(['ArrowLeft','ArrowUp','PageUp','Backspace'].indexOf(e.key)>-1){i=Math.max(i-1,0);show();e.preventDefault()}
+    if(e.key==='Home'){i=0;show()} if(e.key==='End'){i=s.length-1;show()}
+    if(e.key==='Escape')toggle();
+  });
+  document.addEventListener('click',function(e){if(on&&!e.target.closest('.nav')&&!e.target.closest('a')){i=Math.min(i+1,s.length-1);show()}});
+})();
+</script>
+</body>
+</html>
