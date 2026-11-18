@@ -6,66 +6,68 @@
 <style>
   :root {
     --bg: #f6f4f1; --card: #ffffff; --ink: #1f2328; --muted: #6b6f76; --line: #e3dfd9;
-    --label: #2d3a4a; --coral: #ff6f61; --coral-soft: #fff1ef; --neg: #d1495b; --pos: #2a9d8f;
-    --empty: #9aa0a6; --chip: #eef2f6;
+    --label: #2d3a4a; --coral: #ff6f61; --coral-soft: #fff1ef; --neg: #d1495b;
+    --empty: #9aa0a6; --chip: #eef2f6; --opp: #eef6f3; --opp-ink: #2a6f5f; --ind: #8a6d00;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1280px; height: 720px; overflow: hidden; background: var(--bg); }
   body { font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
-         color: var(--ink); font-size: 11px; line-height: 1.38; padding: 12px 16px 8px; }
-  header { height: 44px; display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 6px; }
-  h1 { font-size: 19px; line-height: 1.2; letter-spacing: -0.3px; }
-  .sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
-  .legend { display: flex; gap: 12px; align-items: center; font-size: 10.5px; color: var(--muted); }
-  .legend .box { display: inline-block; width: 14px; height: 10px; border: 2px solid var(--coral); border-radius: 3px; vertical-align: -1px; margin-right: 4px; background: var(--coral-soft); }
-  .grid { display: grid; grid-template-columns: 78px repeat(5, 1fr); gap: 4px;
-          grid-template-rows: 28px 112px 95px 118px 72px 165px; }
-  .stage { background: var(--label); color: #fff; border-radius: 6px; font-weight: 700; font-size: 12.5px;
+         color: var(--ink); font-size: 10.5px; line-height: 1.33; padding: 9px 14px 6px; }
+  header { height: 46px; display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 5px; }
+  h1 { font-size: 17px; line-height: 1.2; letter-spacing: -0.3px; }
+  .sub { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+  .sub b { color: var(--ink); }
+  .legend { display: flex; gap: 10px; align-items: center; font-size: 10px; color: var(--muted); white-space: nowrap; }
+  .legend .box { display: inline-block; width: 13px; height: 9px; border: 2px solid var(--coral); border-radius: 3px; vertical-align: -1px; margin-right: 3px; background: var(--coral-soft); }
+  .grid { display: grid; grid-template-columns: 70px repeat(5, 1fr); gap: 4px;
+          grid-template-rows: 24px 113px 104px 100px 69px 150px 38px; }
+  .stage { background: var(--label); color: #fff; border-radius: 5px; font-weight: 700; font-size: 12px;
            display: flex; align-items: center; justify-content: center; }
   .stage.corner { background: transparent; }
-  .lab { background: var(--label); color: #fff; border-radius: 6px; font-weight: 700; font-size: 12px;
-         display: flex; align-items: center; justify-content: center; text-align: center; }
-  .cell { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; overflow: hidden; }
+  .lab { background: var(--label); color: #fff; border-radius: 5px; font-weight: 700; font-size: 11px;
+         display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.25; }
+  .lab.opp { background: var(--opp-ink); }
+  .cell { background: var(--card); border: 1px solid var(--line); border-radius: 5px; padding: 4px 6px; overflow: hidden; }
   .cell ul { list-style: none; }
-  .cell li { position: relative; padding-left: 9px; margin-bottom: 2px; }
+  .cell li { position: relative; padding-left: 8px; margin-bottom: 1px; }
   .cell li::before { content: "·"; position: absolute; left: 1px; top: 0; color: var(--muted); font-weight: 700; }
-  .id { color: var(--muted); font-size: 9.5px; white-space: nowrap; }
-  .q { font-style: normal; }
-  .need { color: var(--empty); font-weight: 700; display: flex; height: 100%; align-items: center; justify-content: center;
-          border: 1.5px dashed #c9cdd2; border-radius: 4px; }
-  .cell.empty { padding: 5px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 3px; }
-  .chip { background: var(--chip); border-radius: 10px; padding: 1px 7px; font-size: 10.5px; }
+  .id { color: var(--muted); font-size: 9px; white-space: nowrap; }
+  .ind { color: var(--ind); }
+  .tp { font-size: 9px; font-weight: 700; color: var(--muted); margin-right: 2px; }
+  .need { color: var(--empty); font-weight: 700; display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: center;
+          border: 1.5px dashed #c9cdd2; border-radius: 4px; text-align: center; }
+  .need small { display: block; font-weight: 400; font-size: 9px; margin-top: 2px; }
+  .cell.empty { padding: 4px; }
+  .opp-cell { background: var(--opp); border: 1px solid #d3e6df; border-radius: 5px; padding: 4px 6px; overflow: hidden; color: var(--opp-ink); display: flex; align-items: center; }
   /* emotion row */
-  .emo { grid-column: 2 / span 5; position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .emo { grid-column: 2 / span 5; position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 5px; overflow: hidden; }
   .emo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .axis { position: absolute; left: 4px; font-size: 9px; color: var(--muted); transform: translateY(-50%); }
-  .dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.15); }
+  .dot { position: absolute; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.15); }
   .dot.neg { background: var(--neg); } .dot.zero { background: #8d99ae; } .dot.none { background: #fff; border: 2px dashed var(--empty); box-shadow: none; }
-  .elab { position: absolute; transform: translateX(-50%); text-align: center; white-space: nowrap; font-size: 10.5px; }
-  .elab b { font-size: 13px; }
-  .elab .cnt { color: var(--muted); font-size: 9.5px; display: block; }
+  .elab { position: absolute; transform: translateX(-50%); text-align: center; white-space: nowrap; font-size: 10px; }
+  .elab b { font-size: 12.5px; }
+  .elab .cnt { color: var(--muted); font-size: 9px; display: block; }
   /* pain row */
-  .pp { border: 1px solid var(--line); border-radius: 5px; padding: 4px 6px; margin-bottom: 4px; position: relative; background: #fbfbfa; }
-  .pp .h { font-weight: 700; font-size: 10.5px; }
-  .pp .m { color: var(--muted); font-size: 9.5px; }
-  .pp.top { border: 2px solid var(--coral); background: var(--coral-soft); padding-left: 26px; }
-  .badge { position: absolute; left: 4px; top: 4px; width: 17px; height: 17px; border-radius: 50%; background: var(--coral); color: #fff;
-           font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center; }
-  .ind { color: #8a6d00; font-size: 9.5px; margin-top: 1px; }
-  .need small { display: block; font-weight: 400; font-size: 9.5px; margin-top: 2px; text-align: center; }
+  .pp { border: 1px solid var(--line); border-radius: 5px; padding: 3px 6px; margin-bottom: 3px; position: relative; background: #fbfbfa; }
+  .pp .h { font-weight: 700; font-size: 10px; }
+  .pp .m { color: var(--muted); font-size: 9px; }
+  .pp.top { border: 2px solid var(--coral); background: var(--coral-soft); padding-left: 24px; }
+  .badge { position: absolute; left: 4px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--coral); color: #fff;
+           font-weight: 800; font-size: 10.5px; display: flex; align-items: center; justify-content: center; }
   .pp.gap { border-style: dashed; background: transparent; }
   .pp.gap .h { color: var(--empty); }
-  .tag { display: inline-block; font-size: 9px; font-weight: 700; border-radius: 3px; padding: 0 4px; margin-left: 3px; vertical-align: 1px; }
-  .tag.cond { background: #fff3cd; color: #8a6d00; }
-  footer { margin-top: 5px; font-size: 9.5px; color: var(--muted); line-height: 1.35; }
+  .tag { display: inline-block; font-size: 8.5px; font-weight: 700; border-radius: 3px; padding: 0 4px; margin-left: 3px; vertical-align: 1px; background: #fff3cd; color: #8a6d00; }
+  .new { color: var(--muted); font-size: 9px; }
+  footer { margin-top: 4px; font-size: 9px; color: var(--muted); line-height: 1.3; }
 </style>
 </head>
 <body>
 <header>
   <div>
-    <h1>버틴집 고객여정지도 — 정하준</h1>
-    <div class="sub">33세 · 경북 구미 회사원 · 주말에 아내와 자가용으로 대구 당일 나들이 · 리뷰 이벤트와 광고 때문에 리뷰를 믿지 않음 (2025 대구관광 실태조사 반영 페르소나)</div>
+    <h1>버틴집 고객여정지도 — 정하준 (v2)</h1>
+    <div class="sub"><b>행위자</b> 33세 · 경북 구미 회사원 · 주말에 아내와 자가용으로 대구 당일 나들이 · 리뷰 이벤트와 광고 때문에 리뷰를 믿지 않음</div>
+    <div class="sub"><b>시나리오</b> 동성로 · 아쿠아리움 일대를 다니다 근처에서 한 끼를 고름 · <b>기대</b> 광고에 휘둘리지 않고, 문 연 집에서 오래 기다리지 않고 먹기 [가정]</div>
   </div>
   <div class="legend">
     <span><span class="box"></span>Top3 페인포인트 (강도 평균 순)</span>
@@ -84,22 +86,27 @@
   <!-- 행동 -->
   <div class="lab">행동</div>
   <div class="cell"><ul>
-    <li>아내와 자가용으로 당일 대구에 옴 <span class="id">(P25-동반 · 이동 · 당일)</span></li>
-    <li>동성로 · 백화점 · 아쿠아리움 일대를 다님 <span class="id">(P25-장소 · JH-B8)</span></li>
+    <li>아내와 자가용으로 당일 대구에 옴 <span class="id">(P25)</span></li>
+    <li>동성로 · 백화점 · 아쿠아리움 일대를 다님 <span class="id">(P25 · JH-B8)</span></li>
+    <li>외지인은 "당일치기", "기차 타고" 일정을 적고 맛집을 물음 <span class="id">(QA-C02-1 · C04-1 · T04-1)</span></li>
+    <li class="ind">[간접] 갈 맛집은 그때그때 정함 30대 60% <span class="id">(KR-C39)</span></li>
   </ul></div>
   <div class="cell"><ul>
-    <li>내비게이션 목적지로 음식점을 검색 <span class="id">(JH-B5)</span></li>
+    <li>내비게이션 목적지로 음식점 검색 <span class="id">(JH-B5)</span></li>
     <li>"노포"가 아니라 "대구 맛집"으로 찾음 <span class="id">(JH-검색)</span></li>
-    <li>그때그때 정함 <span class="id">(CY-S1)</span> · 예전에 가 본 곳으로 정하기도 함 <span class="id">(JH-S1a)</span></li>
+    <li>그때그때 정함 <span class="id">(CY-S1)</span> · 예전에 가 본 곳 <span class="id">(JH-S1a)</span></li>
+    <li>대구 사는 사람에게 추천을 물음 <span class="id">(QA-K02-2)</span></li>
   </ul></div>
   <div class="cell"><ul>
     <li>네이버 별점을 카카오맵에서 다시 확인 <span class="id">(CY-S5 · CY-R2)</span></li>
     <li>리뷰 이벤트 없는 곳의 리뷰를 찾아 읽음 <span class="id">(GH-2-1)</span></li>
     <li>평점 낮은 순으로 다시 읽음 <span class="id">(GH-2-4)</span></li>
+    <li>가 본 사람에게 어느 쪽이 나았는지 물음 <span class="id">(QA-K04-2)</span></li>
   </ul></div>
   <div class="cell"><ul>
-    <li>웨이팅을 감수하고 오픈런 · 원격 줄서기 앱 사용 <span class="id">(SH-C5 · SH-C6)</span></li>
-    <li>지도 앱에 "영업중"으로 뜬 가게로 찾아감 <span class="id">(CY-R3)</span></li>
+    <li>웨이팅 감수 · 오픈런 · 원격 줄서기 앱 <span class="id">(SH-C5 · SH-C6)</span></li>
+    <li>지도 앱에 "영업중"으로 뜬 가게로 감 <span class="id">(CY-R3)</span></li>
+    <li>동행이 못 먹는 음식을 조건으로 거름 <span class="id">(QA-K02-3 · F03-3 · F04-3 · T04-3)</span></li>
   </ul></div>
   <div class="cell"><ul>
     <li>오래 기다려 먹음 <span class="id">(SH-C2 · SH-C6 · GH-4-1)</span></li>
@@ -109,91 +116,95 @@
   <!-- 생각 -->
   <div class="lab">생각</div>
   <div class="cell"><ul>
-    <li>갈 맛집은 그때그때 상황에 따라 정함 30대 60% <span class="id">(KR-C39)</span></li>
-    <li>마음에 드는 맛집은 다음에도 또 감 30대 88% <span class="id">(KR-C37)</span></li>
-  </ul><div class="ind">[간접] 전국 평소 외식 태도, 여행 중 생각 아님</div></div>
+    <li>"이번에 여행 가는데 뭉티기를 너무 먹어보고 싶어서" <span class="id">(QA-K09-1)</span></li>
+    <li>"바빠서 대구에서 밥은 못먹고 왔네요" <span class="id">(QA-C01-1)</span></li>
+    <li class="ind">[간접] 마음에 드는 맛집은 또 감 30대 88% <span class="id">(KR-C37)</span></li>
+  </ul></div>
   <div class="cell"><ul>
     <li>"음식점 맛집은 죄다 광고" <span class="id">(CY-R1)</span></li>
-    <li>릴스 맛집 영상에 "다 바이럴임" <span class="id">(GH-4-2)</span></li>
+    <li>"다 바이럴임" <span class="id">(GH-4-2)</span></li>
+    <li>"…등등 많아서 헷갈리더라고요" <span class="id">(QA-K09-2)</span></li>
+    <li>"맛집은 너무 어렵네요" <span class="id">(QA-D05-2)</span></li>
   </ul></div>
   <div class="cell"><ul>
     <li>리뷰 이벤트 글은 "내용 자체를 완전히 믿지는 않는다" <span class="id">(SH-C3)</span></li>
-    <li>"네이버는 리뷰이벤트 때문에 별점이 후한데 카카오맵은 믿고 갈만함" <span class="id">(CY-R2)</span></li>
+    <li>"숨은 맛집" · "찐 맛집" · "현지인맛집"을 찾음 <span class="id">(QA-C03-1 · C04-2 · D04-2)</span></li>
+    <li>"3년 이상 안 망하고 장사하고 있으면 평타" <span class="id">(YT-4-03)</span></li>
   </ul></div>
   <div class="cell"><ul>
     <li>"영업중이라 뜨길래 믿고 갔다가 문 닫은 집" <span class="id">(CY-R3)</span></li>
-    <li>기다릴 가치가 있는지 의문 <span class="id">(SH-C5)</span></li>
+    <li>"오늘 밤엔 늦어서 문닫을 것 같고 낼은 휴무래" <span class="id">(QA-T02-3)</span></li>
+    <li>"대기시간이 너무 길어졌어요" <span class="id">(YT-2-06)</span></li>
   </ul></div>
   <div class="cell"><ul>
     <li>"맛있었는데 2시간 기다릴 정도는 아님" <span class="id">(SH-C6)</span></li>
     <li>"릴스 나온 밥집 막상 가보면 걍 그럼" <span class="id">(GH-4-2)</span></li>
+    <li>"유명한 이유를 찾진 못했네요" <span class="id">(YT-1-02)</span></li>
   </ul></div>
 
   <!-- 감정 곡선 -->
   <div class="lab">감정 곡선<br>(+2 ~ −2)</div>
-  <div class="emo" id="emo">
-    <svg viewBox="0 0 1000 118" preserveAspectRatio="none" aria-hidden="true">
-      <line x1="0" x2="1000" y1="20" y2="20" stroke="#eceae6" stroke-width="1" vector-effect="non-scaling-stroke"/>
-      <line x1="0" x2="1000" y1="59" y2="59" stroke="#c9cdd2" stroke-width="1" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>
-      <line x1="0" x2="1000" y1="98" y2="98" stroke="#eceae6" stroke-width="1" vector-effect="non-scaling-stroke"/>
-      <polyline points="300,98 500,59 700,78.5 900,98" fill="none" stroke="#d1495b" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+  <div class="emo">
+    <svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="0" x2="1000" y1="14" y2="14" stroke="#eceae6" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <line x1="0" x2="1000" y1="50" y2="50" stroke="#c9cdd2" stroke-width="1" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>
+      <line x1="0" x2="1000" y1="86" y2="86" stroke="#eceae6" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <polyline points="300,68 500,50 700,68 900,68" fill="none" stroke="#d1495b" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
     </svg>
-    <span class="axis" style="top:20px">+2</span>
-    <span class="axis" style="top:59px">0</span>
-    <span class="axis" style="top:98px">−2</span>
+    <span class="axis" style="top:14px">+2</span>
+    <span class="axis" style="top:50px">0</span>
+    <span class="axis" style="top:86px">−2</span>
 
-    <span class="dot none" style="left:10%; top:59px"></span>
-    <span class="elab" style="left:10%; top:70px; color:var(--empty)"><b>수집 필요</b><span class="cnt">긍정 0 · 부정 0 · KR 감정 문항 없음</span></span>
+    <span class="dot none" style="left:10%; top:50px"></span>
+    <span class="elab" style="left:10%; top:60px; color:var(--empty)"><b>근거 부족</b><span class="cnt">긍정 0 · 부정 1 (QA-C01-1)</span></span>
 
-    <span class="dot neg" style="left:30%; top:98px"></span>
-    <span class="elab" style="left:30%; top:56px"><b style="color:var(--neg)">−2</b> 광고<span class="cnt">긍정 7 · 부정 31 (CY-R광고)</span></span>
+    <span class="dot neg" style="left:30%; top:68px"></span>
+    <span class="elab" style="left:30%; top:20px"><b style="color:var(--neg)">−1</b> 광고 · 고르기 어려움<span class="cnt">긍정 9 · 부정 35 (부정 79.5%, 최저)</span></span>
 
-    <span class="dot zero" style="left:50%; top:59px"></span>
-    <span class="elab" style="left:50%; top:4px"><b>0</b> 네이버 불신 · 카카오맵 신뢰<span class="cnt">긍정 26 · 부정 29 (CY-R리뷰)</span></span>
-    <span class="elab" style="left:50%; top:72px"><span class="cnt">교차 확인 행동이 그대로 드러남</span></span>
+    <span class="dot zero" style="left:50%; top:50px"></span>
+    <span class="elab" style="left:50%; top:62px"><b>0</b> 네이버 불신 · 카카오맵 신뢰<span class="cnt">긍정 29 · 부정 30 (교차 확인)</span></span>
 
-    <span class="dot neg" style="left:70%; top:78.5px"></span>
-    <span class="elab" style="left:70%; top:28px"><b style="color:var(--neg)">−1</b> 영업 정보<span class="cnt">긍정 14 · 부정 22 (CY-R폐업 · SH-C5)</span></span>
+    <span class="dot neg" style="left:70%; top:68px"></span>
+    <span class="elab" style="left:70%; top:20px"><b style="color:var(--neg)">−1</b> 영업 정보 · 휴무<span class="cnt">긍정 15 · 부정 26</span></span>
 
-    <span class="dot neg" style="left:90%; top:98px"></span>
-    <span class="elab" style="left:90%; top:56px"><b style="color:var(--neg)">−2</b> 기다린 뒤 실망<span class="cnt">긍정 0 · 부정 9 (SH · GH 사례)</span></span>
+    <span class="dot neg" style="left:90%; top:68px"></span>
+    <span class="elab" style="left:90%; top:20px"><b style="color:var(--neg)">−1</b> 기다린 뒤 실망<span class="cnt">긍정 5 · 부정 11</span></span>
   </div>
 
   <!-- 터치포인트 -->
   <div class="lab">터치포인트</div>
-  <div class="cell"><div class="chips">
-    <span class="chip">자가용 <span class="id">(P25-이동)</span></span>
-  </div></div>
-  <div class="cell"><div class="chips">
-    <span class="chip">내비게이션 <span class="id">(JH-B5)</span></span>
-    <span class="chip">네이버 지도 · 포털 <span class="id">(JH-S1b)</span></span>
-    <span class="chip">인스타 릴스 · 유튜브 <span class="id">(GH-4-2 · SH-C5)</span></span>
-  </div></div>
-  <div class="cell"><div class="chips">
-    <span class="chip">네이버 별점 · 영수증 리뷰 <span class="id">(SH-C3)</span></span>
-    <span class="chip">카카오맵 별점 <span class="id">(CY-R2 · R5)</span></span>
-    <span class="chip">매장 리뷰 이벤트 안내 <span class="id">(GH-2-5)</span></span>
-  </div></div>
-  <div class="cell"><div class="chips">
-    <span class="chip">지도 앱 영업 정보 <span class="id">(CY-R3 · R4)</span></span>
-    <span class="chip">원격 줄서기 앱 <span class="id">(SH-C5)</span></span>
-  </div></div>
-  <div class="cell"><div class="chips">
-    <span class="chip">매장 웨이팅 <span class="id">(SH-C2 · C6)</span></span>
-    <span class="chip">별점 남기기 <span class="id">(SH-C6)</span></span>
-  </div></div>
+  <div class="cell"><ul>
+    <li><span class="tp">화면</span>커뮤니티 질문글 <span class="id">(QA-C02-1)</span></li>
+    <li><span class="tp">장소</span>자가용 <span class="id">(P25)</span> · 기차 · 동대구역 <span class="id">(QA-T04-1)</span></li>
+  </ul></div>
+  <div class="cell"><ul>
+    <li><span class="tp">화면</span>내비 · 네이버 지도 · 릴스 · 유튜브 <span class="id">(JH-B5 · CY-S1 · GH-4-2 · YT-4-02)</span></li>
+    <li><span class="tp">사람</span>현지인 답변 <span class="id">(QA-K02-2)</span></li>
+  </ul></div>
+  <div class="cell"><ul>
+    <li><span class="tp">화면</span>네이버 · 카카오 별점 · 영상 <span class="id">(CY-R2 · R5 · YT-2-11)</span></li>
+    <li><span class="tp">사람</span>리뷰 이벤트 안내 <span class="id">(GH-2-5)</span> · 가 본 사람 <span class="id">(QA-K04-2)</span></li>
+  </ul></div>
+  <div class="cell"><ul>
+    <li><span class="tp">화면</span>지도 앱 영업 정보 · 줄서기 앱 <span class="id">(CY-R3 · R4 · SH-C5)</span></li>
+    <li><span class="tp">장소</span>시장 · 매장 앞 줄 <span class="id">(YT-2-06 · YT-5-02)</span></li>
+  </ul></div>
+  <div class="cell"><ul>
+    <li><span class="tp">장소</span>매장 웨이팅 <span class="id">(SH-C2 · C6)</span></li>
+    <li><span class="tp">화면</span>별점 남기기 <span class="id">(SH-C6)</span></li>
+  </ul></div>
 
   <!-- 페인포인트 -->
   <div class="lab">페인포인트</div>
-  <div class="cell empty"><div class="need" style="flex-direction:column">수집 필요<small>한국리서치 2025는 불편 문항이 없어 반영 불가 (KR)</small></div></div>
+  <div class="cell empty"><div class="need">수집 필요<small>후보: 일정이 빠듯해 밥을 못 먹고 돌아감<br>(QA-C01-1, 1건 → 근거 부족)</small></div></div>
   <div class="cell">
     <div class="pp top"><span class="badge">2</span>
       <div class="h">PP-01 결과 상위를 광고 업체가 차지해 갈 만한 식당을 고르지 못함</div>
       <div class="m">VOC 8 · 출처 2종 · 강도 평균 2.50</div>
     </div>
     <div class="pp gap">
-      <div class="h">검색 화면에서 오래된 집을 구분할 수 없음 → 수집 필요</div>
-      <div class="m">직접 VOC 0건 (JH-P3)</div>
+      <div class="h">오래된 집 구분 불가 → 수집 필요 <span class="id">(JH-P3)</span></div>
+      <div class="m">후보: 같은 메뉴 가게가 많아 헷갈림 (QA-K09-2 · D05-2, 근거 부족)</div>
     </div>
   </div>
   <div class="cell">
@@ -211,6 +222,7 @@
       <div class="h">PP-04 가 보기 전에는 그날 실제로 영업하는지 알 수 없어 헛걸음</div>
       <div class="m">VOC 15 · 출처 2종 · 강도 평균 2.75 (강도 3이 13건)</div>
     </div>
+    <div class="new">+ 새 VOC: 가려던 집이 영업시간 · 휴무로 못 감 (QA-T02-3, 강도 3)</div>
   </div>
   <div class="cell">
     <div class="pp">
@@ -218,16 +230,24 @@
       <div class="m">VOC 6 · 출처 2종 · 강도 평균 2.17</div>
     </div>
     <div class="pp">
-      <div class="h">PP-06 실제 음식이 알려진 평판에 못 미침<span class="tag cond">조건부</span></div>
-      <div class="m">VOC 5 · 출처 2종 · 강도 평균 2.00</div>
+      <div class="h">PP-06 실제 음식이 알려진 평판에 못 미침<span class="tag">조건부</span></div>
+      <div class="m">VOC 5 · 출처 2종 · + "두번은 안사먹고싶은 맛" (YT-5-06)</div>
     </div>
   </div>
+
+  <!-- 기회 -->
+  <div class="lab opp">기회<br>[제안]</div>
+  <div class="opp-cell">근거 부족이라 정하지 않음</div>
+  <div class="opp-cell">광고와 무관한 업력 순 목록 (spec US1)</div>
+  <div class="opp-cell">업력 · 계산식 · 비교한 폐업 가게 공개 (spec US2 · US3)</div>
+  <div class="opp-cell">폐업 가게 제외 (US4) · 카드에 정보 기준일 표시</div>
+  <div class="opp-cell">업력 순 후보로 줄 분산 (spec 4절, [가정])</div>
 </main>
 
 <footer>
-  행동 · 생각 · 터치포인트 · 감정은 journey_map.md, 페인포인트는 painpoint_definition.md의 진술문(근거 VOC 3건 · 출처 2종 이상)입니다.
-  감정 점수는 단계별 부정 비율(80% 이상 −2, 60~79% −1, 41~59% 0)이고, 앱 리뷰 별점은 앱 전체 평가라 단계 감정과 다를 수 있습니다.
-  근거 사례는 모두 대구 밖이거나 지역 미상(대구 0건)이라, 정하준에게 그대로 적용된다는 것은 [가정]입니다.
+  행동 · 생각 · 감정 · 터치포인트는 journey_map.md v2, 페인포인트는 painpoint_definition.md(근거 VOC 3건 · 출처 2종 이상), 기회는 spec.md의 제안입니다.
+  감정은 단계별 부정 비율(80% 이상 −2, 60~79% −1, 41~59% 0)이고 3건 미만은 근거 부족입니다. 앱 리뷰는 불만 쪽으로 치우친 표본입니다.
+  질문글(QA) · 유튜브 댓글(YT)은 대구 방문 글이지만, 앱 리뷰 · 사례는 대구 밖이거나 지역 미상이라 정하준에게 그대로 적용된다는 것은 [가정]입니다.
 </footer>
 </body>
 </html>
