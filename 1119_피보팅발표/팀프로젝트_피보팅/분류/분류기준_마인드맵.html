@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>분류 기준 마인드맵</title>
+<style>
+  :root{
+    --bg:#f7f6f2; --panel:#ffffff; --ink:#1f2328; --sub:#5b636d; --line:#d9d6cc;
+    --c1:#2f6fb5; --c2:#c2571a; --c3:#7a4fb3; --c4:#2f8a5b; --c5:#b0356b; --c6:#6b7280; --c7:#8a6d1a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#15171a; --panel:#1f2226; --ink:#eceef1; --sub:#a3abb5; --line:#353a41;
+      --c1:#6aa7e8; --c2:#f0935a; --c3:#b393e6; --c4:#6cc79a; --c5:#ec7fad; --c6:#a3abb5; --c7:#d9bb5c; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;line-height:1.5}
+  header{padding:20px 24px 4px}
+  h1{font-size:20px;margin:0 0 4px}
+  header p{margin:0;color:var(--sub);font-size:14px}
+  .wrap{overflow-x:auto;padding:8px 12px}
+  svg{display:block;min-width:1100px;width:100%;height:auto}
+  .link{fill:none;stroke-width:2;opacity:.55}
+  .node{cursor:pointer}
+  .node rect{fill:var(--panel);stroke-width:1.5;rx:10}
+  .node text{fill:var(--ink);font-size:14px}
+  .node .code{font-weight:700}
+  .node:hover rect,.node.on rect{stroke-width:3}
+  .node:focus{outline:none}
+  .node:focus rect{stroke-width:3}
+  .group rect{stroke:none}
+  .group text{fill:#fff;font-weight:700;font-size:15px}
+  @media (prefers-color-scheme: dark){ .group text{fill:#111} }
+  .center rect{fill:var(--ink);stroke:none}
+  .center text{fill:var(--bg);font-weight:700;font-size:17px}
+  #detail{margin:4px 24px 28px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--line);border-radius:12px;padding:16px 20px;min-height:120px}
+  #detail h2{margin:0 0 2px;font-size:18px}
+  #detail .q{color:var(--sub);font-size:14px;margin:0 0 12px}
+  #detail dl{display:grid;grid-template-columns:120px 1fr;gap:8px 14px;margin:0}
+  #detail dt{color:var(--sub);font-size:14px}
+  #detail dd{margin:0;font-size:15px}
+  #detail .ex{font-style:normal;background:var(--bg);border-radius:8px;padding:6px 10px;display:inline-block}
+  .hint{color:var(--sub);font-size:14px}
+  @media (max-width:640px){ #detail dl{grid-template-columns:1fr} #detail{margin:4px 16px 24px} header{padding:16px 16px 4px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>분류 기준 마인드맵 (고친 안, 확정 전)</h1>
+  <p>가운데에서 묶음으로, 묶음에서 태그로 퍼져요. 태그나 묶음을 누르면 아래에 설명이 나와요.</p>
+</header>
+<div class="wrap"><svg id="map" role="img" aria-label="분류 기준 마인드맵"></svg></div>
+<section id="detail" aria-live="polite"><p class="hint">태그를 눌러 보세요. 붙이는 경우, 안 붙이는 경우, 예시가 여기에 나와요.</p></section>
+
+<script>
+const G=[
+ {id:'가',name:'가. 여러 곳을 본다',side:'R',c:'--c1',q:'사람들이 여러 곳을 번갈아 보나? (별점 모아 보기의 근거)',
+  d:'식당을 고를 때 정보를 어디서, 몇 군데서 보는지에 대한 이야기예요.',
+  t:[
+   ['M1','여러 곳을 번갈아 봄','두 곳 이상에서 본다고 직접 씀. 지인 · SNS · 블로그도 "한 곳"으로 셈','한 곳만 말함 → H1','네이버 보고 카카오도 보고 구글까지 봐요'],
+   ['M2','앱마다 평가가 달라 헷갈림','앱끼리 별점 · 평가가 달라서 판단이 어렵다고 씀','가게 정보(영업시간 등)가 다름 → M5','카카오는 3점대인데 네이버는 4.7이라 뭘 믿어야 할지'],
+   ['M3','한 곳만으론 못 믿어 교차 확인','한 곳을 못 믿어서 다른 곳에서도 확인함','다른 곳만 봄 → H2 / 못 믿는다는 말만 있음 → M7','네이버 보고 구글 별점으로 한 번 더 거름'],
+   ['M4','리뷰가 많아 읽기 귀찮음','리뷰가 많아 다 읽기 힘들다, 많아도 고르기 어렵다','리뷰를 못 믿겠다 → M7','리뷰 수백 개 언제 다 읽어요']]},
+ {id:'나',name:'나. 가게 정보 문제',side:'R',c:'--c2',q:'어떤 가게 정보를 아쉬워하나? (정보 보완의 근거)',
+  d:'영업시간 · 주차 · 예약 같은 가게 정보에 대한 이야기예요. 순서대로 물어보면 구분돼요: ① 앱 두 개를 비교했나 → M5 ② 앱에 적힌 게 틀렸다고 했나 → M6 ③ 몰라서 불편했나 → M9 ④ 확인한다는 말만 있나 → M10',
+  t:[
+   ['M5','앱마다 가게 정보가 다름','두 앱을 비교해서 정보가 서로 다르다고 씀','앱 하나만 말함 → M6','카카오엔 영업 중인데 네이버엔 폐업'],
+   ['M6','한 앱 표시가 실제와 다름','앱에 적힌 정보가 틀렸다고 씀','앱 이야기가 없음 → M9','영업중이라 해서 갔는데 문 닫았어요'],
+   ['M9','필요한 정보를 몰랐음','정보가 없었거나 몰라서 불편했다. 앱 이야기가 없어도 됨','불편했다는 말 없이 확인한다는 말만 있음 → M10','주차 되는지 어디에도 안 나와서 전화해 봤어요'],
+   ['M10','가기 전에 확인함','"미리 확인하세요", "저는 가기 전에 ○○를 봐요". 불편했다는 말은 없음','몰라서 불편했다 → M9 / 가게 정보 자체를 알려 줌 → I1','당일 영업 여부는 방문 전에 확인하세요']]},
+ {id:'다',name:'다. 리뷰 · 별점 태도',side:'R',c:'--c3',q:'리뷰와 별점을 어떻게 쓰나?',
+  d:'리뷰와 별점을 믿는지, 어떻게 쓰는지에 대한 이야기예요.',
+  t:[
+   ['M7','리뷰 · 별점을 못 믿음','리뷰 · 별점 · 블로그 후기를 못 믿는다고 씀','못 믿어서 다른 곳도 본다는 말이 같이 있으면 M7 한 줄 + M3 또는 H2 한 줄','네이버 후기는 진짜 믿지마'],
+   ['M8','별점으로 1차 거름','별점을 첫 기준으로 쓰고 그다음 더 고민한다','별점만 보고 끝냄 → H1','구글 4.0 이상이면 가볼까 고민해요']]},
+ {id:'라',name:'라. 한 곳이면 된다',side:'L',c:'--c4',q:'모아 보기가 필요 없다는 사람은 얼마나 있나? (반대 근거)',
+  d:'여러 곳을 볼 필요가 없다는 쪽, 모아 보기에 반대되는 근거예요.',
+  t:[
+   ['H1','한 곳으로 충분','한 곳만 본다. 다른 곳과 비교한 말이 없음','다른 곳과 비교한 말이 있음 → H2','그냥 네이버만 봐요'],
+   ['H2','비교 끝에 한 곳으로 갈아탐','다른 곳과 비교해 본 뒤 믿는 한 곳을 쓴다','두 곳을 계속 같이 봄 → M3','차라리 구글 리뷰가 믿을만 함']]},
+ {id:'마',name:'마. 정보를 주는 글',side:'L',c:'--c5',q:'글 속에 어떤 정보가 숨어 있나?',
+  d:'불편 글이 아니라 남에게 정보를 알려 주는 글이에요.',
+  t:[
+   ['I1','정보 공유','글쓴이가 알게 된 가게 정보 자체를 알려 줌','"확인해 보세요"라고만 함 → M10','인스타 디엠으로 무조건 예약해야 한대요']]},
+ {id:'바',name:'바. 그 밖',side:'L',c:'--c6',q:'',
+  d:'우리가 보려는 이야기가 없거나, 뜻을 알 수 없는 글이에요.',
+  t:[
+   ['해당없음','관련 없음','위 어디에도 해당하지 않음. 맛 · 서비스 평가만 있거나 길찾기 같은 앱 기능 이야기','','너무 편해요'],
+   ['검토','애매함','원문이 잘려서 뜻을 알 수 없음','여러 이야기가 섞였을 뿐이면 줄을 나눠 각각 태그','']]},
+ {id:'칸',name:'칸 (태그에 딸린 내용)',side:'L',c:'--c7',q:'가게 정보 태그(M5 · M6 · M9 · M10 · I1)에만 적어요',
+  d:'태그가 아니라, 태그를 붙인 뒤 그 이야기의 세부 내용을 적는 칸이에요. 글에 없으면 추측하지 않고 "안 적힘"으로 적어요.',
+  t:[
+   ['정보 종류','어떤 정보인가','주차 / 메뉴 · 가격 / 영업시간 · 휴무 / 예약 · 편의시설 / 결제수단 / 혼밥 / 위치 · 길 / 기타','',''],
+   ['정보 성격','얼마나 자주 바뀌나','고정(주차장, 유모차, 결제수단) / 가끔 바뀜(영업시간, 정기휴무, 폐업) / 그날그날(임시휴무, 재료 소진, 웨이팅)','우리가 채울 수 있는 정보인지 판단하는 칸',''],
+   ['결과','그래서 어떻게 됐나','헛걸음 / 가서 당황 / 따로 확인(전화 · 문의 · 검색) / 없음','헛걸음은 태그가 아니라 이 칸의 값',''],
+   ['미리 찾아봤나','정보를 주면 풀리는 불편인가','찾았는데 없음 / 그때그때 달라져서 / 안 찾아봄 / 안 적힘','','']]}
+];
+const NS='http://www.w3.org/2000/svg', svg=document.getElementById('map');
+const LEAF_H=40, GAP=10, GGAP=26, CX=700, GX=235, LX=520, LW=300, GW=190, W=1400;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
+function layout(side){let y=30;const gs=G.filter(g=>g.side===side);gs.forEach(g=>{g.ys=g.t.map(()=>{const v=y;y+=LEAF_H+GAP;return v+LEAF_H/2});g.y=(g.ys[0]+g.ys[g.ys.length-1])/2;y+=GGAP});return y}
+const H=Math.max(layout('R'),layout('L'))+10, CY=H/2;
+// 양쪽 세로 가운데 맞춤
+['R','L'].forEach(s=>{const gs=G.filter(g=>g.side===s);const top=gs[0].ys[0],bot=gs[gs.length-1].ys.slice(-1)[0];const off=CY-(top+bot)/2;gs.forEach(g=>{g.ys=g.ys.map(v=>v+off);g.y+=off})});
+svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+const links=el('g',{}), nodes=el('g',{});
+function curve(x1,y1,x2,y2,col){const mx=(x1+x2)/2;el('path',{class:'link',d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,stroke:`var(${col})`},links)}
+function box(cls,x,y,w,h,col,lines,onpick,label){
+  const g=el('g',{class:'node '+cls,tabindex:0,role:'button','aria-label':label},nodes);
+  el('rect',{x:x-w/2,y:y-h/2,width:w,height:h,rx:10,...(cls==='leaf'?{style:`stroke:var(${col})`}:cls==='group'?{style:`fill:var(${col})`}:{})},g);
+  const t=el('text',{x:cls==='leaf'?x-w/2+14:x,y:y+5,'text-anchor':cls==='leaf'?'start':'middle'},g);
+  lines.forEach(([s,c])=>{const ts=el('tspan',c?{class:c}:{},t);ts.textContent=s});
+  const pick=()=>{document.querySelectorAll('.node.on').forEach(n=>n.classList.remove('on'));g.classList.add('on');onpick()};
+  g.addEventListener('click',pick);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}});
+  return g}
+const D=document.getElementById('detail');
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function showGroup(g){D.style.borderLeftColor=`var(${g.c})`;D.innerHTML=`<h2>${esc(g.name)}</h2><p class="q">${esc(g.q)}</p><dl><dt>무슨 묶음인가</dt><dd>${esc(g.d)}</dd><dt>들어 있는 것</dt><dd>${g.t.map(t=>esc(t[0]+' '+t[1])).join(' · ')}</dd></dl>`}
+function showTag(g,t){const isCol=g.id==='칸';D.style.borderLeftColor=`var(${g.c})`;
+  D.innerHTML=`<h2>${esc(t[0])} — ${esc(t[1])}</h2><p class="q">${esc(g.name)}</p><dl>`+
+   `<dt>${isCol?'들어가는 값':'붙이는 경우'}</dt><dd>${esc(t[2])}</dd>`+
+   (t[3]?`<dt>${isCol?'참고':'안 붙이는 경우'}</dt><dd>${esc(t[3])}</dd>`:'')+
+   (t[4]?`<dt>예시</dt><dd><span class="ex">"${esc(t[4])}"</span></dd>`:'')+`</dl>`}
+G.forEach(g=>{const s=g.side==='R'?1:-1, gx=CX+s*GX, lx=CX+s*LX;
+  curve(CX+s*70,CY,gx-s*GW/2,g.y,g.c);
+  g.t.forEach((t,i)=>{curve(gx+s*GW/2,g.y,lx-s*LW/2,g.ys[i],g.c);
+    box('leaf',lx,g.ys[i],LW,LEAF_H,g.c,[[t[0]+'  ','code'],[t[1]]],()=>showTag(g,t),t[0]+' '+t[1])});
+  box('group',gx,g.y,GW,44,g.c,[[g.name]],()=>showGroup(g),g.name)});
+box('center',CX,CY,150,56,'',[['분류 기준']],()=>{D.style.borderLeftColor='var(--line)';D.innerHTML='<h2>분류 기준</h2><p class="q">식당을 찾고 고르는 과정에 대한 글을 읽고, 어떤 이야기인지 표시해요.</p><dl><dt>① 이야기 나누기</dt><dd>글 안에 서로 다른 이야기가 몇 개인지 봐요. 이야기마다 한 줄이에요.</dd><dt>② 태그 붙이기</dt><dd>줄마다 태그를 하나 붙여요. 주 태그 · 보조 태그 구분은 없어요.</dd><dt>③ 칸 채우기</dt><dd>그 태그의 세부 내용을 글에 적힌 만큼만 적어요.</dd></dl>'},'분류 기준');
+</script>
+</body>
+</html>
