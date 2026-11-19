@@ -85,6 +85,12 @@ body.present .nav{opacity:.25}
 @media print{@page{size:1280px 720px;margin:0}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}html,body{background:#fff}.slide{break-inside:avoid;height:720px;aspect-ratio:auto}.slide:last-child{page-break-after:auto}.nav{display:none}.deck{padding:0;gap:0}.slide{box-shadow:none;border-radius:0;page-break-after:always;width:1280px;font-size:16px}}
 
 /* v2 */
+.bars{display:flex;flex-direction:column;gap:.9em;width:100%}
+.bar{display:grid;grid-template-columns:19em 1fr 3.2em;align-items:center;gap:1em;font-size:1.3em}
+.bar .lb{text-align:right;color:var(--sub)} .bar .lb b{color:var(--ink);margin-right:.4em}
+.bar .tr{height:1.7em;display:block} .bar .tr i{display:block;height:100%;background:#123c69;border-radius:.25em} .bar .tr i.g{background:#9fb4cc}
+.bar .v{font-weight:900;font-size:1.25em;color:var(--navy)}
+
 .flow{position:absolute;left:50%;bottom:0;transform:translate(-50%,50%);display:flex;gap:.5em;background:var(--slide);padding:0 .8em;font-size:.82em;font-weight:700;color:var(--sub);white-space:nowrap;align-items:center}
 .flow span{padding:.25em .8em;border-radius:99px}
 .flow span.on{background:#123c69;color:#fff}
@@ -207,25 +213,30 @@ run(<span class="s">"publish_team_branch.py"</span>)</pre>
 </section>
 <section class="slide">
   <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 1 · 문제</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="on">발견</span> <i>›</i> <span class="">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
-  <h1>발견 — 예상과 다른 페인포인트</h1>
-  
+  <h1>발견 — 데이터로 본 페인포인트</h1>
+  <p class="sub">네이버 리뷰 3,213개에서 나온 불편 (건수)</p>
   <div class="body">
-    <div class="vs">
-      <div class="card"><b class="t">처음 가설</b><p>폐업한 가게로 인한 헛걸음</p><p>오래된 가게 = 믿을 수 있는 가게</p></div>
-      <div class="arrow">→</div>
-      <div class="card dark"><b class="t">데이터 확인 결과</b><p>헛걸음 원인은 <b>휴무 · 품절</b> (폐업 0건)</p><p>오래된 가게의 불만 리뷰 비율이 더 높음<br>(10년 이상 4.7% · 3년 미만 2.5%)</p></div>
-    </div></div>
-  <div class="foot"><span>출처: 대구 헛걸음 VOC · 네이버 리뷰 3,213개 (2026-11-18 수집)</span><span class="pg">8</span></div>
+    <div class="bars">
+      <div class="bar"><span class="lb"><b>식사 불만</b> 맛 47 · 응대 40</span><span class="tr"><i style="width:100%"></i></span><span class="v">97</span></div>
+      <div class="bar"><span class="lb"><b>헛걸음</b> 휴무 · 품절 (폐업 0건)</span><span class="tr"><i class="g" style="width:17.5%"></i></span><span class="v">17</span></div>
+      <div class="bar"><span class="lb"><b>웨이팅</b></span><span class="tr"><i class="g" style="width:12.4%"></i></span><span class="v">12</span></div>
+      <div class="bar"><span class="lb"><b>주차 불편</b></span><span class="tr"><i class="g" style="width:11.3%"></i></span><span class="v">11</span></div>
+    </div>
+    <p class="lead" style="color:var(--ink)">가장 큰 불편은 <b style="color:var(--navy)">맛 · 응대</b> — 처음 가설이었던 폐업 헛걸음은 0건</p></div>
+  <div class="foot"><span>출처: 네이버 방문자 리뷰 300곳 · 3,213개 (2026-11-18 수집, 항목 간 겹침 있음) · 대구 헛걸음 VOC</span><span class="pg">8</span></div>
 </section>
 <section class="slide">
   <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 1 · 문제</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="on">발견</span> <i>›</i> <span class="">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
   <h1>피보팅 결정</h1>
   
   <div class="body">
-    <div class="hero">96%</div>
-    <p class="lead" style="color:var(--ink)">네이버 리뷰 긍정 비율 — 영업 정보 · 리뷰는 네이버가 이미 제공</p>
+    <div class="vs">
+      <div class="card"><b class="t">고객의 가장 큰 불편</b><p>맛 · 응대</p><p class="muted">오래된 가게라고 불만이 적지 않음<br>(10년 이상 4.7% · 3년 미만 2.5%)</p></div>
+      <div class="arrow">≠</div>
+      <div class="card"><b class="t">우리 데이터</b><p>개업일 · 폐업일 · 영업 여부</p><p class="muted">맛 · 응대는 알 수 없음<br>영업 정보 · 리뷰는 네이버가 이미 제공</p></div>
+    </div>
     <p class="lead">→ 우리 데이터가 필요한 고객을 다시 탐색</p></div>
-  <div class="foot"><span>출처: 네이버 방문자 리뷰 3,213개</span><span class="pg">9</span></div>
+  <div class="foot"><span>출처: 네이버 방문자 리뷰 3,213개 (긍정 96%) · 업력별 불만 리뷰 비율</span><span class="pg">9</span></div>
 </section>
 <section class="slide">
   <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 2 · 해결 (후보)</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="on">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
