@@ -89,6 +89,7 @@ body.present .nav{opacity:.25}
 .bar{display:grid;grid-template-columns:19em 1fr 3.2em;align-items:center;gap:1em;font-size:1.3em}
 .bar .lb{text-align:right;color:var(--sub)} .bar .lb b{color:var(--ink);margin-right:.4em}
 .bar .tr{height:1.7em;display:block} .bar .tr i{display:block;height:100%;background:#123c69;border-radius:.25em} .bar .tr i.g{background:#9fb4cc}
+.bar .tr i.w{background:#b4542f;min-width:.5em}
 .bar .v{font-weight:900;font-size:1.25em;color:var(--navy)}
 
 .flow{position:absolute;left:50%;bottom:0;transform:translate(-50%,50%);display:flex;gap:.5em;background:var(--slide);padding:0 .8em;font-size:.82em;font-weight:700;color:var(--sub);white-space:nowrap;align-items:center}
@@ -218,12 +219,13 @@ run(<span class="s">"publish_team_branch.py"</span>)</pre>
   <div class="body">
     <div class="bars">
       <div class="bar"><span class="lb"><b>식사 불만</b> 맛 47 · 응대 40</span><span class="tr"><i style="width:100%"></i></span><span class="v">97</span></div>
-      <div class="bar"><span class="lb"><b>헛걸음</b> 휴무 · 품절 (폐업 0건)</span><span class="tr"><i class="g" style="width:17.5%"></i></span><span class="v">17</span></div>
+      <div class="bar"><span class="lb"><b>헛걸음</b> 휴무 · 품절</span><span class="tr"><i class="g" style="width:17.5%"></i></span><span class="v">17</span></div>
       <div class="bar"><span class="lb"><b>웨이팅</b></span><span class="tr"><i class="g" style="width:12.4%"></i></span><span class="v">12</span></div>
       <div class="bar"><span class="lb"><b>주차 불편</b></span><span class="tr"><i class="g" style="width:11.3%"></i></span><span class="v">11</span></div>
+      <div class="bar"><span class="lb"><b>리뷰 불신</b> 처음 가설</span><span class="tr"><i class="w" style="width:2.1%"></i></span><span class="v" style="color:var(--warn)">2</span></div>
     </div>
-    <p class="lead" style="color:var(--ink)">가장 큰 불편은 <b style="color:var(--navy)">맛 · 응대</b> — 처음 가설이었던 폐업 헛걸음은 0건</p></div>
-  <div class="foot"><span>출처: 네이버 방문자 리뷰 300곳 · 3,213개 (2026-11-18 수집, 항목 간 겹침 있음) · 대구 헛걸음 VOC</span><span class="pg">8</span></div>
+    <p class="lead" style="color:var(--ink)">가장 큰 불편은 <b style="color:var(--navy)">맛 · 응대</b> — 리뷰 불신을 직접 말한 리뷰는 2건</p></div>
+  <div class="foot"><span>출처: 네이버 방문자 리뷰 300곳 · 3,213개 (2026-11-18 수집, 항목 간 겹침 있음)</span><span class="pg">8</span></div>
 </section>
 <section class="slide">
   <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 1 · 문제</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="on">발견</span> <i>›</i> <span class="">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
@@ -231,12 +233,12 @@ run(<span class="s">"publish_team_branch.py"</span>)</pre>
   
   <div class="body">
     <div class="vs">
-      <div class="card"><b class="t">고객의 가장 큰 불편</b><p>맛 · 응대</p><p class="muted">오래된 가게라고 불만이 적지 않음<br>(10년 이상 4.7% · 3년 미만 2.5%)</p></div>
-      <div class="arrow">≠</div>
-      <div class="card"><b class="t">우리 데이터</b><p>개업일 · 폐업일 · 영업 여부</p><p class="muted">맛 · 응대는 알 수 없음<br>영업 정보 · 리뷰는 네이버가 이미 제공</p></div>
+      <div class="card"><b class="t">처음 가설</b><p>리뷰를 믿기 어렵다</p><p>→ <b>업력</b>을 새 기준으로 참고</p></div>
+      <div class="arrow">→</div>
+      <div class="card dark"><b class="t">데이터 확인 결과</b><p>업력이 길어도 불만이 적지 않음<br>(10년 이상 4.7% · 3년 미만 2.5%)</p><p>업력으로는 <b>맛 · 응대</b>를 알 수 없음</p></div>
     </div>
     <p class="lead">→ 우리 데이터가 필요한 고객을 다시 탐색</p></div>
-  <div class="foot"><span>출처: 네이버 방문자 리뷰 3,213개 (긍정 96%) · 업력별 불만 리뷰 비율</span><span class="pg">9</span></div>
+  <div class="foot"><span>출처: 네이버 방문자 리뷰 3,213개 — 업력별 불만 리뷰 비율 · 리뷰의 96%가 긍정</span><span class="pg">9</span></div>
 </section>
 <section class="slide">
   <div class="head"><span class="brand">버틴집 · 팀 4P</span><span class="chip">피치 2 · 해결 (후보)</span><div class="flow"><span class="">데이터 · 자동화</span> <i>›</i> <span class="">페르소나</span> <i>›</i> <span class="">발견</span> <i>›</i> <span class="on">피보팅 갈래</span> <i>›</i> <span class="">다음 단계</span></div></div>
