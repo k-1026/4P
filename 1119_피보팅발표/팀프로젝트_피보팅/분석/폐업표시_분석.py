@@ -34,10 +34,16 @@ P('\n## 앱별 영업 상태 문구 (찾은 가게)\n')
 for a in apps:
     c=collections.Counter(r[a+'_영업표시'].strip() or '(빈칸)' for r in rows if F(r,a))
     P(f'- {a}: '+' · '.join(f'{k} {v}' for k,v in c.most_common()))
+import re
+ev=[r for r in rows if re.search(r'일원|행사|축제|페스타|페스티벌|엑스코|박람회|광장 ?일대|전시',smp[r['번호']]['도로명주소']+' '+r['메모'])]
+P('\n## 행사 · 축제 임시 영업으로 보이는 표본\n')
+P(f'- 주소가 축제장 · 엑스코 · 공원 "일원" 등인 가게 {len(ev)}곳 (번호 '+', '.join(r['번호'] for r in ev)+f'). 이 중 어느 앱에든 남아 있는 곳 {sum(1 for r in ev if any(F(r,a) for a in apps))}곳')
+non=[r for r in rows if r not in ev]
+P(f'- 이 {len(ev)}곳을 빼면 {len(non)}곳 중 어느 앱에든 남아 있음 {sum(1 for r in non if any(F(r,a) for a in apps))}곳 · 폐업 표시가 없는 앱이 하나라도 있음 {sum(1 for r in non if any(F(r,a) and not CL(r,a) for a in apps))}곳 · 어느 앱에서든 "영업 중" {sum(1 for r in non if any(OPEN(r,a) for a in apps))}곳')
 P('\n## 읽을 때 주의\n')
 P('- 상태 문구는 본 시각에 따라 달라짐 ("영업 전" · "영업 종료"는 그 시각 기준)')
 P('- "없음"은 그 주소에서 그 가게를 못 찾았다는 뜻. 같은 자리에 다른 가게가 있는 경우가 많음 (메모 칸)')
-P('- 인허가 폐업 신고 뒤 같은 자리에서 주인만 바뀐 경우가 섞일 수 있음 (메모 칸)')
+P('- 인허가 폐업 신고 뒤 같은 자리에서 주인만 바뀐 경우가 섞일 수 있음 (메모 칸: 19번은 네이버 소식에 새 사장 안내). 11번은 네이버 소식에 가게가 쓴 운영 중단 알림이 있으나 앱 상태 문구는 "영업 종료(다음 영업 시작 안내)"')
 P('- 표본 수가 작아 비율은 참고용')
 open('분석/폐업표시_분석.md','w',encoding='utf-8').write('\n'.join(out)+'\n')
 print('\n'.join(out))
