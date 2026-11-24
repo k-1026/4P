@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>버틴집 고객 여정 지도</title>
+<style>
+  :root{
+    --ink:#1f2328; --sub:#59636e; --line:#d8dee4; --bg:#ffffff; --head:#f3f5f7;
+    --coral:#ff6f61; --coral-bg:#fff1ef; --pos:#2f7d5b; --neg:#c2410c; --hold:#8b949e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#e9ecef}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;color:var(--ink);font-size:11px;line-height:1.35}
+  .board{width:1280px;height:720px;margin:0 auto;background:var(--bg);padding:14px 16px 10px;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+  h1{font-size:18px;letter-spacing:-.2px}
+  .who{font-size:11.5px;color:var(--sub);margin-top:3px}
+  .who b{color:var(--ink)}
+  .legend{display:flex;gap:10px;font-size:10.5px;color:var(--sub);white-space:nowrap}
+  .legend span{display:inline-flex;align-items:center;gap:4px}
+  .sw{width:12px;height:12px;border:2px solid var(--coral);background:var(--coral-bg);border-radius:3px;display:inline-block}
+  .grid{display:grid;grid-template-columns:78px repeat(6,1fr);grid-template-rows:26px 62px 50px 104px 54px 1fr;border:1px solid var(--line);border-radius:6px;overflow:hidden;flex:1;min-height:0}
+  .grid>div{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:5px 7px;overflow:hidden}
+  .grid>div:nth-child(7n){border-right:none}
+  .lab{background:var(--head);font-weight:700;font-size:11px;display:flex;align-items:center;color:var(--sub)}
+  .stage{background:var(--head);font-weight:700;font-size:12px;display:flex;align-items:center;gap:6px}
+  .stage i{font-style:normal;display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--ink);color:#fff;font-size:10px}
+  .think{color:#3b434b;font-style:italic}
+  .src{color:var(--sub);font-size:9.5px;font-style:normal}
+  .curve{grid-column:2 / span 6;padding:0 !important;position:relative}
+  .curve svg{display:block;width:100%;height:100%}
+  .tp b{color:var(--sub);font-weight:600}
+  .pp{display:flex;flex-direction:column;gap:5px}
+  .top{border:2px solid var(--coral);background:var(--coral-bg);border-radius:6px;padding:5px 6px;position:relative}
+  .top .no{position:absolute;top:-1px;right:-1px;background:var(--coral);color:#fff;font-weight:800;font-size:11px;border-radius:0 4px 0 6px;padding:1px 6px}
+  .top h3{font-size:11.5px;margin-right:22px}
+  .top p{font-size:10px;color:#3b434b;margin-top:2px}
+  .hold{color:var(--hold);font-size:10px}
+  .none{color:var(--hold)}
+  footer{font-size:9.5px;color:var(--sub);display:flex;justify-content:space-between;gap:12px}
+</style>
+</head>
+<body>
+<div class="board">
+  <header>
+    <div>
+      <h1>버틴집 고객 여정 지도 — 대구에서 식당 고르기 (현재 여정)</h1>
+      <div class="who"><b>정하준(가상) · 33세 · 부산·울산·경남 거주 회사원</b> — 아내와 자가용으로 대구 당일 나들이, 두세 번 와 봤지만 아는 식당은 거의 없음 · <b>목표:</b> 동성로 나들이 중 둘 다 만족할 식당을 그 자리에서 찾아, 오래 기다리거나 헛걸음하지 않고 먹기</div>
+    </div>
+    <div class="legend">
+      <span><span class="sw"></span>Top 3 페인포인트</span>
+      <span style="color:var(--pos)">● 감정 점수</span>
+      <span>감정 = 같은 단계 VOC 긍정·부정 비율 (+2~−2)</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- 단계 -->
+    <div class="lab">단계</div>
+    <div class="stage"><i>1</i>먹을 때 정하기</div>
+    <div class="stage"><i>2</i>후보 찾아보기</div>
+    <div class="stage"><i>3</i>후보 걸러내기</div>
+    <div class="stage"><i>4</i>한 곳 고르기</div>
+    <div class="stage"><i>5</i>가서 들어가기</div>
+    <div class="stage"><i>6</i>먹고 돌아보기</div>
+
+    <!-- 행동 -->
+    <div class="lab">행동</div>
+    <div>동성로·중구 구경 중 그때그때 식사할 곳을 정함 <span class="src">K-c39 60%, T-3-34</span></div>
+    <div>블로그·지도 앱·SNS·유튜브로 검색, 현지인에게 질문 <span class="src">K-c06, 질문글 30건</span></div>
+    <div>별점·리뷰 수·블루리본·후기로 거르고, 이벤트 리뷰는 낮춰 읽음 <span class="src">K-c07 85%, R016</span></div>
+    <div>동반자와 반반 결정, 맛과 조건(날것·매운 것) 확인 <span class="src">K-c04 61%, K-c25</span></div>
+    <div>차로 이동·주차, 줄을 서거나 원격 줄서기 <span class="src">K-c40 61%, S03·S28</span></div>
+    <div>먹고 나서 후기와 비교, 다시 올지 정하고 후기를 씀 <span class="src">블로그 50건</span></div>
+
+    <!-- 생각 -->
+    <div class="lab">생각</div>
+    <div class="think">"낼 당일치기 대구 갑니다" <span class="src">질문글 C02</span></div>
+    <div class="think">"맛집은 너무 어렵네요" <span class="src">질문글 D05</span></div>
+    <div class="think">"유명하다고 무조건 맛있는 건 아니더라고요" <span class="src">S18</span></div>
+    <div class="think">"와이프가 임신중이라 날것은 못먹어서" <span class="src">질문글 F04</span></div>
+    <div class="think">"웨이팅을 걸었지만…우리 차례는 오지 않았다" <span class="src">S42</span></div>
+    <div class="think">"40분정도를 기다렸는데 뭐지..." <span class="src">S33</span></div>
+
+    <!-- 감정 곡선 -->
+    <div class="lab">감정 곡선</div>
+    <div class="curve">
+      <svg viewBox="0 0 1158 104" preserveAspectRatio="none" aria-label="감정 곡선">
+        <!-- 기준선: y = 52 - score*20 -->
+        <line x1="0" y1="52" x2="1158" y2="52" stroke="#d8dee4" stroke-dasharray="4 4"/>
+        <text x="4" y="14" font-size="9.5" fill="#8b949e">+2</text>
+        <text x="4" y="56" font-size="9.5" fill="#8b949e">0</text>
+        <text x="4" y="100" font-size="9.5" fill="#8b949e">−2</text>
+        <polyline fill="none" stroke="#2f7d5b" stroke-width="2.5"
+          points="96.5,42 289.5,52 482.5,28 675.5,32 868.5,56 1061.5,26"/>
+        <g font-size="10.5" font-weight="700" text-anchor="middle">
+          <circle cx="96.5" cy="42" r="4.5" fill="#2f7d5b"/><text x="96.5" y="33" fill="#2f7d5b">+0.5</text>
+          <circle cx="289.5" cy="52" r="4.5" fill="#2f7d5b"/><text x="289.5" y="43" fill="#2f7d5b">0.0</text>
+          <circle cx="482.5" cy="28" r="4.5" fill="#2f7d5b"/><text x="482.5" y="19" fill="#2f7d5b">+1.2</text>
+          <circle cx="675.5" cy="32" r="4.5" fill="#2f7d5b"/><text x="675.5" y="23" fill="#2f7d5b">+1.0</text>
+          <circle cx="868.5" cy="56" r="6" fill="#c2410c"/><text x="868.5" y="76" fill="#c2410c">−0.2 최저점</text>
+          <circle cx="1061.5" cy="26" r="4.5" fill="#2f7d5b"/><text x="1061.5" y="17" fill="#2f7d5b">+1.3</text>
+        </g>
+        <g font-size="9.5" fill="#59636e" text-anchor="middle">
+          <text x="96.5" y="94">긍정 5 · 부정 3</text>
+          <text x="289.5" y="94">긍정 5 · 부정 5</text>
+          <text x="482.5" y="94">긍정 17 · 부정 4</text>
+          <text x="675.5" y="94">긍정 12 · 부정 4</text>
+          <text x="868.5" y="94">긍정 28 · 부정 33 (포기 7)</text>
+          <text x="1061.5" y="94">긍정 83 · 부정 19</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- 터치포인트 -->
+    <div class="lab">터치포인트</div>
+    <div class="tp"><b>장소</b> 동성로·중구 · <b>사람</b> 동반자</div>
+    <div class="tp"><b>화면</b> 블로그·지도 앱·유튜브 · <b>사람</b> 지인·현지인</div>
+    <div class="tp"><b>화면</b> 별점·리뷰·블루리본 · <b>사람</b> 현지인 추천</div>
+    <div class="tp"><b>사람</b> 동반자 · <b>화면</b> <span class="none">수집 필요</span></div>
+    <div class="tp"><b>장소</b> 줄·주차장 · <b>화면</b> 원격 줄서기 앱 · <b>사람</b> 직원</div>
+    <div class="tp"><b>장소</b> 매장 · <b>화면</b> 블로그 후기</div>
+
+    <!-- 페인포인트 -->
+    <div class="lab">페인포인트</div>
+    <div class="pp"><span class="none">—</span></div>
+    <div class="pp">
+      <div class="hold">C7 무엇을 골라야 할지 막막함 (질문글 5) · 보류</div>
+      <div class="hold">C2 광고가 먼저 보임 (앱 리뷰 11) · 보류</div>
+    </div>
+    <div class="pp">
+      <div class="top"><span class="no">1</span>
+        <h3>평판 정보와 실제가 다름</h3>
+        <p>리뷰·별점·유명세로 고르려다 이벤트·대가성 후기 때문에 믿을 수 없음</p>
+        <p class="src">VOC 66 · 출처 5종 · 포기 7 · 75점</p>
+      </div>
+    </div>
+    <div class="pp">
+      <div class="none">수집 필요 (조건 요청 4건 — 불만 아님)</div>
+    </div>
+    <div class="pp">
+      <div class="top"><span class="no">2</span>
+        <h3>웨이팅 실망</h3>
+        <p>유명 식당에 몰려 대기가 길어 포기하거나 기다린 만큼 실망</p>
+        <p class="src">VOC 25 · 출처 4종 · 포기 4 · 75점</p>
+      </div>
+      <div class="top"><span class="no">3</span>
+        <h3>헛걸음</h3>
+        <p>영업 중으로 봤는데 휴무·재료 소진·대기 마감으로 돌아섬</p>
+        <p class="src">VOC 40 · 출처 4종 · 포기 19 · 50점</p>
+      </div>
+      <div class="hold">C6 주차 (블로그 6, 실태조사 여행 불편 1위 18.9%) · 보류</div>
+    </div>
+    <div class="pp">
+      <div class="top"><span class="no">1</span>
+        <h3>평판을 믿고 고른 뒤 실망</h3>
+        <p>①의 결과 — 후기·유명세와 실제 맛·양이 다름</p>
+        <p class="src">①에 포함 · 34건</p>
+      </div>
+      <div class="hold">C3b 맛 자체 실망 (10) · 보류</div>
+    </div>
+  </div>
+
+  <footer>
+    <span>감정: 중립 표본(블로그 후기 50 · 질문글 30 · 유튜브 댓글 34줄)만으로 계산 · 불만 검색 글 33 · 지도 앱 리뷰 84는 빈도 근거 · 점수 = 빈도 × 강도 × 해결 가능성 (Day11)</span>
+    <span>근거: painpoint/voc_classified.csv · painpoint_def.md · K=한국리서치 2025, T=2025 대구관광 실태조사 · 2026-11-18</span>
+  </footer>
+</div>
+</body>
+</html>

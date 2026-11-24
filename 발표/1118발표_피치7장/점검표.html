@@ -1,0 +1,213 @@
+<title>버틴집 피치 점검표</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 한 줄 결론 → 7장 카드 보드(상태 + 다음 할 일, 세부는 접기) → 평가 기준 4줄 → 할 일 순서 */
+:root{
+  --bg:#f5f6f4; --card:#ffffff; --fg:#1d2421; --muted:#66726d; --line:#e1e6e3;
+  --accent:#2f6b5a;
+  --ok:#2e7d4f; --ok-bg:#e3f2e8; --part:#946300; --part-bg:#fcf0d4; --no:#b03a2e; --no-bg:#f9e2de;
+  --font:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --card:#1d2421; --fg:#e8eeeb; --muted:#9eaba5; --line:#2f3935; --accent:#7cc4ab;
+  --ok:#86d6a6; --ok-bg:#1d3527; --part:#e9c46a; --part-bg:#3a3019; --no:#f29a8f; --no-bg:#3f2320; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --card:#1d2421; --fg:#e8eeeb; --muted:#9eaba5; --line:#2f3935; --accent:#7cc4ab;
+  --ok:#86d6a6; --ok-bg:#1d3527; --part:#e9c46a; --part-bg:#3a3019; --no:#f29a8f; --no-bg:#3f2320; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.65;margin:0}
+.wrap{max-width:960px;margin:0 auto;padding-block:32px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:44px}
+h1{font-size:28px;line-height:1.3;margin:0 0 6px;text-wrap:balance}
+h2{font-size:20px;margin:0 0 14px;text-wrap:balance}
+.meta{color:var(--muted);font-size:14px;margin:0}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* 한 줄 결론 */
+.verdict{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:grid;gap:14px}
+.verdict p{margin:0;font-size:18px;font-weight:500;text-wrap:pretty}
+.counts{display:flex;flex-wrap:wrap;gap:10px}
+.count{display:flex;align-items:center;gap:8px;font-size:15px}
+.count b{font-size:22px;font-variant-numeric:tabular-nums}
+
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;padding:3px 12px;border-radius:999px;white-space:nowrap}
+.ok{color:var(--ok);background:var(--ok-bg)} .part{color:var(--part);background:var(--part-bg)} .no{color:var(--no);background:var(--no-bg)}
+
+/* 7장 보드 */
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.ch{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:12px;align-content:start;min-width:0}
+.ch-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.ch-num{font-size:13px;color:var(--muted);font-weight:500}
+.ch h3{margin:0;font-size:19px}
+.q{margin:0;color:var(--muted);font-size:15px}
+.items{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.items li{display:flex;gap:8px;align-items:baseline;font-size:15px}
+.mark{flex:none;width:20px;text-align:center;font-weight:700}
+.mark.ok,.mark.part,.mark.no{background:none}
+.todo{margin:0;font-size:15px;padding:10px 12px;border-radius:10px;background:var(--bg)}
+.todo b{font-weight:700}
+details{font-size:14px}
+summary{cursor:pointer;color:var(--accent);font-weight:500;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ ";}
+details[open] summary::before{content:"▾ ";}
+.detail{display:grid;gap:12px;margin-top:10px}
+.detail h4{margin:0 0 2px;font-size:14px}
+.detail p{margin:0;color:var(--muted)}
+.files{display:flex;flex-wrap:wrap;gap:6px}
+.files a,.files span{font-size:13px;padding:2px 8px;border:1px solid var(--line);border-radius:6px;text-decoration:none;overflow-wrap:anywhere}
+
+/* 평가 기준 */
+.crit{display:grid;gap:10px}
+.crit-row{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;display:grid;grid-template-columns:170px 120px 1fr;gap:6px 16px;align-items:center}
+.crit-row .name{font-weight:700}
+.crit-row .why{font-size:15px;color:var(--muted)}
+
+/* 할 일 */
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:10px}
+ol.steps li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px 14px 56px;position:relative}
+ol.steps li::before{content:counter(s);position:absolute;left:18px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--card);font-weight:700;font-size:14px;display:grid;place-items:center}
+ol.steps b{display:block}
+ol.steps span{font-size:14px;color:var(--muted)}
+
+footer{font-size:14px;color:var(--muted);display:grid;gap:4px}
+@media (max-width:640px){
+  h1{font-size:23px}
+  .crit-row{grid-template-columns:1fr auto}
+  .crit-row .why{grid-column:1 / -1}
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <h1>버틴집 피치 점검표</h1>
+  <p class="meta">팀 4P · 2026-11-18 · 기준: 「피치 구조 — 일곱 장, 장마다 증명할 것 하나」</p>
+</header>
+
+<section class="verdict" aria-label="한 줄 결론">
+  <p>7장 중 <b>4장은 준비됐고</b>, <b>시장 · BM · MVP 3장</b>은 숫자나 사용자 반응이 더 필요합니다.</p>
+  <div class="counts">
+    <span class="count"><span class="badge ok">✓ 준비됨</span><b>4</b>장</span>
+    <span class="count"><span class="badge part">△ 보완 필요</span><b>3</b>장</span>
+    <span class="count"><span class="badge no">✕ 없음</span><b>0</b>장</span>
+  </div>
+</section>
+
+<section>
+  <h2>장별 상태</h2>
+  <div class="board" id="board"></div>
+</section>
+
+<section>
+  <h2>평가 기준 4개</h2>
+  <div class="crit" id="crit"></div>
+</section>
+
+<section>
+  <h2>다음에 할 일 (순서대로)</h2>
+  <ol class="steps" id="steps"></ol>
+</section>
+
+<footer>
+  <span>✓ 있음 · △ 있지만 숫자가 가정이거나 일부 빠짐 · ✕ 없음</span>
+  <span>자세한 표: <a id="mdlink" target="_blank" rel="noopener">점검표.md (GitHub)</a></span>
+</footer>
+</div>
+
+<script>
+const BASE="https://github.com/k-1026/4P/blob/"+encodeURIComponent("발표")+"/";
+const DIR="발표/1118발표_피치7장/";
+const gh=p=>BASE+p.split("/").map(encodeURIComponent).join("/");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fileTag=f=>{
+  if(f.startsWith("http"))return `<a href="${f}" target="_blank" rel="noopener">사이트 열기</a>`;
+  const root=f.startsWith("!"); const p=root?f.slice(1):f;
+  const label=p.split("/").pop();
+  return `<a href="${gh(root?p:DIR+p)}" target="_blank" rel="noopener">${esc(label)}</a>`;
+};
+const MARK={ok:"✓",part:"△",no:"✕"};
+const BADGE={ok:'<span class="badge ok">✓ 준비됨</span>',part:'<span class="badge part">△ 보완 필요</span>',no:'<span class="badge no">✕ 없음</span>'};
+
+const CH=[
+ {n:1,t:"문제",q:"정말 있는 문제인가?",s:"ok",
+  items:[["VOC 인용","ok"],["고객 여정","ok"],["밸류체인 병목","ok"]],
+  todo:"페르소나 사는 곳 하나로 정하기",
+  std:"출처 2종 이상, 원문 링크, 2022년 이후, 대구 사례 포함",
+  files:["01_문제.md","근거/고객여정_페인포인트/voc_classified.csv","근거/고객여정_페인포인트/journey_map.md","!1111실습/11월 11일 밸류체인.md"],
+  need:"persona_final.md, sources_check.md",data:"30대 외지 방문객 인터뷰 3명, 기사 원문 재확인"},
+ {n:2,t:"해결",q:"왜 이 방법인가?",s:"ok",
+  items:[["AX 기회 정의","ok"],["spec.md","ok"],["As-Is → To-Be","ok"]],
+  todo:"spec.md 초안 팀 검토",
+  std:"1장 여정 단계와 1:1로 맞는 To-Be, 유저 스토리와 완료 기준",
+  files:["02_해결.md","spec.md"],
+  need:"userflow.md, screens/ (화면 캡처)",data:"—"},
+ {n:3,t:"시장",q:"충분히 큰가?",s:"part",
+  items:[["경쟁 비교표","ok"],["포지셔닝 맵","part"],["SOM","part"]],
+  todo:"대구 연간 외지 방문객 수 구하기",
+  std:"숫자마다 원문 문장 · 연도 · 단위, 포지셔닝 점수마다 근거",
+  files:["03_시장.md"],
+  need:"competitors.md, positioning.html, market_sizing.md",data:"대구관광 데이터랩 외지 방문객 수, 대구 창업 상담 건수"},
+ {n:4,t:"BM",q:"지속 가능한가?",s:"part",
+  items:[["BM 캔버스","ok"],["단위 경제","part"],["시나리오","part"]],
+  todo:"단가 하나라도 실제 값으로 확인",
+  std:"단가 중 최소 1개가 확인값, 손익분기 계산식, 민감도 1위",
+  files:["bm_canvas.md","unit_economics.md","04_BM.md"],
+  need:"payer_interview.md",data:"나라장터 유사 용역 낙찰가, 상권 보고서 가격표, 공공누리 유형"},
+ {n:5,t:"MVP",q:"보여 줄 수 있나?",s:"part",
+  items:[["v1 URL 라이브 데모","ok"],["가설 판정","part"]],
+  todo:"사용자 3~5명에게 써 보게 하기",
+  std:"URL이 끝까지 동작, 가설마다 판정 + 사용자 반응 1개 이상",
+  files:["https://daegu-survival-fegw.vercel.app/","05_MVP.md","results.md"],
+  need:"test_plan.md, test_sessions/P1~P5.md",data:"사용자 행동 기록, 길찾기 클릭 수, 방문 수"},
+ {n:6,t:"팀",q:"이 팀이 할 수 있나?",s:"ok",
+  items:[["역할","ok"],["사용 도구","ok"],["작업 흔적","ok"]],
+  todo:"슬라이드와 데모 리허설 준비",
+  std:"이름 · 맡은 일 · 대표 산출물, AI 도구와 사람이 한 일",
+  files:["06_팀.md"],
+  need:"pitch_deck.html, demo_rehearsal.md",data:"—"},
+ {n:7,t:"요청사항",q:"그래서 무엇을 해 주면 되나?",s:"ok",
+  items:[["results.md 계획 칸","ok"],["민감도 1위 가정","ok"]],
+  todo:"관광 공공기관 정확한 이름 확인",
+  std:"할 일 · 끝 기준 · 담당 · 기한, 민감도 1위 가정과 숫자",
+  files:["07_요청사항.md","results.md"],
+  need:"관광공사_제안_1p.md",data:"담당 부서 이름"}
+];
+document.getElementById("board").innerHTML=CH.map(c=>`
+ <article class="ch">
+  <div class="ch-top"><div><div class="ch-num">${c.n}장</div><h3>${esc(c.t)}</h3></div>${BADGE[c.s]}</div>
+  <p class="q">“${esc(c.q)}”</p>
+  <ul class="items">${c.items.map(i=>`<li><span class="mark" style="color:var(--${i[1]})">${MARK[i[1]]}</span>${esc(i[0])}</li>`).join("")}</ul>
+  <p class="todo"><b>다음 할 일</b> · ${esc(c.todo)}</p>
+  <details>
+   <summary>자세히 보기</summary>
+   <div class="detail">
+    <div><h4>충족 기준</h4><p>${esc(c.std)}</p></div>
+    <div><h4>지금 있는 파일</h4><div class="files">${c.files.map(fileTag).join("")}</div></div>
+    <div><h4>더 만들 파일</h4><p>${esc(c.need)}</p></div>
+    <div><h4>더 모을 데이터</h4><p>${esc(c.data)}</p></div>
+   </div>
+  </details>
+ </article>`).join("");
+
+const CR=[
+ ["문제-해결 논리","ok","부합","1 · 2 · 7장. 페르소나만 하나로 정하면 됨"],
+ ["시장·BM 근거","no","미달","3 · 4장. 방문객 수와 단가가 아직 가정"],
+ ["MVP 동작","part","부분","5장. 동작은 증명, 사용자 반응이 없음"],
+ ["발표·데모 완성도","part","부분","6장. 문서는 있지만 슬라이드와 리허설이 없음"]
+];
+document.getElementById("crit").innerHTML=CR.map(c=>`
+ <div class="crit-row"><span class="name">${esc(c[0])}</span><span class="badge ${c[1]}">${esc(c[2])}</span><span class="why">${esc(c[3])}</span></div>`).join("");
+
+const ST=[
+ ["사용자 3~5명에게 사이트 써 보게 하기","5장 · 약 2시간"],
+ ["길찾기 클릭 수 기록 붙이기, 업력을 카드 첫 줄로","5장 · 약 1시간 (이건협)"],
+ ["대구 연간 외지 방문객 수 찾기","3장 · 약 30분 (대구관광 데이터랩)"],
+ ["나라장터에서 비슷한 용역 금액 찾기","4장 · 약 1시간"],
+ ["페르소나 사는 곳 정하기","1장 · 팀 회의"],
+ ["7장 슬라이드 만들고 데모 리허설","6장 · 반나절"]
+];
+document.getElementById("steps").innerHTML=ST.map(s=>`<li><b>${esc(s[0])}</b><span>${esc(s[1])}</span></li>`).join("");
+const md=document.getElementById("mdlink"); md.href=gh(DIR+"점검표.md");
+</script>
