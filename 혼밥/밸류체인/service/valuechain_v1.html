@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>혼밥 밸류체인 서비스 체인</title>
+<style>
+  :root {
+    --ink: #1c2329; --muted: #6b7480; --teal: #2E8B83; --teal-l: #EAF5F3; --teal-b: #4E9E95;
+    --dark: #1d2a33; --lime: #B6E36B;
+    --money: #D9932A; --money-bg: #FBF1DA; --money-ink: #9A6A16;
+    --data: #3B6FE0; --data-bg: #E8EFFB; --data-ink: #3B6FE0;
+    --who-bg: #F3F4F6; --line: #DADFE4; --aux: #9E9E9E;
+    --bn: #E89B00; --bn-bg: #FEF7E8; --co: #E8603C; --co-bg: #FDF0EB; --op: #9BD24B; --op-bg: #F3F9EA;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #e9ecef; font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; color: var(--ink); }
+  .slide { position: relative; width: 1280px; height: 720px; margin: 0 auto; background: #fff; overflow: hidden; }
+  .a { position: absolute; }
+  .bar { left: 44px; top: 20px; width: 64px; height: 4px; background: var(--teal); border-radius: 2px; }
+  h1 { position: absolute; left: 44px; top: 34px; font-size: 28px; font-weight: 800; letter-spacing: -0.6px; }
+  h1 em { font-style: normal; color: var(--teal); }
+  .pill { right: 44px; top: 32px; background: var(--teal-l); color: var(--teal); font-size: 12px; font-weight: 700; padding: 8px 16px; border-radius: 18px; letter-spacing: 0.5px; }
+  .subt { left: 44px; top: 76px; font-size: 13px; color: var(--muted); }
+  .card { left: 44px; top: 100px; width: 1192px; height: 378px; border: 1px solid var(--line); border-radius: 14px; }
+  .rl { left: 66px; font-size: 13px; font-weight: 700; width: 120px; }
+  .stage { width: 182px; height: 74px; border: 1.5px solid var(--teal-b); background: var(--teal-l); border-radius: 8px;
+           display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-align: center; }
+  .stage .t { font-size: 14px; font-weight: 700; }
+  .stage .s { font-size: 11px; color: var(--muted); }
+  .stage.dark { background: var(--dark); border-color: var(--dark); color: #fff; }
+  .stage.dark .s { color: var(--lime); }
+  .stage.out { background: #F6F6F6; border: 1.5px dashed var(--aux); }
+  .chips { display: flex; gap: 4px; margin-top: 2px; }
+  .chip { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px; background: #fff; color: var(--ink); }
+  .chip.bn { border: 1.5px solid var(--bn); }
+  .chip.co { border: 1.5px solid var(--co); }
+  .chip.op { background: var(--op-bg); border: 1px solid var(--op); }
+  .band { left: 188px; width: 1036px; border-radius: 8px; }
+  .who { width: 182px; text-align: center; font-size: 12.5px; line-height: 1.35; }
+  .who .b { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .who .p { font-size: 11px; }
+  .who .tm { display: inline-block; margin-top: 3px; font-size: 9.5px; font-weight: 700; color: var(--teal); background: var(--teal-l); border: 1px solid var(--teal-b); border-radius: 3px; padding: 0 4px; margin-left: 3px; vertical-align: 1px; }
+  .lbl { width: 182px; text-align: center; font-size: 11.5px; line-height: 1.3; }
+  .lbl.m { color: var(--money-ink); }
+  .lbl.d { color: var(--data-ink); }
+  .lbl.x { color: #777; }
+  svg.ov { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; pointer-events: none; }
+  svg text { font-family: inherit; font-size: 11.5px; font-weight: 600; paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+  .rule { width: 384px; height: 112px; top: 492px; border-radius: 6px; padding: 12px 16px; font-size: 12px; line-height: 1.5; }
+  .rule h3 { font-size: 13px; font-weight: 800; margin-bottom: 4px; }
+  .rule.bn { background: var(--bn-bg); border-left: 4px solid var(--bn); }
+  .rule.co { background: var(--co-bg); border-left: 4px solid var(--co); }
+  .rule.op { background: var(--op-bg); border-left: 4px solid var(--op); }
+  .note { left: 44px; top: 618px; width: 1192px; font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .foot { left: 44px; top: 686px; font-size: 11.5px; color: var(--muted); letter-spacing: 0.3px; }
+  .pg { right: 44px; top: 680px; background: var(--teal); color: #fff; font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<div class="slide" id="slide"></div>
+<script>
+const C = {
+  title: '혼밥 챗봇 서비스 체인 맵 — <em>활동 · 이해관계자 · 돈 · 데이터</em> 네 층',
+  pill: '서비스 체인 v1 · 2026-11-23',
+  subt: "산업 체인의 '정보 올리기 → 찾기' 구간을 우리 챗봇 서비스 안에서 다시 자른 맵 — 서비스는 출시 전이라 우리 활동은 모두 계획 [I]",
+  stages: [
+    { t: '1 식당 정보 모으기', s: '공공 DB · 메뉴판 사진 · 리뷰', m: [['op', '기회']] },
+    { t: '2 1인분·시간대 판정', s: '판정 규칙 · 메뉴 글자 읽기', m: [['bn', '병목']] },
+    { t: '3 1인분 + 취향 거르기', s: '챗봇 ★ 우선 기회 · 광고 노출', dark: true, m: [['op', '기회 ★']] },
+    { t: '4 주문·식사·결제', s: '서비스 밖 (식당에서)', out: true, m: [['bn', '병목']] },
+    { t: '5 후기·피드백', s: "'실제로 1인분 됐나'", m: [['op', '기회']] }
+  ],
+  who: [
+    { a: '우리 서비스 · 대구시 · 행안부', p: '네이버 지도 (메뉴판 · 리뷰)', b: '(식당 사장님 · 이용약관 [U])', team: true },
+    { a: '우리 서비스 (판정 규칙)', b: '(식당 사장님 규칙 · 혼밥 후기 작성자)', team: true },
+    { a: '혼밥 고객 · 챗봇 · 광고주 식당 [I]', p: '대표: 달서구 32세 남성 직장인', b: '(지도 앱 필터 · 커뮤니티 답변자)', team: true },
+    { a: '혼밥 고객 · 식당 · 카드사 [U]', b: '(우리 서비스는 관여 안 함)' },
+    { a: '혼밥 고객', p: '1인분 됐나 · 다녀오셨나요', b: '(네이버 리뷰 · 사장님 답글 드묾)' }
+  ],
+  money: [
+    { arrow: true, l: '운영 비용 [U] · 데이터 수집' },
+    { arrow: true, l: '운영 비용 [U] · 판정 · 챗봇 모델' },
+    { arrow: true, l: '광고비 [U] · 광고주 → 우리 (시작점)' },
+    { arrow: false, l: '결제 · 결제수수료 — 서비스 밖', x: true },
+    { arrow: false, l: '돈 없음', x: true }
+  ],
+  data: [
+    { arrow: true, l: '맛집 DB · 인허가 · 메뉴판 사진 · 리뷰' },
+    { arrow: true, l: '1인분 · 시간대 판정 · 우리 서비스' },
+    { arrow: true, l: '대화 로그 · 노출 · 클릭 · 우리 서비스' },
+    { arrow: false, l: '방문 여부 — 서비스에 안 들어옴', x: true },
+    { arrow: false, l: "'1인분 됐나' 응답 · 우리 서비스" }
+  ],
+  feedback: [
+    { from: 4, to: 1, peak: 372, label: '응답 → 판정 고치기 (피드백)', lx: 700 }
+  ],
+  rules: [
+    { k: 'bn', h: '병목 — 막히는 곳', body: '2 지점 · 시간대마다 1인분 여부가 다름 (사례) [출처 34]<br>4 점심 피크 테이블 회전 — 추천해도 가서 거절될 수 있음 [출처 36]' },
+    { k: 'co', h: '비용 — 새는 곳', body: '근거 있는 비용 마커 0개 (SV10)<br>운영 비용 [U] · 지도 앱과 광고 예산 경쟁 [I]<br>규칙 후보: 1인분 가능 판정 가게만 광고 노출 (SV12)' },
+    { k: 'op', h: '기회 — 바꿀 수 있는 곳', body: '1 메뉴판 사진 글자 읽기<br><b>★ 3 챗봇에서 1인분 + 취향 한 번에 거르기 (O2)</b><br>5 피드백으로 판정 고치기' }
+  ],
+  note: '※ 숫자는 쓰지 않음 (광고비 · 운영 비용 근거 없음 [U]) · [출처 n] = ../sources.md 번호 · 회색 점선 단계 = 서비스 밖 · 단계별 근거 표는 service/valuechain_v1.md, 팀 결정은 service/analysis.md',
+  foot: '혼밥 4P · 밸류체인 맵 · 서비스 체인 v1',
+  pg: '2 / 2'
+};
+
+const S = document.getElementById('slide');
+const X0 = 200, STEP = 208.5, W = 182;
+const colX = i => X0 + i * STEP;
+const add = (cls, style, html) => { const d = document.createElement('div'); d.className = 'a ' + cls; Object.assign(d.style, style); d.innerHTML = html; S.appendChild(d); return d; };
+
+add('bar', {}, '');
+const h = document.createElement('h1'); h.innerHTML = C.title; S.appendChild(h);
+add('pill', {}, C.pill);
+add('subt', {}, C.subt);
+add('card', {}, '');
+
+const ROW = { stage: 118, who: 204, money: 288, data: 402 };
+const BAND_H = 66;
+add('rl', { top: (ROW.stage + 28) + 'px', color: 'var(--teal)' }, '① 활동 (단계)');
+add('rl', { top: (ROW.who + 24) + 'px' }, '② 이해관계자');
+add('rl', { top: (ROW.money + 24) + 'px', color: 'var(--money)' }, '③ 돈 흐름');
+add('rl', { top: (ROW.data + 24) + 'px', color: 'var(--data)' }, '④ 데이터 흐름');
+
+C.stages.forEach((s, i) => {
+  const chips = '<div class="chips">' + s.m.map(([k, t]) => `<span class="chip ${k}">${t}</span>`).join('') + '</div>';
+  add('stage' + (s.dark ? ' dark' : '') + (s.out ? ' out' : ''), { left: colX(i) + 'px', top: ROW.stage + 'px' },
+      `<div class="t">${s.t}</div><div class="s">${s.s}</div>${chips}`);
+});
+
+add('band', { top: ROW.who + 'px', height: (BAND_H + 10) + 'px', background: 'var(--who-bg)' }, '');
+add('band', { top: ROW.money + 'px', height: BAND_H + 'px', background: 'var(--money-bg)' }, '');
+add('band', { top: ROW.data + 'px', height: BAND_H + 'px', background: 'var(--data-bg)' }, '');
+
+C.who.forEach((w, i) => add('who', { left: colX(i) + 'px', top: (ROW.who + 7) + 'px' },
+  `<div>${w.a}</div>${w.p ? `<div class="p">${w.p}</div>` : ''}<div class="b">${w.b}</div>${w.team ? '<span class="tm">팀 자산</span>' : ''}`));
+C.money.forEach((m, i) => add('lbl m' + (m.x ? ' x' : ''), { left: colX(i) + 'px', top: (ROW.money + (m.arrow ? 32 : 20)) + 'px' }, m.l));
+C.data.forEach((m, i) => add('lbl d', { left: colX(i) + 'px', top: (ROW.data + (m.arrow ? 32 : 20)) + 'px' }, m.l));
+C.rules.forEach((r, i) => add('rule ' + r.k, { left: (44 + i * 404) + 'px' }, `<h3>${r.h}</h3>${r.body}`));
+add('note', {}, C.note);
+add('foot', {}, C.foot);
+add('pg', {}, C.pg);
+
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'ov'); svg.setAttribute('viewBox', '0 0 1280 720');
+svg.innerHTML = `<defs>
+  <marker id="hm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#D9932A"/></marker>
+  <marker id="hd" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3B6FE0"/></marker>
+  <marker id="hc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#E8603C"/></marker>
+  <marker id="hs" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4E9E95"/></marker>
+</defs>`;
+const el = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); svg.appendChild(e); return e; };
+
+// stage connectors
+for (let i = 0; i < 4; i++) {
+  const x1 = colX(i) + W, x2 = colX(i + 1), y = ROW.stage + 37;
+  el('line', { x1, y1: y, x2: x2 - 2, y2: y, stroke: '#4E9E95', 'stroke-width': 2, 'marker-end': 'url(#hs)' });
+}
+// money arrows (right → left)
+C.money.forEach((m, i) => { if (!m.arrow) return; const y = ROW.money + 20;
+  el('line', { x1: colX(i) + W - 12, y1: y, x2: colX(i) + 14, y2: y, stroke: '#D9932A', 'stroke-width': 3, 'marker-end': 'url(#hm)' }); });
+// data arrows (left → right, dashed)
+C.data.forEach((m, i) => { if (!m.arrow) return; const y = ROW.data + 20;
+  el('line', { x1: colX(i) + 12, y1: y, x2: colX(i) + W - 12, y2: y, stroke: '#3B6FE0', 'stroke-width': 2, 'stroke-dasharray': '5 4', 'marker-end': 'url(#hd)' }); });
+// feedback curves (back → front)
+C.feedback.forEach(f => {
+  const xs = colX(f.from) + W / 2 + 40, xe = colX(f.to) + W / 2 - 30, y0 = ROW.data + 2;
+  const d = `M ${xs} ${y0} C ${xs} ${f.peak - 6}, ${xs - 60} ${f.peak}, ${(xs + xe) / 2} ${f.peak} S ${xe} ${f.peak + 4}, ${xe} ${y0 + 4}`;
+  el('path', { d, fill: 'none', stroke: f.broken ? '#E8603C' : '#3B6FE0', 'stroke-width': 2, 'stroke-dasharray': '5 4', 'marker-end': f.broken ? 'url(#hc)' : 'url(#hd)' });
+  const t = el('text', { x: f.lx, y: f.peak + 4, 'text-anchor': 'middle', fill: f.broken ? '#C0462A' : '#3B6FE0' }); t.textContent = f.label;
+});
+S.appendChild(svg);
+</script>
+</body>
+</html>
