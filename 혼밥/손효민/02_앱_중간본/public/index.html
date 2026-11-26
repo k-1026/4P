@@ -622,7 +622,7 @@ function levelUp(l){
 }
 
 /* ================= 혼밥 MBTI =================
-   4개 축 × 1문항 = 4문항 (축마다 하나라 동점이 없다)
+   4개 축 × 4문항 = 16문항 (2:2면 그 축의 첫 문항 답을 따른다)
    W/A 날씨   : W 날씨파(Weather)   vs A 입맛파(Appetite) — 추우면 따뜻한 음식, 더우면 시원한 음식을 찾는지
    B/O 자리   : B 구석자리파(Booth)     vs O 아무자리파(Open)
    N/R 탐험   : N 탐험파(New)       vs R 단골파(Regular)
@@ -641,10 +641,22 @@ const AXES=[
 ];
 // [축, 질문, A답(축의 a쪽), B답(축의 b쪽)]
 const MQ=[
- [0,'추운 날 점심, 나는','뜨끈한 국물부터 떠오른다','그날 당기는 걸 먹는다'],
- [1,'혼자 식당에 가면','구석·바 자리가 편하다','어디 앉든 괜찮다'],
- [2,'점심이 고민될 때','안 가본 집에 간다','늘 가던 집에 간다'],
- [3,'혼밥 한 끼는','싸고 든든하게','비싸도 맛있게'],
+ [0,'기온이 영하로 떨어진 날 점심','뜨끈한 국물 메뉴부터 떠오른다','그날 당기는 걸 먹는다'],
+ [1,'식당에 들어갔는데 4인 테이블만 남았다','살짝 민망해서 망설여진다','그냥 넓게 앉는다'],
+ [2,'회사 앞에 새 식당이 생겼다','바로 가본다','늘 가던 곳이 더 편하다'],
+ [3,'혼밥 한 끼, 적당한 가격은?','1만원 이하가 마음 편하다','맛있으면 2만원도 괜찮다'],
+ [0,'30도가 넘는 한여름 점심','냉면·냉소바처럼 시원한 메뉴','더워도 국밥·찌개 OK'],
+ [1,'가장 편한 자리는?','벽 보는 바 좌석·칸막이','창가나 넓은 테이블'],
+ [2,'메뉴판 앞에서 나는','처음 보는 메뉴에 도전','늘 먹던 그 메뉴'],
+ [3,'양과 맛 중에서','배부르게 많이','조금이어도 제대로 맛있게'],
+ [0,'비 오고 쌀쌀한 저녁','칼국수·우동처럼 따끈한 면','평소 먹던 메뉴'],
+ [1,'옆 테이블 단체 손님이 시끌벅적하다','신경 쓰여서 빨리 먹고 나간다','별로 상관없다'],
+ [2,'같은 식당에 일주일에 두 번','질려서 싫다','오히려 좋다'],
+ [3,'분위기 좋은 레스토랑에 혼자','혼자는 좀 아깝다','혼자라서 더 좋다'],
+ [0,'갑자기 더워진 봄날','오늘은 시원한 메뉴로 바꾼다','원래 먹으려던 걸 먹는다'],
+ [1,'"몇 분이세요?" 질문에','"한 명이요…" 살짝 작아진다','"혼자요!" 당당하다'],
+ [2,'나에게 단골집은','딱히 없다, 매번 다른 곳','사장님이 알아보는 곳이 있다'],
+ [3,'월급날 혼밥','평소처럼 먹는다','오늘은 좋은 걸 먹는다'],
 ];
 // 16유형: 코드 순서 = 고르는 법·자리·새로움·가치
 const TYPES={
@@ -714,7 +726,8 @@ function drawQ(){
 }
 function finishMbti(){
   // 축마다 a쪽 선택 비율(%)
-  const pct=AXES.map((x,ai)=>{const qs=MQ.map((q,i)=>q[0]===ai?MA[i]:null).filter(v=>v!==null);return Math.round(qs.filter(v=>v===0).length/qs.length*100)});
+  const pct=AXES.map((x,ai)=>{const qs=MQ.map((q,i)=>q[0]===ai?MA[i]:null).filter(v=>v!==null);
+    const share=Math.round(qs.filter(v=>v===0).length/qs.length*100);return share===50?(qs[0]===0?51:49):share});
   const type=AXES.map((x,i)=>pct[i]>=50?x.a:x.b).join('');
   S.mbti={type,pct,ts:Date.now()};save();
   renderMy();syncProfile&&syncProfile();
@@ -1244,7 +1257,7 @@ function renderMy(){
   $('#myMbti').innerHTML=M?`<div class="mc-h"><span>🧩 나의 혼밥 MBTI</span><small>AI 추천에 반영 중</small></div>
     <div class="mmini"><div style="font-size:40px;line-height:1">${M.e}</div><div><div class="mcode" style="font-size:22px;margin:0">${S.mbti.type}</div><div class="cws left">${codeWords(S.mbti.type)}</div><b>${M.n}</b><p>${M.d}</p></div></div>
     <div class="btns" style="padding:0;margin-top:10px"><button class="cta ghost" onclick="showMbti()">결과 자세히</button><button class="cta ghost" onclick="startMbti()">다시 테스트</button></div>`
-   :`<div class="mc-h"><span>🧩 혼밥 MBTI</span><small>4문항 · 약 10초</small></div>
+   :`<div class="mc-h"><span>🧩 혼밥 MBTI</span><small>16문항 · 약 1분</small></div>
     <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:6px 0 12px">날씨파일까 입맛파일까? 16가지 혼밥 유형 중 나는 어디에 속하는지 알아보세요. 결과는 AI 추천에 반영돼요.</p>
     <button class="cta" onclick="startMbti()">🧩 혼밥 MBTI 테스트하기</button>`;
   renderSaved();
@@ -1560,7 +1573,7 @@ let testing=false;
 function mbtiReady(){return !!(S.mbti&&TYPES[S.mbti.type]&&S.mbti.ts&&Array.isArray(S.mbti.pct))}
 function openTest(){testing=true;startMbti()}
 function needTest(auto){
-  const m=crewSay('조율자','추천을 시작하려면 <b>혼밥 MBTI 검사</b>를 먼저 해야 해요 (4문항). 고른 성향을 추천에 반영해요.<br><button class="crewbtn">🧩 검사 시작</button>');
+  const m=crewSay('조율자','추천을 시작하려면 <b>혼밥 MBTI 검사</b>를 먼저 해야 해요 (16문항). 고른 성향을 추천에 반영해요.<br><button class="crewbtn">🧩 검사 시작</button>');
   m.querySelector('.crewbtn').onclick=openTest;
   if(auto)setTimeout(openTest,500);
 }

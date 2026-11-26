@@ -55,12 +55,38 @@ class Preference(unittest.TestCase):
 
 
 class Solo(unittest.TestCase):
-    def test_rules(self):
-        self.assertEqual(s.score_solo("C", single_ok=False)["verdict"], "drop")
-        self.assertEqual(s.score_solo("B", single_ok=True, seat="bar")["score"], 10)
-        self.assertEqual(s.score_solo("A", single_ok=True)["score"], 6)
-        self.assertEqual(s.score_solo("A", single_ok=True, cozy_without_pct=True)["score"], 3)
-        self.assertEqual(s.score_solo("Z")["verdict"], "unknown")
+    """최종본 test_db.py의 점수 시험과 같은 값"""
+
+    def test_20_buckets(self):
+        self.assertEqual([p for _, p in s.review_points(list(range(20, 0, -1)))],
+                         s.C["solo"]["review_points_20"])
+
+    def test_ties_and_single(self):
+        self.assertEqual(s.review_points([76, 76, 10]), [(1, 8), (1, 8), (3, 3)])
+        self.assertEqual(s.review_points([5]), [(1, 8)])
+
+    def test_seat_drop_unknown(self):
+        got = {x["store_id"]: (x["verdict"], x["score"]) for x in s.score_solo([
+            {"store_id": "B1", "solo_review_count": 40, "solo_seat": "있음"},
+            {"store_id": "B2", "solo_review_count": 640, "solo_seat": "있음"},
+            {"store_id": "C", "single_ok": False, "solo_review_count": 900},
+            {"store_id": "Z"}])}
+        self.assertEqual(got, {"B2": ("pass", 10), "B1": ("pass", 6), "C": ("drop", None), "Z": ("unknown", None)})
+
+    def test_same_as_final_db(self):  # data/honbap_db_final/혼밥점수.py와 가까운 20곳 점수가 같은지
+        import json, os, sqlite3, sys
+        d = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "honbap_db_final")
+        if not os.path.exists(os.path.join(d, "혼밥_동성로.db")):
+            self.skipTest("최종본 DB 없음")
+        sys.path.insert(0, d)
+        import 혼밥점수
+        con = sqlite3.connect("file:" + os.path.join(d, "혼밥_동성로.db") + "?mode=ro", uri=True)
+        ids = 혼밥점수.nearest(con, 35.8690, 128.5955)
+        want = {x["식당ID"]: x["혼밥점수"] for x in 혼밥점수.score(con, ids)[0]}
+        with open(os.path.join(d, "..", "stores_동성로391.json"), encoding="utf-8") as f:
+            by = {x["store_id"]: x for x in json.load(f)["stores"]}
+        got = {x["store_id"]: x["score"] for x in s.score_solo([by[i] for i in ids])}
+        self.assertEqual(got, want)
 
 
 class Coordinator(unittest.TestCase):

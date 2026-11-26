@@ -15,7 +15,8 @@ call_agent(name, instruction_json)으로 호출한다. 지시서와 결과는 00
 
 [입력]
 - 사용자 요청: {{request}}
-- 앱 데이터: {{app_data}}            # 혼밥 MBTI, MBTI 퍼센트, 위치, 혼밥일기, 가게 목록
+- 앱 데이터: {{app_data}}            # 혼밥 MBTI, MBTI 퍼센트, 위치, 혼밥일기
+- 가게 목록: data/stores_동성로391.json (혼밥 DB 최종본, store_id = 식당ID). 앱 1차본 번호(1001~)는 data/id_map_app276_to_db.json으로 바꾼다.
 - 판정 기준표: {{criteria}}
 
 [절차]

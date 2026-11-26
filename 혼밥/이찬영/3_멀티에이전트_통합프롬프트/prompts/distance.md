@@ -13,12 +13,13 @@
 [입력]
 - 지시서: {{instruction}}
 - 사용자 위치: {{origin}}           # lat, lng, accuracy_m, source(gps / area / test)
-- 가게 목록: {{stores}}             # store_id, name, lat, lng 또는 dist_m
+- 가게 목록: {{stores}}             # data/stores_동성로391.json: store_id(식당ID), name, lat, lng (391곳 모두 좌표 있음)
 - 판정 기준: {{criteria.distance}}
 - 맥락: {{context}}                 # time_pressure, 체감온도(날씨 에이전트 값)
 
 [절차]
-1. 위치가 있으면 가게 좌표까지 직선거리를 잰다. 좌표가 없으면 앱이 적어 둔 dist_m을 쓰고 notes에 밝힌다.
+1. 위치가 있으면 가게 좌표(lat, lng)까지 직선거리를 잰다. 위치가 없으면 동성로 중심(35.8690, 128.5955)에서 재고 notes에 밝힌다.
+   좌표가 없는 가게(혼밥 DB 밖)만 앱이 적어 둔 dist_m을 쓴다.
 2. walk_min 도구로 도보 시간을 구한다: 직선거리 × 1.3 ÷ 70m, 올림.
 3. 1km 안에서 가까운 순으로 20곳을 고른다. 20곳이 안 되면 있는 만큼 내고 notes에 수를 적는다.
 4. score_distance 도구로 점수를 받는다.
@@ -30,7 +31,7 @@
 
 [confidence]
 - GPS 위치 + 가게 좌표: high
-- 동네 중심 또는 앱 거리값: mid
+- 동성로 중심 또는 앱 거리값(dist_m): mid
 - 도보 시간 모름: low
 
 [규칙]
