@@ -40,8 +40,8 @@ def load_agents(plan=PLAN, importer=importlib.import_module):
 
 
 # 가중치는 총합 10: 거리 2점은 고정, 나머지 8점을 혼밥 MBTI 퍼센트에 비례해서 나눈다.
-#   날씨 = 날씨파 %, 혼밥 = 아늑파 %           (입맛파·당당파일수록 작아진다)
-#   취향 = 탐험파·단골파 중 센 쪽 %, 가격 = 가성비파·플렉스파 중 센 쪽 %
+#   날씨 = 날씨파 %, 혼밥 = 구석자리파 %           (입맛파·아무자리파일수록 작아진다)
+#   취향 = 탐험파·단골파 중 센 쪽 %, 가격 = 알뜰파·맛우선파 중 센 쪽 %
 # 퍼센트가 없으면 네 항목을 똑같이 나눈다. 안에서는 합 100(%)으로 계산하고 화면에만 10점으로 적는다.
 DISTANCE_POINTS = 2
 TOTAL_POINTS = 10
@@ -281,7 +281,7 @@ def run(ctx=None, stores=None, agents=None, missing=None, assume_missing=False, 
             failed.append(agent["name"])
         else:
             ready.append({**agent, "state": state})
-    for a in ready:  # 이번엔 점수로 가를 수 없다고 하는 에이전트 (가격: 플렉스파) -> 가중치를 나머지에 나눈다
+    for a in ready:  # 이번엔 점수로 가를 수 없다고 하는 에이전트 (가격: 맛우선파) -> 가중치를 나머지에 나눈다
         weightless = getattr(a["module"], "weightless", None)
         a["weightless"] = bool(weightless and weightless(a["state"], ctx))
     for a in ready:  # 날씨의 체감온도는 다른 에이전트도 쓴다 (거리: "4도인데 …")
@@ -528,7 +528,7 @@ def run(ctx=None, stores=None, agents=None, missing=None, assume_missing=False, 
 if __name__ == "__main__":
     import sys
     # python coordinator.py 가정  -> 없는 에이전트를 가정해서 채움 / 급함 -> 시간이 없어요
-    # python coordinator.py 50 75 60 70 -> 혼밥 MBTI 퍼센트(날씨파·아늑파·탐험파·가성비파 쪽 %)를 직접 정함
+    # python coordinator.py 50 75 60 70 -> 혼밥 MBTI 퍼센트(날씨파·구석자리파·탐험파·알뜰파 쪽 %)를 직접 정함
     numbers = [float(a) for a in sys.argv[1:] if a.replace(".", "", 1).isdigit()]
     ctx = {"hurry": "급함" in sys.argv, **({"mbti_pct": numbers} if numbers else {})}
     print(run(ctx, assume_missing="가정" in sys.argv)["text"])

@@ -5,12 +5,12 @@
 
   1인 가격  메뉴 에이전트가 알려 준 1인 메뉴 가격의 중앙값 (없으면 가게 대표 가격)
             4,000원 미만의 꼬치·접시·초밥류·"3ea" 메뉴는 낱개 값이라 한 끼 가격으로 치지 않는다
-  상한      말한 예산 > 가성비파 10,000원 / 플렉스파 없음 / MBTI 없음 13,000원. 넘으면 탈락
+  상한      말한 예산 > 알뜰파 10,000원 / 맛우선파 없음 / MBTI 없음 13,000원. 넘으면 탈락
             예산을 '상관없음'으로 고르면 아무도 탈락하지 않는다 (싼 곳 점수는 그대로)
   점수      floor(10 × 더 비싼 가게 수 ÷ (n − 1) + 0.5). 가장 싼 곳 10점, 가장 비싼 곳 0점
             가격 확인된 곳이 5곳 미만이면: 상한의 80% 이하 10점 / 그 위 5점
   모름      0점, 확실도 낮음 (탈락 아님)
-  플렉스파  예산을 말하지 않았으면 가격으로 가르지 않는다 (가중치 0, 나머지 에이전트가 나눠 가짐)
+  맛우선파  예산을 말하지 않았으면 가격으로 가르지 않는다 (가중치 0, 나머지 에이전트가 나눠 가짐)
   반론      점수 차 2점 이하면 "차이는 작다", 3점 이상이면 가격 숫자를 들어 동의/반대
 
 가게 데이터와 이어진 가격 후기(VOC)가 없어서 VOC 보정(±1점)은 넣지 않았다.
@@ -24,7 +24,7 @@ import mbti
 from taste import josa
 
 NAME = "가격"
-CAP_VALUE = 10000      # 가성비파
+CAP_VALUE = 10000      # 알뜰파
 CAP_UNKNOWN = 13000    # MBTI 없음
 MIN_COMPARE = 5        # 이보다 적으면 상대 비교를 하지 않는다
 CLEAR_GAP = 3          # 이 점수 차부터 동의/반대
@@ -53,13 +53,13 @@ def person_price(store):
 
 
 def cap_of(ctx):
-    """상한 (원). 플렉스파가 예산을 말하지 않았으면 None"""
+    """상한 (원). 맛우선파가 예산을 말하지 않았으면 None"""
     if ctx.get("budget"):
         return ctx["budget"]
     code = ctx.get("mbti")
-    if mbti.has(code, "플렉스파"):
+    if mbti.has(code, "맛우선파"):
         return None
-    return CAP_VALUE if mbti.has(code, "가성비파") else CAP_UNKNOWN
+    return CAP_VALUE if mbti.has(code, "알뜰파") else CAP_UNKNOWN
 
 
 def _won(value):
@@ -90,10 +90,10 @@ def opinion(state, ctx):
         return "예산은 상관없다고 하셔서 가격으로 탈락시키지 않고 비교만 할게요."
     if ctx.get("budget"):
         return f"말씀하신 {_won(ctx['budget'])} 안에서 1인 가격을 비교해 볼게요."
-    if mbti.has(ctx.get("mbti"), "가성비파"):
-        return f"가성비파시니 {_won(CAP_VALUE)} 이하를 우선할게요."
-    if mbti.has(ctx.get("mbti"), "플렉스파"):
-        return "플렉스파시니 오늘은 가격으로 가게를 가르지 않을게요."
+    if mbti.has(ctx.get("mbti"), "알뜰파"):
+        return f"알뜰파시니 {_won(CAP_VALUE)} 이하를 우선할게요."
+    if mbti.has(ctx.get("mbti"), "맛우선파"):
+        return "맛우선파시니 오늘은 가격으로 가게를 가르지 않을게요."
     return "1인 가격을 후보끼리 비교해 볼게요."
 
 
@@ -159,7 +159,7 @@ def _undecided(message, sure="높음"):
 def rebut(state, sender, proposed, current, ctx):
     """sender 에이전트가 current(지금 1순위) 대신 proposed를 밀 때, 가격으로만 판단해서 답한다."""
     if cap_of(ctx) is None:
-        return _undecided("플렉스파시라 가격으로는 의견을 내지 않을게요.")
+        return _undecided("맛우선파시라 가격으로는 의견을 내지 않을게요.")
     theirs, mine = points(state, proposed, ctx), points(state, current, ctx)
     if theirs is None or mine is None:
         return _undecided("가격을 모르는 곳이 있어서 비교할 수 없어요.", "낮음")

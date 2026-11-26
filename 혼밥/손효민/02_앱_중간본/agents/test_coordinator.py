@@ -196,7 +196,7 @@ class CoordinatorTest(unittest.TestCase):
         self.assertNotIn("메뉴", result["weights"])
         self.assertAlmostEqual(sum(result["weights"].values()), 100)
         self.assertIn("📋 메뉴(가정)", result["text"])
-        self.assertIn("가성비파시니", result["text"])
+        self.assertIn("알뜰파시니", result["text"])
 
     @unittest.skipIf(__import__("shutil").which("node") is None, "node가 없어요")
     def test_example_scenario(self):
@@ -218,16 +218,16 @@ class CoordinatorTest(unittest.TestCase):
     def test_mbti_changes_the_answer(self):
         """같은 가게·같은 날이어도 혼밥 MBTI에 따라 에이전트 판단과 1순위가 달라진다"""
         import scenario_demo
-        cozy = scenario_demo.run_person("WBNV")    # 아늑파·탐험파·가성비파
-        flex = scenario_demo.run_person("AORP")    # 당당파·단골파·플렉스파
+        cozy = scenario_demo.run_person("WBNV")    # 구석자리파·탐험파·알뜰파
+        flex = scenario_demo.run_person("AORP")    # 아무자리파·단골파·맛우선파
         self.assertEqual(cozy["ranking"][0]["store"]["name"], "B 라멘집")  # 탐험파 +3이 어제 면 -3을 상쇄
         self.assertEqual(flex["ranking"][0]["store"]["name"], "F 샤브집")
         score = lambda result, store, agent: next(r for r in result["ranking"]
                                                   if r["store"]["name"] == store)["scores"][agent]["score"]
-        self.assertEqual(score(cozy, "삼덕 백반", "혼밥"), 3)     # 아늑파: 1인석 모르면 크게 감점
+        self.assertEqual(score(cozy, "삼덕 백반", "혼밥"), 3)     # 구석자리파: 1인석 모르면 크게 감점
         self.assertEqual(score(flex, "삼덕 백반", "혼밥"), 6)
-        self.assertEqual(score(cozy, "F 샤브집", "가격"), 2)      # 가성비파: 평균 16,000원은 낮게
-        self.assertEqual(score(flex, "F 샤브집", "가격"), 10)     # 플렉스파: 높게
+        self.assertEqual(score(cozy, "F 샤브집", "가격"), 2)      # 알뜰파: 평균 16,000원은 낮게
+        self.assertEqual(score(flex, "F 샤브집", "가격"), 10)     # 맛우선파: 높게
         self.assertGreater(score(cozy, "F 샤브집", "취향"), score(flex, "F 샤브집", "취향"))  # 탐험파 vs 단골파
         self.assertEqual(flex["debate"][0]["agent"], "취향")       # 단골파라 가봤던 A 국밥집을 제안
         self.assertIn("단골파시니 가봤던 A 국밥집은 어떨까요?", flex["debate"][0]["message"])
@@ -267,7 +267,7 @@ class MbtiPercentTest(unittest.TestCase):
         self.assertEqual(mbti.parse_pct("WBNV", None), (None, "퍼센트 없음"))
         self.assertIn("1번째 글자 A", mbti.parse_pct("ABNV", [75, 80, 60, 70])[1])
         self.assertIn("모양", mbti.parse_pct("WBNV", [75, 80, 60])[1])
-        self.assertEqual(mbti.pct_label(pct), "날씨파 75% · 아늑파 88% · 탐험파 62% · 가성비파 75%")
+        self.assertEqual(mbti.pct_label(pct), "날씨파 75% · 구석자리파 88% · 탐험파 62% · 알뜰파 75%")
 
     def test_weights_follow_user_percent(self):
         """총합 10: 거리 2 고정, 나머지 8을 MBTI 퍼센트에 비례해서 나눈다 (아래는 % = 점 x 10)"""
@@ -280,7 +280,7 @@ class MbtiPercentTest(unittest.TestCase):
         for name, share in (("날씨", 0.75), ("혼밥", 0.875), ("취향", 0.6), ("가격", 0.7)):
             self.assertAlmostEqual(cozy[name], 80 * share / whole)
         self.assertAlmostEqual(sum(cozy.values()), 100)
-        # 단골파 60%·플렉스파 70%는 센 쪽 퍼센트를 써서 같은 몫이 된다
+        # 단골파 60%·맛우선파 70%는 센 쪽 퍼센트를 써서 같은 몫이 된다
         self.assertEqual(coordinator.weights_for(self.AGENTS, False, {**pct, "N": 0.4, "V": 0.3}), cozy)
         hurry = coordinator.weights_for(self.AGENTS, True, pct)
         self.assertAlmostEqual(hurry["거리"], 100 * 4 / 12)

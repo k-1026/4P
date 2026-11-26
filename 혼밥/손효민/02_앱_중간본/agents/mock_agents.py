@@ -5,8 +5,8 @@
 
   📋 메뉴: 가게 메뉴를 갱신하고, 다른 에이전트에게 메뉴·음식 종류·국물 여부를 공유한다 (점수 없음)
   🪑 혼밥: 1인분 가능한 가게 데이터를 갱신하고, 혼밥일기에 '1인석 있음'이 있는지 확인한다.
-           혼밥 MBTI가 아늑파면 1인석 있는 곳을 더 추천한다
-  💰 가격: 메뉴 평균 가격을 보고, 가성비파면 싼 곳, 플렉스파면 비싼 곳을 선호한다
+           혼밥 MBTI가 구석자리파면 1인석 있는 곳을 더 추천한다
+  💰 가격: 메뉴 평균 가격을 보고, 알뜰파면 싼 곳, 맛우선파면 비싼 곳을 선호한다
 """
 import types
 
@@ -61,15 +61,15 @@ def avg_price(store):
 
 
 def price_score(store, code, budget=None):
-    """가성비파: 1만 원 이하 10점 / 1.2만 원 이하 6점 / 그 위 2점
-    플렉스파: 1.2만 원 이상 10점 / 1만 원 이상 6점 / 그 아래 4점
+    """알뜰파: 1만 원 이하 10점 / 1.2만 원 이하 6점 / 그 위 2점
+    맛우선파: 1.2만 원 이상 10점 / 1만 원 이상 6점 / 그 아래 4점
     MBTI 없음: 예산이 있으면 예산의 80% 이하 10점 / 그 위 5점, 없으면 1만 원 이하 8점 / 1.2만 원 이하 6점 / 그 위 4점"""
     price = avg_price(store)
     if price is None:
         return None
-    if mbti.has(code, "가성비파"):
+    if mbti.has(code, "알뜰파"):
         return 10 if price <= 10000 else 6 if price <= 12000 else 2
-    if mbti.has(code, "플렉스파"):
+    if mbti.has(code, "맛우선파"):
         return 10 if price >= 12000 else 6 if price >= 10000 else 4
     if budget:
         return 10 if price <= budget * 0.8 else 5
@@ -77,15 +77,15 @@ def price_score(store, code, budget=None):
 
 
 def _price_taste(code):
-    return "가성비파" if mbti.has(code, "가성비파") else "플렉스파" if mbti.has(code, "플렉스파") else ""
+    return "알뜰파" if mbti.has(code, "알뜰파") else "맛우선파" if mbti.has(code, "맛우선파") else ""
 
 
 def price_opinion(state, ctx):
     kind = _price_taste(ctx.get("mbti"))
-    if kind == "가성비파":
-        return "가성비파시니 메뉴 평균 1만 원 이하를 우선할게요."
-    if kind == "플렉스파":
-        return "플렉스파시니 오늘은 메뉴 평균 1.2만 원 이상도 좋게 볼게요."
+    if kind == "알뜰파":
+        return "알뜰파시니 메뉴 평균 1만 원 이하를 우선할게요."
+    if kind == "맛우선파":
+        return "맛우선파시니 오늘은 메뉴 평균 1.2만 원 이상도 좋게 볼게요."
     return "메뉴 평균 가격으로 볼게요."
 
 
@@ -150,8 +150,8 @@ def solo_opinion(state, ctx):
         parts.append(f"1인분 가능 가게 데이터를 갱신했어요{when}.")
     if state["diary_seat"]:
         parts.append(f"혼밥일기에서 1인석 기록을 찾았어요: {', '.join(state['diary_seat'])}.")
-    if mbti.has(ctx.get("mbti"), "아늑파"):
-        parts.append("아늑파시니 1인석 있는 곳을 더 추천할게요.")
+    if mbti.has(ctx.get("mbti"), "구석자리파"):
+        parts.append("구석자리파시니 1인석 있는 곳을 더 추천할게요.")
     return " ".join(parts)
 
 
@@ -171,15 +171,15 @@ def solo_describe(state, store, ctx):
 
 
 def solo_score(state, store, ctx):
-    """1인석 확인 10점. 확인 안 되면 아늑파 3점 / 그 외 6점 (아늑파일수록 1인석 차이를 크게 본다)"""
+    """1인석 확인 10점. 확인 안 되면 구석자리파 3점 / 그 외 6점 (구석자리파일수록 1인석 차이를 크게 본다)"""
     info = _solo(state, store)
     if info["seat"]:
         where = "내 혼밥일기에서 1인석을 확인했어요." if info["diary_seat"] else "1인석이 확인됐어요."
         return {"score": 10, "확실도": "높음", "why": where}
-    # 혼밥 MBTI 퍼센트가 있으면 아늑파 정도는 조율자가 비율로 반영하므로 여기서는 감점하지 않는다 (두 번 반영 방지)
-    cozy = mbti.has(ctx.get("mbti"), "아늑파") and not ctx.get("pct")
+    # 혼밥 MBTI 퍼센트가 있으면 구석자리파 정도는 조율자가 비율로 반영하므로 여기서는 감점하지 않는다 (두 번 반영 방지)
+    cozy = mbti.has(ctx.get("mbti"), "구석자리파") and not ctx.get("pct")
     return {"score": 3 if cozy else 6, "확실도": "낮음",
-            "why": "1인석은 확인하지 못했어요" + (" (아늑파라 감점)." if cozy else ".")}
+            "why": "1인석은 확인하지 못했어요" + (" (구석자리파라 감점)." if cozy else ".")}
 
 
 def solo_rebut(state, sender, proposed, current, ctx):
@@ -191,7 +191,7 @@ def solo_rebut(state, sender, proposed, current, ctx):
     if p["seat"] == c["seat"]:
         return _undecided("두 곳 다 1인석이 확인돼서 혼밥 편의는 같아요." if p["seat"]
                           else "두 곳 다 1인석을 확인하지 못했어요.", "높음" if p["seat"] else "낮음")
-    cozy = " 아늑파시니 1인석이 중요해요." if mbti.has(ctx.get("mbti"), "아늑파") else ""
+    cozy = " 구석자리파시니 1인석이 중요해요." if mbti.has(ctx.get("mbti"), "구석자리파") else ""
     if p["seat"]:
         return {"stance": "동의", "확실도": "높음", "message": f"{josa(proposed['name'], '은', '는')} 1인석이 있어요.{cozy}"}
     return {"stance": "반대", "확실도": "중간",

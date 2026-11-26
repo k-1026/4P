@@ -79,11 +79,11 @@ SOLO = {  # 🪑 혼밥 에이전트가 갱신한 1인분·좌석 데이터 (가
     "S": {"single_ok": True},
     "H": {"single_ok": True, "seat": True, "seat_text": "창가 1인석"},
 }
-PEOPLE = {"WBNV": "아늑파 · 탐험파 · 가성비파", "AORP": "당당파 · 단골파 · 플렉스파"}
+PEOPLE = {"WBNV": "구석자리파 · 탐험파 · 알뜰파", "AORP": "아무자리파 · 단골파 · 맛우선파"}
 
 
 def run_person(code, hurry=False, pct=None):
-    """pct: 사용자가 정한 혼밥 MBTI 퍼센트 [날씨파, 아늑파, 탐험파, 가성비파 쪽 %] (없으면 기본 비율)"""
+    """pct: 사용자가 정한 혼밥 MBTI 퍼센트 [날씨파, 구석자리파, 탐험파, 알뜰파 쪽 %] (없으면 기본 비율)"""
     diary, agents = agents_for(COLD)
     ctx = {"now": TODAY, "hurry": hurry, "mbti": code, "mbti_pct": pct, "diary": diary, "menus": MENUS,
            "menus_updated": "11/26 09:00", "solo_data": SOLO, "solo_updated": "11/26 09:00"}
