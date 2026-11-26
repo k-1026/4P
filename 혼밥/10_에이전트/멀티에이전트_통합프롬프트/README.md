@@ -31,6 +31,7 @@
 | `prompts/verifier.md` | 검증 |
 | `spec/spec.md` | 서비스 spec v0 (목표·사용자·기능·제약·완료 기준) |
 | `spec/userflow.md`, `spec/ia.md` | 실제 웹페이지로 그린 유저 플로우 v1, 사이트맵·스토리 대응표 |
+| `피칭_슬라이드/` | 피칭 PDF 크기(960×540) HTML 슬라이드: 8쪽 유저플로우(실제 1쪽 · 실제·계획·비교 3쪽), 11쪽 시장 규모(2쪽). `피칭_슬라이드/README.md` |
 | `market/` | 시장 검증: 경쟁 비교표, 포지셔닝 맵, TAM·SAM·SOM 시트, 검증 메모 (`market/README.md`) |
 | `ref/예산에이전트_설계_원본.md` | 원본 설계 문서 복사본 (`1123실습/`) |
 | `ref/weather-agent_README_원본.md` | 날씨 에이전트 원본 설명 복사본 |
