@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>혼밥 홈 화면 (동작 프로토타입)</title>
+<style>
+  :root{
+    --brand:#b8430f; --brand-dark:#8f3208; --brand-soft:#fdeee4;
+    --bg:#faf6f2; --card:#fff; --line:#efe6de; --text:#2a211c; --sub:#8a7b70;
+    --green:#2f9e5b; --amber:#d08a12; --red:#c8402a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:#e9e4df;color:var(--text);display:flex;justify-content:center;padding:24px 0}
+  button{font-family:inherit}
+  .phone{width:390px;height:844px;background:var(--bg);border-radius:28px;overflow:hidden;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.15);display:flex;flex-direction:column}
+  .scroll{flex:1;overflow-y:auto;padding-bottom:100px}
+  .view{display:none}.view.on{display:block}
+  header{display:flex;align-items:center;gap:10px;padding:16px 18px 10px;background:var(--bg);position:sticky;top:0;z-index:5}
+  .logo{width:30px;height:30px;border-radius:8px;background:var(--brand-soft);display:grid;place-items:center;font-size:16px}
+  .loc{font-weight:700;font-size:15px;border:0;background:transparent;cursor:pointer;color:var(--text)}
+  .hdr-right{margin-left:auto;display:flex;gap:14px;align-items:center}
+  .bell{position:relative;cursor:pointer;border:0;background:none;font-size:17px}
+  .bell .n{position:absolute;top:-4px;right:-6px;background:var(--red);color:#fff;font-size:9px;border-radius:8px;padding:1px 4px}
+  .avatar{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:14px;cursor:pointer}
+  .hscroll{display:flex;gap:12px;overflow-x:auto;padding:4px 18px 14px;scrollbar-width:none}
+  .rcard{min-width:270px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;cursor:pointer;transition:.15s}
+  .rcard:hover,.lv:hover,.listrow:hover{border-color:var(--brand)}
+  .rcard h4{font-size:16px;margin-bottom:8px;display:flex;justify-content:space-between}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-size:11.5px;padding:4px 8px;border-radius:6px;background:#f4efea;color:#5b4d43}
+  .status{font-size:12px;color:var(--sub);margin:10px 0;display:flex;align-items:center;gap:6px}
+  .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+  .menu{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:10px;font-size:13px}
+  .menu b{color:var(--brand)}
+  .heart{border:0;background:none;font-size:17px;cursor:pointer;color:var(--brand)}
+  .ai{margin:6px 18px 22px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+  .ai-top{display:flex;gap:10px;align-items:flex-start}
+  .ai-ic{width:36px;height:36px;border-radius:10px;background:var(--brand-soft);display:grid;place-items:center;font-size:18px;flex-shrink:0}
+  .ai h3{font-size:15.5px;display:flex;align-items:center;gap:6px}
+  .beta{font-size:10px;color:var(--brand);border:1px solid var(--brand);border-radius:4px;padding:1px 5px;font-weight:700}
+  .ai p{font-size:12px;color:var(--sub);margin-top:3px}
+  .prompts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+  .prompt{font-size:11.5px;padding:8px 10px;border-radius:10px;background:#faf5f0;border:1px solid var(--line);cursor:pointer;text-align:left;color:var(--text)}
+  .prompt:hover{border-color:var(--brand);background:var(--brand-soft)}
+  .cta{width:100%;border:0;border-radius:12px;background:var(--brand);color:#fff;font-weight:700;font-size:14px;padding:13px;cursor:pointer}
+  .cta:hover{background:var(--brand-dark)}
+  .cta.ghost{background:#fff;color:var(--brand);border:1px solid var(--brand)}
+  .sec-h{display:flex;justify-content:space-between;align-items:baseline;padding:0 18px 12px}
+  .sec-h h2{font-size:18px}
+  .sec-h span{font-size:12px;color:var(--sub)}
+  .levels{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px 22px}
+  .lv{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;position:relative;cursor:pointer}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-bottom:10px}
+  .b1{background:#e6f4ea;color:#2f7d4a}.b2{background:#e7f0fb;color:#2f5f9e}.b3{background:#fdf2dc;color:#a86e0a}.b4{background:#fde6dc;color:var(--brand)}
+  .lv .em{position:absolute;right:14px;top:12px;font-size:20px}
+  .lv h4{font-size:16px;margin-bottom:4px}
+  .lv p{font-size:11.5px;color:var(--sub)}
+  .review{margin:0 18px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;transition:opacity .3s}
+  .rv-top{display:flex;gap:10px;align-items:center}
+  .area{width:36px;height:36px;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:11px;font-weight:700;display:grid;place-items:center}
+  .rv-top h5{font-size:14px}.rv-top small{font-size:11.5px;color:var(--sub)}
+  .star{margin-left:auto;font-size:13px;font-weight:700}.star i{color:var(--amber);font-style:normal}
+  blockquote{margin:12px 0;padding:12px;background:#faf5f0;border-radius:10px;font-size:13px;line-height:1.55;color:#4a3d35}
+  .rv-foot{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--sub)}
+  .help{border:1px solid var(--line);background:#fff;border-radius:14px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--sub)}
+  .help.on{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+  .toast{position:absolute;right:76px;bottom:102px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:8px 12px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);white-space:nowrap;cursor:pointer;z-index:6}
+  .fab{position:absolute;right:18px;bottom:92px;width:50px;height:50px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:22px;box-shadow:0 6px 16px rgba(184,67,15,.4);cursor:pointer;border:0;z-index:6}
+  nav{position:absolute;bottom:0;left:0;right:0;height:72px;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;padding-bottom:8px;z-index:7}
+  nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--sub);border:0;background:none;cursor:pointer}
+  nav button .i{font-size:19px}
+  nav button.on{color:var(--brand);font-weight:700}
+  .page-h{padding:18px 18px 12px;font-size:20px;font-weight:800}
+  .listrow{margin:0 18px 10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:center;cursor:pointer}
+  .listrow .ico{font-size:24px}
+  .listrow h5{font-size:14px}.listrow small{font-size:11.5px;color:var(--sub)}
+  .listrow .r{margin-left:auto;text-align:right;font-size:12px}
+  .empty{text-align:center;color:var(--sub);font-size:13px;padding:40px 20px;line-height:1.6}
+  .map{margin:0 18px 14px;height:300px;border-radius:16px;background:linear-gradient(135deg,#eef3e8,#f6efe4);border:1px solid var(--line);position:relative;overflow:hidden}
+  .map::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 46px,#fff 46px 52px),repeating-linear-gradient(90deg,transparent 0 70px,#fff 70px 76px);opacity:.8}
+  .mpin{position:absolute;transform:translate(-50%,-100%);background:var(--brand);color:#fff;font-size:11px;padding:4px 7px;border-radius:10px;white-space:nowrap;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+  .me{position:absolute;left:50%;top:55%;width:14px;height:14px;border-radius:50%;background:#2f6fe0;border:3px solid #fff;box-shadow:0 0 0 6px rgba(47,111,224,.2);transform:translate(-50%,-50%)}
+  .filters{display:flex;gap:6px;padding:0 18px 12px;overflow-x:auto}
+  .fbtn{border:1px solid var(--line);background:#fff;border-radius:16px;padding:6px 12px;font-size:12px;cursor:pointer;white-space:nowrap}
+  .fbtn.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .form{margin:0 18px 16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+  .form input,.form select,.form textarea{border:1px solid var(--line);border-radius:10px;padding:9px;font-family:inherit;font-size:13px}
+  .lvpick{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 18px}
+  .lvpick button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;cursor:pointer;font-size:13px;text-align:left}
+  .lvpick button.on{border:2px solid var(--brand);background:var(--brand-soft)}
+  /* sheet */
+  .dim{position:absolute;inset:0;background:rgba(30,20,15,.4);opacity:0;pointer-events:none;transition:.2s;z-index:20}
+  .dim.on{opacity:1;pointer-events:auto}
+  .sheet{position:absolute;left:0;right:0;bottom:0;max-height:88%;background:var(--bg);border-radius:22px 22px 0 0;transform:translateY(100%);transition:.25s;z-index:21;display:flex;flex-direction:column}
+  .sheet.on{transform:none}
+  .sheet-h{display:flex;align-items:center;padding:16px 18px 10px;gap:8px;font-weight:800;font-size:16px}
+  .sheet-h .x{margin-left:auto;border:0;background:none;font-size:20px;cursor:pointer;color:var(--sub)}
+  .sheet-b{overflow-y:auto;padding:0 0 18px}
+  .chat{padding:0 18px;display:flex;flex-direction:column;gap:10px;min-height:280px}
+  .msg{max-width:85%;padding:10px 12px;border-radius:14px;font-size:13px;line-height:1.5}
+  .msg.bot{background:#fff;border:1px solid var(--line);align-self:flex-start;border-top-left-radius:4px}
+  .msg.me{background:var(--brand);color:#fff;align-self:flex-end;border-top-right-radius:4px}
+  .msg .rec{margin-top:8px;background:#faf5f0;border-radius:10px;padding:8px 10px;cursor:pointer;border:1px solid transparent}
+  .msg .rec:hover{border-color:var(--brand)}
+  .msg .rec b{display:block}
+  .typing{color:var(--sub);font-size:12px}
+  .chat-in{display:flex;gap:8px;padding:10px 18px 18px;border-top:1px solid var(--line);background:var(--bg)}
+  .chat-in input{flex:1;border:1px solid var(--line);border-radius:20px;padding:10px 14px;font-size:13px;font-family:inherit}
+  .chat-in button{border:0;background:var(--brand);color:#fff;border-radius:20px;padding:0 16px;cursor:pointer;font-weight:700}
+  .qchips{display:flex;gap:6px;overflow-x:auto;padding:0 18px 8px}
+  .snack{position:absolute;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:#2a211c;color:#fff;font-size:12.5px;padding:9px 14px;border-radius:18px;opacity:0;transition:.2s;z-index:30;pointer-events:none;white-space:nowrap}
+  .snack.on{opacity:1;transform:translateX(-50%)}
+  .detail .row{padding:0 18px 12px}
+  .detail .kv{display:grid;grid-template-columns:80px 1fr;gap:6px 10px;font-size:13px;padding:12px 18px;background:#fff;margin:0 18px 14px;border-radius:14px;border:1px solid var(--line)}
+  .detail .kv span:nth-child(odd){color:var(--sub)}
+  .btns{display:flex;gap:8px;padding:0 18px}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="scroll" id="scroll">
+
+    <!-- HOME -->
+    <div class="view on" id="v-home">
+      <header>
+        <div class="logo">🍚</div>
+        <button class="loc" id="locBtn">📍 <span id="locName">역삼동 테헤란로</span> ▾</button>
+        <div class="hdr-right">
+          <button class="bell" id="bellBtn">🔔<span class="n" id="bellN">2</span></button>
+          <div class="avatar" onclick="go('my')">👤</div>
+        </div>
+      </header>
+      <div class="hscroll" id="nearby"></div>
+
+      <section class="ai">
+        <div class="ai-top">
+          <div class="ai-ic">🤖</div>
+          <div>
+            <h3>AI 밥친구 · 실시간 혼밥 추천 <span class="beta">BETA</span></h3>
+            <p>기분, 예산, 혼밥 레벨에 꼭 맞는 식당을 찾아드려요</p>
+          </div>
+        </div>
+        <div class="prompts">
+          <button class="prompt" data-q="15분 만에 먹을 수 있는 곳">⏱ 15분 만에 먹을 수 있는 곳</button>
+          <button class="prompt" data-q="혼자 눈치 안 보고 고기 굽기">🥩 혼자 눈치 안 보고 고기 굽기</button>
+          <button class="prompt" data-q="1만원 이하 따뜻한 국물">🍲 1만원 이하 따뜻한 국물</button>
+          <button class="prompt" data-q="콘센트 있고 조용한 곳">🔌 콘센트 있고 조용한 곳</button>
+        </div>
+        <button class="cta" onclick="openChat()">AI에게 맞춤 혼밥 질문하기 →</button>
+      </section>
+
+      <div class="sec-h"><h2>혼밥 레벨별 추천</h2><span>내 취향과 용기에 맞게</span></div>
+      <div class="levels">
+        <div class="lv" data-lv="1"><span class="badge b1">Lv.1 초심자</span><span class="em">🏪</span><h4>편의점 · 버거</h4><p>키오스크 완비 빠른 식사</p></div>
+        <div class="lv" data-lv="2"><span class="badge b2">Lv.2 일상러</span><span class="em">🍜</span><h4>라멘 · 국밥 · 분식</h4><p>다찌석 중심 편안한 동선</p></div>
+        <div class="lv" data-lv="3"><span class="badge b3">Lv.3 마스터</span><span class="em">🔥</span><h4>1인 화로 · 샤브</h4><p>혼자 굽는 프리미엄 고기</p></div>
+        <div class="lv" data-lv="4"><span class="badge b4">Lv.4 마스터</span><span class="em">🍽</span><h4>뷔페 · 레스토랑</h4><p>당당하게 즐기는 풀코스</p></div>
+      </div>
+
+      <div class="sec-h"><h2>💬 실시간 혼밥러의 소리</h2><span id="rvTime">방금 전 업데이트</span></div>
+      <div class="review" id="review"></div>
+    </div>
+
+    <!-- MAP -->
+    <div class="view" id="v-map">
+      <div class="page-h">🗺 내 주변 혼밥 지도</div>
+      <div class="filters" id="mapFilters"></div>
+      <div class="map" id="map"><div class="me" title="내 위치"></div></div>
+      <div id="mapList"></div>
+    </div>
+
+    <!-- DIARY -->
+    <div class="view" id="v-diary">
+      <div class="page-h">📔 혼밥일기</div>
+      <div class="form">
+        <select id="dPlace"></select>
+        <select id="dRate"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>
+        <textarea id="dText" rows="3" placeholder="오늘 혼밥 어땠나요? (눈치, 좌석, 맛…)"></textarea>
+        <button class="cta" id="dSave">일기 저장</button>
+      </div>
+      <div id="diaryList"></div>
+    </div>
+
+    <!-- SAVED -->
+    <div class="view" id="v-saved">
+      <div class="page-h">♡ 찜한 혼밥 맛집</div>
+      <div id="savedList"></div>
+    </div>
+
+    <!-- MY -->
+    <div class="view" id="v-my">
+      <div class="page-h">👤 마이</div>
+      <div class="sec-h"><h2 style="font-size:15px">나의 혼밥 레벨</h2><span>추천에 반영돼요</span></div>
+      <div class="lvpick" id="lvPick"></div>
+      <div class="form" style="margin-top:16px">
+        <div style="font-size:13px" id="myStats"></div>
+        <button class="cta ghost" id="resetBtn">저장된 데이터 초기화</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">✨ 오늘 뭐 먹지? AI 밥친구에게 물어보세요!</div>
+  <button class="fab" onclick="openChat()">🍱</button>
+
+  <nav id="nav">
+    <button data-v="home" class="on"><span class="i">🏠</span>홈/탐색</button>
+    <button data-v="map"><span class="i">🗺</span>지도</button>
+    <button data-v="diary"><span class="i">📔</span>혼밥일기</button>
+    <button data-v="saved"><span class="i">♡</span>찜/저장</button>
+    <button data-v="my"><span class="i">👤</span>마이</button>
+  </nav>
+
+  <div class="dim" id="dim"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheet-h"><span id="sheetTitle"></span><button class="x" onclick="closeSheet()">✕</button></div>
+    <div class="sheet-b" id="sheetBody"></div>
+    <div id="sheetFoot"></div>
+  </div>
+  <div class="snack" id="snack"></div>
+</div>
+
+<script>
+/* ---------- 데이터 (샘플) ---------- */
+const AREAS = ['역삼동 테헤란로','강남역','선릉역'];
+const R = [
+ {id:1,area:0,name:'멘야하나비 역삼점',lv:2,ic:'🍜',tags:['1인 칸막이 좌석','키오스크'],wait:0,dist:180,min:12,price:11000,menu:'마제소바 1인 정식',soup:false,grill:false,outlet:false,quiet:false,x:38,y:40},
+ {id:2,area:0,name:'혼고기 화로구이',lv:3,ic:'🔥',tags:['1인 화로','장기 1인석'],wait:1,dist:420,min:35,price:18000,menu:'1인 화로 정식',soup:false,grill:true,outlet:false,quiet:false,x:66,y:30},
+ {id:3,area:0,name:'역삼 순대국 본가',lv:2,ic:'🍲',tags:['다찌석','회전 빠름'],wait:0,dist:260,min:10,price:9000,menu:'순대국 정식',soup:true,grill:false,outlet:false,quiet:false,x:28,y:70},
+ {id:4,area:0,name:'포카치아 테이블',lv:4,ic:'🍝',tags:['창가 1인석','콘센트'],wait:1,dist:550,min:40,price:16500,menu:'수제 파스타 세트',soup:false,grill:false,outlet:true,quiet:true,x:75,y:72},
+ {id:5,area:0,name:'버거스탠드 테헤란',lv:1,ic:'🍔',tags:['키오스크','테이크아웃'],wait:0,dist:120,min:8,price:8500,menu:'클래식 버거 세트',soup:false,grill:false,outlet:true,quiet:false,x:52,y:45},
+ {id:6,area:0,name:'샤브온 1인샤브',lv:3,ic:'🫕',tags:['1인 냄비','바 좌석'],wait:2,dist:610,min:30,price:14000,menu:'1인 샤브 세트',soup:true,grill:false,outlet:false,quiet:true,x:20,y:28},
+ {id:7,area:0,name:'조용한 북카페 식당',lv:2,ic:'📚',tags:['콘센트','조용함'],wait:0,dist:340,min:20,price:9500,menu:'오늘의 덮밥',soup:false,grill:false,outlet:true,quiet:true,x:84,y:50},
+ {id:8,area:1,name:'강남 우동집',lv:2,ic:'🍜',tags:['다찌석'],wait:0,dist:200,min:12,price:9000,menu:'붓카케 우동',soup:true,grill:false,outlet:false,quiet:false,x:40,y:35},
+ {id:9,area:1,name:'1인 야키니쿠 강남',lv:3,ic:'🔥',tags:['1인 화로'],wait:1,dist:380,min:35,price:22000,menu:'와규 1인 세트',soup:false,grill:true,outlet:false,quiet:false,x:65,y:62},
+ {id:10,area:1,name:'편의점 키친 강남',lv:1,ic:'🏪',tags:['키오스크','24시'],wait:0,dist:90,min:5,price:6000,menu:'도시락',soup:false,grill:false,outlet:true,quiet:false,x:50,y:48},
+ {id:11,area:2,name:'선릉 곰탕',lv:2,ic:'🍲',tags:['다찌석'],wait:0,dist:150,min:10,price:9500,menu:'곰탕',soup:true,grill:false,outlet:false,quiet:true,x:35,y:55},
+ {id:12,area:2,name:'선릉 호텔 뷔페',lv:4,ic:'🍽',tags:['1인 예약'],wait:1,dist:700,min:60,price:59000,menu:'런치 뷔페',soup:false,grill:false,outlet:false,quiet:false,x:70,y:30},
+];
+const REVIEWS = [
+ {area:'역삼',rid:4,who:'익명의 혼밥러',ago:'14분 전',star:5.0,text:'사장님이 혼자 와도 눈치 하나도 안 주시고 1인 식판 있어요! 콘센트도 폰 거치대도 있어서 최고였어요. 세트 구성도 양 딱 맞네요.',tag:'🔌 콘센트 있음',help:12},
+ {area:'역삼',rid:2,who:'고기러버',ago:'22분 전',star:4.8,text:'1인 화로라 주변 신경 안 쓰고 구워 먹었어요. 직원분이 첫 고기 구워주셔서 처음이어도 편했어요.',tag:'🔥 1인 화로',help:8},
+ {area:'역삼',rid:3,who:'점심 혼밥 3년차',ago:'31분 전',star:4.6,text:'회전 빨라서 12시 반에 가도 10분 컷. 다찌석이라 혼자 앉기 전혀 안 어색해요.',tag:'⏱ 회전 빠름',help:5},
+];
+const LV = {1:'Lv.1 초심자',2:'Lv.2 일상러',3:'Lv.3 마스터',4:'Lv.4 마스터'};
+const WAIT = [['여유','(대기 없음)','var(--green)'],['보통','(2석 남음)','var(--amber)'],['혼잡','(대기 3팀)','var(--red)']];
+
+/* ---------- 상태 (localStorage) ---------- */
+const LS = (()=>{try{localStorage.setItem('_t','1');return localStorage}catch(e){return null}})();
+const S = (LS&&JSON.parse(LS.getItem('honbap')||'null')) || {area:0,saved:[],diary:[],myLv:2,helped:[]};
+const save = ()=>{try{LS&&LS.setItem('honbap',JSON.stringify(S))}catch(e){}};
+const $ = s=>document.querySelector(s);
+const won = n=>n.toLocaleString()+'원';
+const here = ()=>R.filter(r=>r.area===S.area);
+const byId = id=>R.find(r=>r.id===id);
+
+function snack(t){const e=$('#snack');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),1600)}
+
+/* ---------- 홈 ---------- */
+function renderNearby(){
+  $('#locName').textContent=AREAS[S.area];
+  $('#nearby').innerHTML = here().sort((a,b)=>a.dist-b.dist).map(r=>{
+    const w=WAIT[r.wait];
+    return `<div class="rcard" onclick="detail(${r.id})">
+      <h4>${r.name}<button class="heart" onclick="event.stopPropagation();toggleSave(${r.id})">${S.saved.includes(r.id)?'♥':'♡'}</button></h4>
+      <div class="chips">${r.tags.map(t=>`<span class="chip">${t}</span>`).join('')}</div>
+      <div class="status"><span class="dot" style="background:${w[2]}"></span><b style="color:${w[2]}">${w[0]}</b>${w[1]} · 도보 ${Math.ceil(r.dist/60)}분(${r.dist}m)</div>
+      <div class="menu"><span>${r.menu}</span><b>${won(r.price)}</b></div></div>`}).join('');
+}
+let rvIdx=0;
+function renderReview(){
+  const v=REVIEWS[rvIdx], r=byId(v.rid), on=S.helped.includes(rvIdx);
+  $('#review').innerHTML=`<div class="rv-top"><div class="area">${v.area}</div>
+    <div><h5 style="cursor:pointer" onclick="detail(${r.id})">${r.name}</h5><small>${v.who} · ${v.ago}</small></div>
+    <div class="star"><i>★</i> ${v.star.toFixed(1)}</div></div>
+    <blockquote>“${v.text}”</blockquote>
+    <div class="rv-foot"><span>${v.tag}</span><button class="help ${on?'on':''}" onclick="helpful()">👍 도움돼요 ${v.help+(on?1:0)}</button></div>`;
+}
+function helpful(){const i=S.helped.indexOf(rvIdx);i<0?S.helped.push(rvIdx):S.helped.splice(i,1);save();renderReview()}
+setInterval(()=>{const e=$('#review');e.style.opacity=0;setTimeout(()=>{rvIdx=(rvIdx+1)%REVIEWS.length;renderReview();e.style.opacity=1;$('#rvTime').textContent='방금 전 업데이트'},300)},6000);
+
+$('#locBtn').onclick=()=>{
+  sheet('📍 위치 선택',AREAS.map((a,i)=>`<div class="listrow" onclick="setArea(${i})"><span class="ico">${i===S.area?'✅':'📍'}</span><div><h5>${a}</h5><small>혼밥 가능 식당 ${R.filter(r=>r.area===i).length}곳</small></div></div>`).join(''));
+};
+function setArea(i){S.area=i;save();closeSheet();renderAll();snack(AREAS[i]+'(으)로 변경했어요')}
+$('#bellBtn').onclick=()=>{
+  $('#bellN').style.display='none';
+  sheet('🔔 알림',`<div class="listrow"><span class="ico">🟢</span><div><h5>멘야하나비 지금 대기 없음</h5><small>찜한 근처 식당 · 2분 전</small></div></div>
+  <div class="listrow"><span class="ico">🎉</span><div><h5>혼밥 레벨업 미션</h5><small>Lv.3 식당 1곳 방문하면 레벨업!</small></div></div>`);
+};
+document.querySelectorAll('.lv').forEach(el=>el.onclick=()=>{
+  const lv=+el.dataset.lv, list=here().filter(r=>r.lv===lv);
+  sheet(LV[lv]+' 추천', list.length?list.map(row).join(''):`<div class="empty">이 지역엔 아직 ${LV[lv]} 식당이 없어요.<br>다른 위치를 선택해 보세요.</div>`);
+});
+
+/* ---------- 공통 시트 ---------- */
+function sheet(title,body,foot=''){$('#sheetTitle').textContent=title;$('#sheetBody').innerHTML=body;$('#sheetFoot').innerHTML=foot;$('#dim').classList.add('on');$('#sheet').classList.add('on')}
+function closeSheet(){$('#dim').classList.remove('on');$('#sheet').classList.remove('on')}
+$('#dim').onclick=closeSheet;
+function row(r){const w=WAIT[r.wait];return `<div class="listrow" onclick="detail(${r.id})"><span class="ico">${r.ic}</span><div><h5>${r.name}</h5><small>${LV[r.lv]} · ${r.menu}</small></div><div class="r"><b style="color:var(--brand)">${won(r.price)}</b><br><span style="color:${w[2]}">${w[0]}</span> · ${r.dist}m</div></div>`}
+function detail(id){
+  const r=byId(id),w=WAIT[r.wait];
+  sheet(r.ic+' '+r.name,`<div class="detail">
+    <div class="row chips">${r.tags.map(t=>`<span class="chip">${t}</span>`).join('')}<span class="badge b${r.lv}" style="margin:0">${LV[r.lv]}</span></div>
+    <div class="kv"><span>혼잡도</span><span style="color:${w[2]};font-weight:700">${w[0]} ${w[1]}</span>
+    <span>거리</span><span>도보 ${Math.ceil(r.dist/60)}분 (${r.dist}m)</span>
+    <span>식사 시간</span><span>약 ${r.min}분</span>
+    <span>대표 메뉴</span><span>${r.menu} · ${won(r.price)}</span>
+    <span>편의</span><span>${[r.outlet&&'🔌 콘센트',r.quiet&&'🤫 조용함',r.soup&&'🍲 국물',r.grill&&'🔥 1인 굽기'].filter(Boolean).join(' · ')||'-'}</span></div>
+    <div class="btns"><button class="cta ghost" onclick="toggleSave(${r.id});detail(${r.id})">${S.saved.includes(r.id)?'♥ 찜 해제':'♡ 찜하기'}</button>
+    <button class="cta" onclick="writeDiary(${r.id})">📔 일기 쓰기</button></div></div>`);
+}
+function toggleSave(id){const i=S.saved.indexOf(id);i<0?(S.saved.push(id),snack('찜했어요 ♥')):(S.saved.splice(i,1),snack('찜을 해제했어요'));save();renderNearby();renderSaved();renderMy()}
+
+/* ---------- AI 밥친구 (규칙 기반 데모) ---------- */
+let chatLog=[];
+function openChat(q){
+  sheet('🤖 AI 밥친구','<div class="chat" id="chat"></div>',
+   `<div class="qchips">${['15분 만에','고기 굽기','1만원 이하 국물','콘센트 조용한 곳','처음 혼밥'].map(t=>`<button class="fbtn" onclick="ask('${t}')">${t}</button>`).join('')}</div>
+    <div class="chat-in"><input id="chatIn" placeholder="예: 비 오는데 따뜻한 거 1만원 이하"><button onclick="ask()">전송</button></div>`);
+  const c=$('#chat'); c.innerHTML=chatLog.join('')||`<div class="msg bot">안녕하세요! ${AREAS[S.area]} 근처에서 혼밥할 곳 찾아드릴게요 🍚<br>기분, 예산, 시간 아무거나 말씀해 주세요.</div>`;
+  $('#chatIn').onkeydown=e=>{if(e.key==='Enter')ask()};
+  if(q) ask(q); else setTimeout(()=>$('#chatIn').focus(),250);
+}
+function ask(q){
+  const inp=$('#chatIn'); q=q||inp.value.trim(); if(!q)return; inp.value='';
+  push(`<div class="msg me">${q.replace(/</g,'&lt;')}</div>`);
+  push(`<div class="msg bot typing" id="typing">AI 밥친구가 찾는 중…</div>`,false);
+  setTimeout(()=>{$('#typing')?.remove();push(answer(q))},700);
+}
+function push(h,keep=true){if(keep)chatLog.push(h);const c=$('#chat');c.insertAdjacentHTML('beforeend',h);$('#sheetBody').scrollTop=1e6}
+function answer(q){
+  let list=here(), why=[];
+  const num=q.match(/(\d+)\s*(만|천)?\s*원/);
+  if(num){const n=+num[1]*(num[2]==='만'?10000:num[2]==='천'?1000:1);list=list.filter(r=>r.price<=n);why.push(won(n)+' 이하')}
+  else if(/만원|저렴|싼/.test(q)){list=list.filter(r=>r.price<=10000);why.push('1만원 이하')}
+  if(/국물|국밥|따뜻|비|추워|해장/.test(q)){list=list.filter(r=>r.soup);why.push('따뜻한 국물')}
+  if(/고기|굽|화로|야키/.test(q)){list=list.filter(r=>r.grill);why.push('1인 굽기')}
+  if(/콘센트|충전|노트북|작업/.test(q)){list=list.filter(r=>r.outlet);why.push('콘센트')}
+  if(/조용|혼자 쉬|눈치/.test(q)){list=list.filter(r=>r.quiet||r.tags.some(t=>/1인|칸막이/.test(t)));why.push('눈치 안 보이는 자리')}
+  const m=q.match(/(\d+)\s*분/); if(m||/빨리|급해|바빠/.test(q)){const t=m?+m[1]:15;list=list.filter(r=>r.min<=t);why.push(t+'분 내 식사')}
+  if(/처음|초보|무서/.test(q)){list=list.filter(r=>r.lv<=2);why.push('초심자 난이도')}
+  list.sort((a,b)=>Math.abs(a.lv-S.myLv)-Math.abs(b.lv-S.myLv)||a.wait-b.wait||a.dist-b.dist);
+  if(!list.length) return `<div class="msg bot">음… 조건(${why.join(', ')})에 딱 맞는 곳이 ${AREAS[S.area]}엔 아직 없어요 😢<br>조건을 조금 풀거나 위치를 바꿔볼까요?</div>`;
+  return `<div class="msg bot">${why.length?`<b>${why.join(' · ')}</b> 조건으로 `:''}${LV[S.myLv]} 기준 추천이에요!
+   ${list.slice(0,3).map(r=>`<div class="rec" onclick="detail(${r.id})"><b>${r.ic} ${r.name}</b>${r.menu} ${won(r.price)} · ${WAIT[r.wait][0]} · 약 ${r.min}분 · ${r.dist}m</div>`).join('')}</div>`;
+}
+document.querySelectorAll('.prompt').forEach(b=>b.onclick=()=>openChat(b.dataset.q));
+$('#toast').onclick=()=>openChat();
+
+/* ---------- 지도 ---------- */
+let mapF='all';
+const MF={all:'전체',free:'대기 없음',lv1:'초심자',soup:'국물',grill:'고기',outlet:'콘센트'};
+function renderMap(){
+  $('#mapFilters').innerHTML=Object.entries(MF).map(([k,v])=>`<button class="fbtn ${k===mapF?'on':''}" onclick="mapF='${k}';renderMap()">${v}</button>`).join('');
+  const f={all:()=>1,free:r=>r.wait===0,lv1:r=>r.lv<=2,soup:r=>r.soup,grill:r=>r.grill,outlet:r=>r.outlet}[mapF];
+  const list=here().filter(f).sort((a,b)=>a.dist-b.dist);
+  $('#map').innerHTML='<div class="me" title="내 위치"></div>'+list.map(r=>`<div class="mpin" style="left:${r.x}%;top:${r.y}%;background:${WAIT[r.wait][2]}" onclick="detail(${r.id})">${r.ic} ${r.name.split(' ')[0]}</div>`).join('');
+  $('#mapList').innerHTML=list.map(row).join('')||'<div class="empty">조건에 맞는 식당이 없어요</div>';
+}
+
+/* ---------- 일기 ---------- */
+function writeDiary(id){closeSheet();go('diary');$('#dPlace').value=id;$('#dText').focus()}
+function renderDiary(){
+  $('#dPlace').innerHTML=R.map(r=>`<option value="${r.id}">${r.ic} ${r.name}</option>`).join('');
+  $('#diaryList').innerHTML=S.diary.length?S.diary.slice().reverse().map(d=>{const r=byId(d.id);return `<div class="listrow" onclick="detail(${r.id})"><span class="ico">${r.ic}</span><div><h5>${r.name} <span style="color:var(--amber)">${'★'.repeat(d.rate)}</span></h5><small>${d.date} · ${d.text.replace(/</g,'&lt;')}</small></div></div>`}).join(''):'<div class="empty">아직 혼밥일기가 없어요.<br>첫 혼밥을 기록해 보세요 ✍️</div>';
+}
+$('#dSave').onclick=()=>{
+  const t=$('#dText').value.trim(); if(!t){snack('내용을 입력해 주세요');return}
+  S.diary.push({id:+$('#dPlace').value,rate:+$('#dRate').value,text:t,date:new Date().toLocaleDateString('ko-KR')});
+  save();$('#dText').value='';renderDiary();renderMy();snack('혼밥일기를 저장했어요 📔');
+};
+
+/* ---------- 찜 / 마이 ---------- */
+function renderSaved(){$('#savedList').innerHTML=S.saved.length?S.saved.map(id=>row(byId(id))).join(''):'<div class="empty">찜한 식당이 없어요.<br>카드의 ♡를 눌러 저장해 보세요.</div>'}
+function renderMy(){
+  $('#lvPick').innerHTML=[1,2,3,4].map(l=>`<button class="${l===S.myLv?'on':''}" onclick="S.myLv=${l};save();renderMy();snack('${LV[l]}(으)로 설정했어요')"><span class="badge b${l}">${LV[l]}</span><br>${['편의점·버거','라멘·국밥','화로·샤브','뷔페·레스토랑'][l-1]}</button>`).join('');
+  $('#myStats').innerHTML=`📔 혼밥일기 <b>${S.diary.length}</b>개 · ♥ 찜 <b>${S.saved.length}</b>곳 · 📍 ${AREAS[S.area]}`;
+}
+$('#resetBtn').onclick=()=>{try{LS&&LS.removeItem('honbap')}catch(e){};location.reload()};
+
+/* ---------- 탭 ---------- */
+function go(v){
+  document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  $('#toast').style.display=v==='home'?'':'none';
+  $('#scroll').scrollTop=0;
+  ({map:renderMap,diary:renderDiary,saved:renderSaved,my:renderMy}[v]||(()=>{}))();
+}
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+
+function renderAll(){renderNearby();renderReview();renderMap();renderDiary();renderSaved();renderMy()}
+renderAll();
+</script>
+</body>
+</html>

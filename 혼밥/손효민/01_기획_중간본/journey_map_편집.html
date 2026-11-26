@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>혼밥 여정 지도 편집</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --teal:#3f8b8b; --teal-ink:#3a8585; --ink:#1f2328; --sub:#6b7280; --line:#e3e6e8;
+    --coral:#e0623f; --green:#5b8a2e; --gray:#9aa3ab; --bg:#ffffff; --card:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);font-family:"Noto Sans KR",sans-serif;color:var(--ink)}
+  .slide{width:1280px;height:720px;margin:0 auto;padding:30px 56px 22px;position:relative;overflow:hidden}
+  .bar{width:44px;height:4px;background:var(--teal);border-radius:2px;margin-bottom:12px}
+  h1{font-size:26px;font-weight:700;letter-spacing:-.5px}
+  h1 em{font-style:normal;color:var(--teal-ink)}
+  .tag{position:absolute;top:40px;right:56px;background:#e6f1f1;color:#2f6d6d;font-size:11px;font-weight:700;padding:7px 14px;border-radius:16px;letter-spacing:1px}
+  .lead{font-size:12.5px;color:var(--sub);margin-top:6px}
+  .lead b{color:var(--ink);font-weight:500}
+  .card{margin-top:12px;border:1px solid var(--line);border-radius:14px;padding:14px 18px 10px;background:var(--card)}
+  .grid{display:grid;grid-template-columns:92px repeat(6,1fr);column-gap:8px}
+  .stage{background:var(--teal);color:#fff;font-weight:700;font-size:14px;text-align:center;padding:9px 0;border-radius:6px}
+  .lab{font-size:15px;font-weight:700;color:var(--teal-ink);display:flex;align-items:center}
+  .cell{font-size:12.5px;line-height:1.5;text-align:center;padding:11px 2px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+  .row{border-bottom:1px solid var(--line)}
+  .src{display:block;font-size:10px;color:var(--gray);margin-top:1px}
+  .q{color:#4b5563}
+  .need{color:var(--gray);font-size:12px}
+  .pain{color:var(--coral);font-weight:700}
+  .pain .src{font-weight:400}
+  .opp{color:var(--green)}
+  .emo{position:relative;height:72px}
+  .emo .mid{position:absolute;left:0;right:0;top:50%;border-top:1px dashed #cfd5da}
+  .emo .dots{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);column-gap:8px}
+  .emo .d{display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .emo .d i{width:11px;height:11px;border-radius:50%;background:#fff;border:2px solid var(--gray);display:block;position:relative;top:4px}
+  .emo .d span{font-size:9.5px;color:var(--gray);margin-top:10px}
+  .pm{font-size:10px;color:var(--gray);position:absolute;left:-14px}
+  .foot{font-size:9.5px;color:var(--sub);margin-top:9px;line-height:1.5}
+  .meta{position:absolute;bottom:14px;left:56px;font-size:10.5px;color:var(--sub)}
+  .pg{position:absolute;bottom:10px;right:56px;background:var(--teal);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px}
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="bar"></div>
+  <h1>혼밥 고객 여정 지도 — <em>대구 달서구 32세 1인가구 남성</em> v0</h1>
+  <div class="tag">3교시 · 실습 · 여정 지도</div>
+  <p class="lead"><b>행위자</b> 대구 달서구 32세 남성 · 미혼 1인가구 · 취업자 · 혼밥 주 8.3회, 주로 저녁 <span class="src" style="display:inline">(S1·S2·S3·S4·S6·S14·S17)</span>
+  &nbsp;|&nbsp; <b>시나리오</b> "혼자 외식할 때, 내 취향에 맞고 혼자 들어가도 눈치 보이지 않는 식당을 쉽게 찾고 싶다" <span class="src" style="display:inline">(손효민 브랜치 초안)</span></p>
+
+  <div class="card">
+    <div class="grid">
+      <div></div>
+      <div class="stage">찾아보기</div>
+      <div class="stage">조건 따지기</div>
+      <div class="stage">물어보기</div>
+      <div class="stage">이동 · 입장</div>
+      <div class="stage">주문 · 먹기</div>
+      <div class="stage">귀가 · 재방문</div>
+    </div>
+
+    <!-- 행동 -->
+    <div class="grid row">
+      <div class="lab">행동</div>
+      <div class="cell">블로그·주변 추천·지도 앱<br>앱 혼밥 필터로 검색<span class="src">S13 (B) · S20 앱 필터 (D)</span></div>
+      <div class="cell">가격·맛·청결 따지기<br>1인용 메뉴·1인석 따지기<span class="src">S9 (B, 전체 연령)</span></div>
+      <div class="cell">1인분·혼밥 되는지<br>카페·지식iN에 묻기<span class="src">S20 ② (D)</span></div>
+      <div class="cell need">수집 필요</div>
+      <div class="cell">한식 음식점에서 먹기<br>1회 1만~1.5만 원<span class="src">S7 (A) · S9 (B)</span></div>
+      <div class="cell need">수집 필요</div>
+    </div>
+
+    <!-- 생각 -->
+    <div class="grid row">
+      <div class="lab">생각</div>
+      <div class="cell q">"혼밥 옵션 넣어서 검색했는데<br>… 곱창집은 왜 뜨는 걸까요?"<span class="src">지도앱 리뷰 2026-04-20 (D)</span></div>
+      <div class="cell need">수집 필요</div>
+      <div class="cell q">"대구 달서구 쪽<br>1인분 식사 되는 고기집"<span class="src">브랜치 수집 2023-09-11 (D)</span></div>
+      <div class="cell need">수집 필요</div>
+      <div class="cell q">"2인분 이상<br>주문해야 되네요"<span class="src">카페 질문 2025-04-25 (D)</span></div>
+      <div class="cell need">수집 필요</div>
+    </div>
+
+    <!-- 감정 -->
+    <div class="grid row">
+      <div class="lab">감정</div>
+      <div class="emo" style="grid-column:2 / span 6">
+        <div class="mid"></div>
+        <span class="pm" style="top:2px">+</span><span class="pm" style="bottom:2px">−</span>
+        <div class="dots">
+          <div class="d"><i></i><span>근거 부족</span></div>
+          <div class="d"><i></i><span>근거 부족</span></div>
+          <div class="d"><i></i><span>근거 부족</span></div>
+          <div class="d"><i></i><span>근거 부족</span></div>
+          <div class="d"><i></i><span>근거 부족</span></div>
+          <div class="d"><i></i><span>근거 부족</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 터치포인트 -->
+    <div class="grid row">
+      <div class="lab">터치포인트</div>
+      <div class="cell">블로그 · 주변 사람 · 지도 앱<br>(네이버·카카오맵·다이닝코드·캐치테이블)<span class="src">S13 · S20</span></div>
+      <div class="cell need">수집 필요</div>
+      <div class="cell">네이버 카페 · 지식iN<br>(야구 팬카페·지역 카페)<span class="src">S20 ② (D)</span></div>
+      <div class="cell need">수집 필요</div>
+      <div class="cell">가게 메뉴<br>예: "오징어볶음(2인이상)"<span class="src">대구푸드 DB 메뉴 문구 · S20 (A)</span></div>
+      <div class="cell need">수집 필요</div>
+    </div>
+
+    <!-- 페인포인트 -->
+    <div class="grid row">
+      <div class="lab">페인포인트</div>
+      <div class="cell pain">1인분 주문 가능 여부를<br>어느 맛집 앱에서도<br>미리 거를 수 없음<span class="src">S20 ① · 후보 🟡</span></div>
+      <div class="cell pain">주변 음식점에 1인용 메뉴가<br>없는 경우가 많음<span class="src">S20 ① (B, 대구 아님) · 후보 🟡</span></div>
+      <div class="cell pain">1인분·혼밥 가능 여부를<br>묻는 질문이 반복됨<span class="src">S20 ② (D) · 후보 🟡</span></div>
+      <div class="cell pain">거절 · 눈치 · 냉대<span class="src">리뷰 묶음 G1 (D, 건수 미확인)</span></div>
+      <div class="cell pain">2인분 이상 주문해야 함<span class="src">S20 ① (D) · 2016 학술 19.2%<br>(B, 수도권)</span></div>
+      <div class="cell need">수집 필요</div>
+    </div>
+
+    <!-- 기회 -->
+    <div class="grid">
+      <div class="lab">기회</div>
+      <div class="cell need">11/10 AX에서 작성</div>
+      <div class="cell need">11/10 AX에서 작성</div>
+      <div class="cell need">11/10 AX에서 작성</div>
+      <div class="cell need">11/10 AX에서 작성</div>
+      <div class="cell need">11/10 AX에서 작성</div>
+      <div class="cell need">11/10 AX에서 작성</div>
+    </div>
+  </div>
+
+  <p class="foot">※ 모든 칸은 혼밥_페르소나_v2.md(S1~S21)·문제정의 단계별정리·신호등점검 문서에서 옮김. 근거가 없는 칸은 "수집 필요". 감정은 단계별 긍정·부정 VOC 건수가 없어 "근거 부족"(감정 최저점 미표시).<br>
+  출처 등급 A 공식 통계 · B 공공·민간 보고서 · D 커뮤니티·리뷰(사례로만, 숫자 근거 아님). 페인포인트 ①·②는 후보(🟡) — 대구 거주 30대 남성의 경험인지 미확인. 질문 글 작성자는 주로 외지 방문객.</p>
+
+  <div class="meta">L.L.M Academy · Day 11 · Lifestyle · painpoint/journey_map.html (2026-11-20)</div>
+</div>
+<style id="edit-style">
+  body{padding-top:58px}
+  #edit-bar{position:fixed;top:0;left:0;right:0;z-index:10;background:#1f2a30;color:#fff;font-family:"Noto Sans KR",sans-serif;font-size:13px;display:flex;align-items:center;gap:10px;padding:10px 20px;flex-wrap:wrap}
+  #edit-bar b{font-weight:700}
+  #edit-bar .hint{color:#b8c4cc;font-size:12px}
+  #edit-bar button{font:inherit;border:0;border-radius:6px;padding:7px 14px;cursor:pointer}
+  #edit-bar .save{background:#3f8b8b;color:#fff;font-weight:700}
+  #edit-bar .reset{background:#3a4650;color:#fff}
+  #edit-bar .count{margin-left:auto;color:#ffd479}
+  [contenteditable="true"]{outline:none;border-radius:4px;transition:background .15s}
+  [contenteditable="true"]:hover{background:#f3f7f7;box-shadow:inset 0 0 0 1px #cfe3e3}
+  [contenteditable="true"]:focus{background:#fffbe8;box-shadow:inset 0 0 0 2px #f0c24b}
+  .edited{background:#fff4cc !important}
+  .stage[contenteditable="true"]:hover,.stage[contenteditable="true"]:focus,.stage.edited{background:#2f6d6d !important;box-shadow:inset 0 0 0 2px #f0c24b}
+</style>
+<div id="edit-bar">
+  <b>편집 모드</b>
+  <span class="hint">칸을 눌러 글자를 고치세요 · 줄바꿈은 Shift+Enter · 고친 칸은 노란색으로 표시됩니다</span>
+  <button class="save" type="button" id="btn-save">저장 (수정본 내려받기)</button>
+  <button class="reset" type="button" id="btn-reset">처음 상태로 되돌리기</button>
+  <span class="count" id="edit-count">고친 칸 0개</span>
+</div>
+<script id="edit-script">
+(function(){
+  var KEY = 'journey_map_edit_draft_v0';
+  var sel = 'h1, .lead, .stage, .lab, .cell, .emo .d span, .foot, .tag';
+  var els = Array.prototype.slice.call(document.querySelectorAll(sel));
+  var orig = els.map(function(e){ return e.innerHTML; });
+  var draft = null;
+  try { draft = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e) {}
+
+  function count(){
+    var n = 0;
+    els.forEach(function(e, i){
+      var changed = e.innerHTML !== orig[i];
+      e.classList.toggle('edited', changed);
+      if (changed) n++;
+    });
+    document.getElementById('edit-count').textContent = '고친 칸 ' + n + '개';
+    return n;
+  }
+  function saveDraft(){
+    try { localStorage.setItem(KEY, JSON.stringify(els.map(function(e){ return e.innerHTML; }))); } catch(e) {}
+  }
+
+  els.forEach(function(e, i){
+    e.setAttribute('contenteditable', 'true');
+    e.setAttribute('spellcheck', 'false');
+    if (draft && draft.length === els.length && typeof draft[i] === 'string') e.innerHTML = draft[i];
+    e.addEventListener('input', function(){ count(); saveDraft(); });
+    e.addEventListener('keydown', function(ev){
+      if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); e.blur(); }
+    });
+    e.addEventListener('paste', function(ev){
+      ev.preventDefault();
+      var t = (ev.clipboardData || window.clipboardData).getData('text');
+      document.execCommand('insertText', false, t);
+    });
+  });
+  count();
+
+  document.getElementById('btn-reset').addEventListener('click', function(){
+    if (!confirm('고친 내용을 모두 지우고 처음 상태로 되돌릴까요?')) return;
+    els.forEach(function(e, i){ e.innerHTML = orig[i]; });
+    try { localStorage.removeItem(KEY); } catch(e) {}
+    count();
+  });
+
+  document.getElementById('btn-save').addEventListener('click', function(){
+    var root = document.documentElement.cloneNode(true);
+    ['#edit-bar', '#edit-style', '#edit-script'].forEach(function(s){
+      var n = root.querySelector(s); if (n) n.parentNode.removeChild(n);
+    });
+    Array.prototype.forEach.call(root.querySelectorAll('[contenteditable]'), function(n){
+      n.removeAttribute('contenteditable'); n.removeAttribute('spellcheck');
+      n.classList.remove('edited');
+      if (!n.getAttribute('class')) n.removeAttribute('class');
+    });
+    var html = '<!doctype html>\n' + root.outerHTML;
+    var blob = new Blob([html], {type: 'text/html;charset=utf-8'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'journey_map_수정본.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  });
+})();
+</script>
+
+</body>
+</html>

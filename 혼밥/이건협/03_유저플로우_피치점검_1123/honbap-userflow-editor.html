@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>혼밥 유저플로우 편집기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#2c7a56;--bg:#e9ebe7}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:#1f2a24}
+.bar{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 12px;background:#fff;border-bottom:1px solid #d8dbd6}
+.bar button,.bar select{font:inherit;font-size:13px;padding:5px 10px;border:1px solid #c9cdc6;border-radius:6px;background:#fff;cursor:pointer;color:#222}
+.bar button:hover{background:#f2f5f1}
+.bar button.on{background:var(--g);color:#fff;border-color:var(--g)}
+.bar button:disabled,.bar select:disabled{opacity:.4;cursor:default}
+.sep{width:1px;height:22px;background:#ddd;margin:0 4px}
+.hint{width:100%;font-size:12px;color:#777}
+#views{padding:12px;display:flex;gap:12px;align-items:flex-start}
+.wrap{flex:1;min-width:0;position:relative;background:#fafaf8;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.1);overflow:hidden}
+.stage{position:absolute;left:0;top:0;width:2000px;height:1130px;transform-origin:0 0;background:#fafaf8}
+.edges{position:absolute;left:0;top:0;width:2000px;height:1130px;z-index:1;overflow:visible;pointer-events:none}
+.edges .hit{pointer-events:stroke;cursor:pointer}
+.labels{position:absolute;inset:0;z-index:3;pointer-events:none}
+.lbl{position:absolute;transform:translate(-50%,-50%);font-size:17px;background:rgba(250,250,248,.92);padding:1px 6px;border-radius:4px;white-space:pre;pointer-events:auto;font-weight:500}
+.node{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:2;border-radius:8px;padding:6px 10px}
+.title{font-weight:700;font-size:22px;line-height:1.3;white-space:pre-wrap;min-width:10px}
+.body{font-size:16.5px;line-height:1.45;color:#5b5f5c;white-space:pre-wrap;margin-top:4px;min-width:10px}
+[contenteditable="true"]:hover{outline:1px dashed rgba(44,122,86,.5)}
+[contenteditable="true"]:focus{outline:1.5px solid var(--g);background:rgba(255,255,255,.6)}
+.t-user{background:#eaf5ef;border:1.5px solid #8fc5a9}.t-user .title{color:#2c7a56}
+.t-auto{background:#efedfb;border:1.5px solid #b4abe3}.t-auto .title{color:#6655c4}
+.t-ad{background:#fdf2e2;border:1.5px solid #e8c08a}.t-ad .title{color:#b06f22}
+.t-gray{background:#f0f0ee;border:1.5px solid #c4c4c0}.t-gray .title{color:#333}
+.t-plain{background:#fff;border:2px solid #444;border-radius:0}.t-plain .title{color:#111;font-size:23px}
+.t-dashed{background:transparent;border:2px dashed #bdbdbd}.t-dashed .title{color:#444}
+.t-dashed2{background:#f3f3f1;border:2px dashed #c9c9c9}.t-dashed2 .title{color:#555}
+.t-pill{background:#efe9df;border:1.5px solid #cbbfa9;border-radius:999px}.t-pill .title{color:#3a3125}
+.t-step{background:#fff;border:1.5px solid #cfcfcf}.t-step .title{color:#222;font-size:21px}.t-step .body{font-size:18px;margin-top:0}
+.t-badge{background:#e7f3ec;border-radius:999px}.t-badge .title{color:#2c7a56;font-size:17px}
+.t-diamond{background:transparent;border:none}
+.t-diamond .shape{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.t-diamond .shape polygon{fill:#fff;stroke:#c9c9c9;stroke-width:1.5;vector-effect:non-scaling-stroke}
+.t-diamond .title{font-size:20px;color:#222}.t-diamond .body{font-size:15px;margin-top:2px}
+.t-text{background:none;border:none;padding:0;align-items:flex-start;justify-content:flex-start;text-align:left;border-radius:0}
+.t-text.right{align-items:flex-end;text-align:right}
+.t-lane{z-index:0;align-items:flex-start;justify-content:flex-start;text-align:left;border-radius:16px;padding:16px 24px}
+.t-lane .title{font-size:20px;text-align:left}.t-lane .body{font-size:13px;color:#888;text-align:left}
+.tone-green{background:#f2f7f3}.tone-green .title{color:#1f3d32}
+.tone-purple{background:#f0eefa}.tone-purple .title{color:#222}
+.tone-none{background:transparent}
+.t-hr{background:#dcdcdc;padding:0;border-radius:0}
+.swatch{padding:0;border-radius:5px}
+.rh{position:absolute;right:-6px;bottom:-6px;width:12px;height:12px;background:#e0533d;border-radius:3px;cursor:nwse-resize;display:none}
+body.m-move .node{cursor:move}
+body.m-move .node.sel .rh{display:block}
+body.m-connect .node{cursor:crosshair}
+.node.sel{outline:2px dashed #e0533d;outline-offset:4px}
+.node.src{outline:2px solid #e0533d;outline-offset:4px}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#222;color:#fff;padding:7px 14px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:99}
+#toast.show{opacity:.92}
+</style>
+</head>
+<body class="m-text">
+<div class="bar">
+  <button data-view="d1">흐름 1 · 상세</button>
+  <button data-view="d2">흐름 2 · AI 에이전트</button>
+  <button data-view="split">나란히</button>
+  <span class="sep"></span>
+  <button data-mode="text">✏️ 글자 편집</button>
+  <button data-mode="move">✥ 이동·크기</button>
+  <button data-mode="connect">↗ 화살표 연결</button>
+  <span class="sep"></span>
+  <select id="addType"></select>
+  <button id="addBtn">+ 추가</button>
+  <span class="sep"></span>
+  <select id="typeSel" title="선택한 박스 모양"></select>
+  <button id="colorBtn" title="선택한 화살표 색 바꾸기">선 색</button>
+  <button id="dashBtn" title="실선/점선">점선</button>
+  <button id="labelBtn" title="화살표 라벨 추가">라벨</button>
+  <button id="delBtn">삭제</button>
+  <span class="sep"></span>
+  <button id="undoBtn">↶ 되돌리기</button>
+  <button id="resetBtn">초기화</button>
+  <button id="jsonBtn">JSON 저장</button>
+  <button id="importBtn">JSON 불러오기</button>
+  <button id="pngBtn">PNG 저장</button>
+  <input type="file" id="fileIn" accept=".json" hidden>
+  <div class="hint" id="hint"></div>
+</div>
+<div id="views"></div>
+<div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const W=2000,H=1130,NS='http://www.w3.org/2000/svg',KEY='honbap-flow-editor-v1';
+const COLORS={gray:'#9a9a9a',purple:'#7464c4',brown:'#b07a2a',green:'#2e7d5b',dark:'#333333'};
+const COLOR_KEYS=Object.keys(COLORS);
+const TYPES={user:'사용자 화면(초록)',auto:'자동 처리(보라)',ad:'광고(주황)',diamond:'마름모 분기',plain:'흰 박스(굵은 테두리)',gray:'회색 박스',dashed:'점선 박스',dashed2:'점선 회색 박스',pill:'둥근 시작·끝',step:'단계 박스',badge:'배지',text:'글자만',lane:'구역 배경'};
+
+function N(id,type,x,y,w,h,title,body){const n={id,type,x,y,w,h,title};if(body!==undefined)n.body=body;return n}
+function L(id,x,y,w,h,tone,title,body){return{id,type:'lane',tone,x,y,w,h,title,body}}
+function T(id,x,y,w,h,title,fs,color,fw,extra){return Object.assign({id,type:'text',x,y,w,h,title,fs,color,fw},extra||{})}
+function S(id,type,x,y,w){return{id,type,x,y,w:w||22,h:22,swatch:true}}
+function E(from,fs,to,ts,color,label,o){return Object.assign({from,fs,to,ts,color,label:label||''},o||{})}
+
+const DEFAULTS={
+d1:{nodes:[
+ L('lane1',38,195,1925,155,'green','01\n채팅 질문','왼쪽 → 오른쪽'),
+ L('lane2',38,435,1925,175,'purple','02\n자동 추천','오른쪽 → 왼쪽'),
+ L('lane3',38,785,1925,170,'green','03\n확인·선택','왼쪽 → 오른쪽'),
+ T('h1',60,24,1000,56,'User flow · 혼밥 추천 에이전트',36,'#1f3d32',800),
+ T('h2',60,82,1200,30,'1인분 가능한 가게를 모아 취향에 맞게 추천하고, 방문 전 필요한 정보를 확인한다.',19,'#666',400),
+ N('badge','badge',1655,40,285,42,'대구 혼밥 웹 서비스 · 상세 흐름'),
+ T('noteA',555,149,520,30,'Ⓐ 조건을 바꾸면 해당 질문부터 다시 응답',17,'#2c7a56',500),
+ N('n1','user',183,215,287,108,'사이트 접속 · 채팅 시작','“오늘의 혼밥을 추천해줄게요”\n질문에 순서대로 응답'),
+ N('q1','user',557,215,280,108,'① 업종 질문','“어떤 음식이 좋으세요?”\n한식 · 중식 · 일식 · 양식 등'),
+ N('q2','user',929,215,280,108,'② 가격대 질문','“1인 예산은 얼마인가요?”\n예: 1만 원 미만 / 1만~1.5만 원'),
+ N('q3','user',1300,215,280,108,'③ 1인석 질문','“1인석이 필요하세요?”\n필요 / 상관없음'),
+ N('q4','user',1671,215,280,108,'④ 분위기 질문','“어떤 분위기가 좋으세요?”\n조용한 · 편안한 · 상관없음'),
+ N('m1','auto',1671,477,280,108,'1인분 가능 가게 통합','1인분 주문·1인 식사 가능 확인\n불가·미확인 가게는 후보에서 제외'),
+ N('f1','auto',1293,477,294,108,'사용자 취향으로 필터링','업종 · 1인 메뉴 가격 · 좌석 · 분위기\n상관없음으로 고른 조건은 제한 안 함'),
+ N('d1','diamond',952,470,233,120,'추천할 가게','있는가?'),
+ N('s1','auto',557,477,280,108,'리뷰·평점 기준 정렬','평점이 높은 가게부터 추천\n평점이 같으면 리뷰 수 많은 순'),
+ N('d2','diamond',210,470,233,120,'조건에 맞는','광고 가게가 있는가?'),
+ N('ad','ad',183,655,287,85,'[광고] 표시 · 상단 배치','가게명 옆 광고 표시 후 맨 위 노출'),
+ N('chg','user',914,645,310,105,'조건 변경 · 다시 추천','업종·가격·1인석·분위기 중 수정\n1인분 주문 가능 조건은 유지'),
+ T('backA',1280,683,320,30,'Ⓐ 변경할 질문으로 돌아가기',17,'#2c7a56',500),
+ N('card','user',175,811,302,121,'추천 결과 카드','상단: [광고] / 아래: 일반 추천\n메뉴·가격·평점·리뷰 수·추천 이유'),
+ N('det','user',550,811,295,121,'가게 상세 확인','1인 메뉴·가격·최소 주문 조건\n1인석·분위기·리뷰·정보 확인일'),
+ N('d3','diamond',952,812,233,120,'마음에 드는','가게가 있는가?'),
+ N('sel','user',1300,811,280,121,'방문할 가게 선택','선택한 가게의 위치 확인\n필요하면 길찾기 열기'),
+ N('visit','gray',1671,825,280,93,'가게 방문','1인분 주문·혼밥 식사'),
+ T('critT',62,990,120,30,'추천 기준',18,'#222',700),
+ T('crit',200,990,1300,30,'광고도 취향 조건을 충족해야 노출 · 1인분 가능 여부는 필수, 1인석은 선택 조건',17,'#666',400),
+ {id:'hr1',type:'hr',x:60,y:1041,w:1880,h:1},
+ S('sw1','user',62,1068),T('lg1',92,1065,250,28,'사용자 화면·행동',16,'#666',400),
+ S('sw2','auto',386,1068),T('lg2',416,1065,250,28,'서비스 자동 처리',16,'#666',400),
+ S('sw3','ad',720,1068),T('lg3',750,1065,250,28,'광고·결과 없음',16,'#666',400),
+ S('sw4','step',1053,1068),T('lg4',1083,1065,250,28,'마름모: 조건 분기',16,'#666',400),
+ T('lg5',1455,1065,400,28,'- - - ▶  점선: 조건 수정·재추천',16,'#666',400)
+],edges:[
+ E('n1','r','q1','l','gray'),E('q1','r','q2','l','gray'),E('q2','r','q3','l','gray'),E('q3','r','q4','l','gray'),
+ E('q4','b','m1','t','purple','응답 완료',{ldy:-5}),
+ E('m1','l','f1','r','purple'),E('f1','l','d1','r','purple'),
+ E('d1','l','s1','r','purple','있음',{ldy:-25}),E('s1','l','d2','r','purple'),
+ E('d1','b','chg','t','brown','없음',{ldx:36}),
+ E('d2','b','ad','t','brown','있음',{ldx:34}),E('ad','b','card','t','brown'),
+ E('d2','l','card','l','purple','없음',{off:5,ldy:88}),
+ E('card','r','det','l','gray'),E('det','r','d3','l','gray'),
+ E('d3','r','sel','l','gray','예',{ldy:-25}),E('sel','r','visit','l','gray'),
+ E('d3','t','chg','b','green','아니오',{dash:true,ldx:44}),
+ E('chg','r','backA','l','green','',{dash:true})
+]},
+d2:{nodes:[
+ L('laneAI',68,198,1865,165,'purple','AI\n에이전트','(자동)'),
+ T('h1',85,48,1200,72,'User flow · 대구 혼밥 AI 에이전트',46,'#111',800),
+ T('h2',85,125,1500,32,'채팅형 추천 · 점심때 달서구 32세 1인가구 직장인 · 근거: 페르소나 확정안 · 문제정의 최종본 · spec/userflow.md',20,'#666',400),
+ T('quote',1500,60,420,36,'“오늘의 혼밥을 추천해 줄게요”',22,'#555',400,{italic:true,align:'right'}),
+ T('lu',85,518,150,64,'사용자\n화면',21,'#222',700),
+ T('lx',85,696,170,64,'예외 · 되돌아\n가기',19,'#777',400),
+ N('p1','auto',500,222,203,118,'1인분 가게','확정·추정 종합,\n미상 제외'),
+ N('p2','auto',862,222,197,118,'거르고 정렬','취향으로 거른 뒤\n광고·평점 순'),
+ N('dec','plain',1093,209,211,148,'맞는 가게\n있나?'),
+ N('x2','dashed',1335,222,203,118,'X2 결과 없음','아니오 → 조건 빼\n고 Q3로'),
+ N('s1','pill',251,491,175,118,'S1 채팅 시작','인사 메시지'),
+ N('q1','user',461,491,155,118,'Q1 업종','한식·고기 등'),
+ N('q2','user',651,491,171,118,'Q2 가격대','1만 원 이\n하 등'),
+ N('q3','user',857,491,206,118,'Q3 1인석·분위기','1인석? 분위기?'),
+ N('s2','user',1099,491,196,118,'S2 추천 목록','[광고] 맨 위 · 리\n뷰·평점 순'),
+ N('s3','user',1330,491,196,118,'S3 가게 상세','1인분 메뉴·근거'),
+ N('dec2','plain',1561,484,180,136,'여기로\n갈까?'),
+ N('end','pill',1772,491,143,118,'끝','지도 앱\n으로'),
+ N('x1','dashed',461,674,602,115,'X1 다시 묻기 (Q1~Q3 공통)','못 알아들으면 선택지 버튼으로 다시 · ‘상관없어요’ 있음'),
+ N('s4','dashed2',1751,674,165,115,'S4 방문 확인','나중 · 1인분\n됐나요?'),
+ T('sh',85,820,900,36,'추천 목록이 만들어지는 순서  (상세: S2 추천 목록)',22,'#222',700),
+ N('st1','step',85,864,231,82,'① 1인분 가게','확정·추정 종합'),
+ N('st2','step',351,864,231,82,'② 업종 맞추기','Q1 답으로'),
+ N('st3','step',618,864,231,82,'③ 가격대 맞추기','Q2 답으로'),
+ N('st4','step',885,864,231,82,'④ 1인석·분위기','Q3 답으로'),
+ N('st5','step',1152,864,231,82,'⑤ 순위 매기기','리뷰·평점 높은 순'),
+ N('st6','step',1418,864,231,82,'⑥ 광고 가게','맨 위 + [광고]'),
+ N('st7','step',1685,864,231,82,'⑦ 추천 보여 주기','S2 추천 목록'),
+ S('sw1','user',85,997,36),T('lg1',131,992,200,32,'사용자 화면',20,'#555',400),
+ S('sw2','auto',310,997,36),T('lg2',356,992,260,32,'AI 에이전트 (자동)',20,'#555',400),
+ S('sw3','dashed',617,997,36),T('lg3',663,992,260,32,'예외 경로 (아니오)',20,'#555',400),
+ S('sw4','pill',935,997,36),T('lg4',981,992,150,32,'시작 · 끝',20,'#555',400),
+ S('sw5','dashed2',1130,997,36),T('lg5',1176,992,150,32,'나중 기능',20,'#555',400),
+ T('lg6',1435,992,480,32,'PP① 1인분 가게 · PP② Q1~Q3·S2 · PP③ S3',20,'#555',400,{align:'right'})
+],edges:[
+ E('p1','r','p2','l','dark','후보 넘기기',{ldy:-30}),E('p2','r','dec','l','dark'),
+ E('dec','r','x2','l','gray','',{dash:true}),
+ E('q3','t','p2','b','dark','답 마치기',{ldx:60}),
+ E('dec','b','s2','t','green','예 · 추천',{ldx:56}),
+ E('s1','r','q1','l','dark'),E('q1','r','q2','l','dark'),E('q2','r','q3','l','dark'),
+ E('s2','r','s3','l','dark'),E('s3','r','dec2','l','dark'),E('dec2','r','end','l','dark'),
+ E('dec2','b','s2','b','green','아니오 · 다른 가게 보기',{dash:true,off:85,ldx:-80,ldy:-48}),
+ E('q1','b','x1','t','gray','',{dash:true,both:true,toAt:.128}),
+ E('q2','b','x1','t','gray','',{dash:true,both:true,toAt:.457}),
+ E('q3','b','x1','t','gray','',{dash:true,both:true,toAt:.829}),
+ E('end','b','s4','t','gray','',{dash:true,toAt:.56}),
+ E('st1','r','st2','l','dark'),E('st2','r','st3','l','dark'),E('st3','r','st4','l','dark'),
+ E('st4','r','st5','l','dark'),E('st5','r','st6','l','dark'),E('st6','r','st7','l','dark')
+]}};
+function normalize(s){['d1','d2'].forEach(k=>s[k].edges.forEach((e,i)=>{if(!e.id)e.id=k+'e'+i}));return s}
+
+let state, view='d1', mode='text', sel=null, connectFrom=null, activeKey='d1', history=[];
+const stages={};
+const clone=o=>JSON.parse(JSON.stringify(o));
+const uid=()=>'x'+Math.random().toString(36).slice(2,8);
+function load(){try{const r=localStorage.getItem(KEY);if(r){const s=JSON.parse(r);if(s.d1&&s.d2)return s}}catch(e){}return null}
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}},200)}
+function snap(){history.push(JSON.stringify(state));if(history.length>80)history.shift()}
+function undo(){if(!history.length)return toast('되돌릴 내용이 없어요');state=JSON.parse(history.pop());sel=null;save();render()}
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1600)}
+state=normalize(load()||clone(DEFAULTS));
+
+function render(){
+ const v=document.getElementById('views');v.innerHTML='';
+ for(const k in stages)delete stages[k];
+ const keys=view==='split'?['d1','d2']:[view];
+ if(view!=='split')activeKey=view;
+ keys.forEach(k=>{const wrap=document.createElement('div');wrap.className='wrap';const st=document.createElement('div');st.className='stage';st.dataset.key=k;wrap.appendChild(st);v.appendChild(wrap);stages[k]=st;buildStage(k)});
+ fit();updateToolbar();
+}
+function fit(){for(const k in stages){const st=stages[k];const w=st.parentElement.clientWidth;const s=w/W;st._s=s;st.style.transform=`scale(${s})`;st.parentElement.style.height=(H*s)+'px'}}
+new ResizeObserver(fit).observe(document.getElementById('views'));
+
+function buildStage(k){
+ const st=stages[k],d=state[k];st.innerHTML='';
+ const svg=document.createElementNS(NS,'svg');svg.setAttribute('class','edges');svg.setAttribute('viewBox','0 0 2000 1130');st.appendChild(svg);
+ const lbl=document.createElement('div');lbl.className='labels';st.appendChild(lbl);
+ d.nodes.forEach(n=>st.appendChild(makeNode(k,n)));
+ drawEdges(k);
+ st.addEventListener('pointerdown',ev=>{
+  activeKey=k;
+  if(ev.target.classList&&ev.target.classList.contains('hit')){select(k,'edge',ev.target.dataset.eid);return}
+  if(ev.target===st){select(null);if(connectFrom){connectFrom=null;markSrc()}}
+ });
+}
+function place(el,n){el.style.left=n.x+'px';el.style.top=n.y+'px';el.style.width=n.w+'px';el.style.height=n.h+'px'}
+function makeNode(k,n){
+ const el=document.createElement('div');
+ el.className='node t-'+n.type+(n.type==='lane'?' tone-'+(n.tone||'green'):'')+(n.swatch?' swatch':'')+(n.align==='right'?' right':'');
+ el.dataset.id=n.id;place(el,n);
+ if(n.type==='diamond')el.innerHTML='<svg class="shape" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,1 99,50 50,99 1,50"/></svg>';
+ if(!n.swatch)['title','body'].forEach(f=>{
+  if(n[f]===undefined)return;
+  const t=document.createElement('div');t.className=f;t.textContent=n[f];t.contentEditable=mode==='text';t.spellcheck=false;
+  if(n.type==='text'){if(n.fs)t.style.fontSize=n.fs+'px';if(n.color)t.style.color=n.color;if(n.fw)t.style.fontWeight=n.fw;if(n.italic)t.style.fontStyle='italic'}
+  t.addEventListener('focus',()=>snap());
+  t.addEventListener('input',()=>{n[f]=t.innerText.replace(/\n$/,'');save()});
+  el.appendChild(t);
+ });
+ const rh=document.createElement('div');rh.className='rh';el.appendChild(rh);
+ el.addEventListener('pointerdown',ev=>onNodeDown(ev,k,n,el,ev.target===rh));
+ if(sel&&sel.k===k&&sel.kind==='node'&&sel.id===n.id)el.classList.add('sel');
+ return el;
+}
+function onNodeDown(ev,k,n,el,resize){
+ activeKey=k;ev.stopPropagation();
+ if(mode==='text'){select(k,'node',n.id);return}
+ ev.preventDefault();
+ if(mode==='connect'){
+  if(!connectFrom||connectFrom.k!==k){connectFrom={k,id:n.id};markSrc();toast('도착할 박스를 클릭하세요')}
+  else if(connectFrom.id!==n.id){addEdge(k,connectFrom.id,n.id);connectFrom=null;markSrc()}
+  return;
+ }
+ select(k,'node',n.id);snap();
+ const s=stages[k]._s,sx=ev.clientX,sy=ev.clientY,ox=n.x,oy=n.y,ow=n.w,oh=n.h;let moved=false;
+ el.setPointerCapture(ev.pointerId);
+ const mv=e=>{moved=true;const dx=(e.clientX-sx)/s,dy=(e.clientY-sy)/s;
+  if(resize){n.w=Math.max(16,Math.round((ow+dx)/5)*5);n.h=Math.max(1,Math.round((oh+dy)/5)*5)}
+  else{n.x=Math.round((ox+dx)/5)*5;n.y=Math.round((oy+dy)/5)*5}
+  place(el,n);drawEdges(k)};
+ const up=()=>{el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',up);if(moved)save();else history.pop()};
+ el.addEventListener('pointermove',mv);el.addEventListener('pointerup',up);
+}
+function markSrc(){document.querySelectorAll('.node.src').forEach(e=>e.classList.remove('src'));if(connectFrom&&stages[connectFrom.k]){const el=stages[connectFrom.k].querySelector(`.node[data-id="${connectFrom.id}"]`);if(el)el.classList.add('src')}}
+
+function anchor(n,side,at){at=at??.5;switch(side){case'r':return{x:n.x+n.w,y:n.y+n.h*at};case'l':return{x:n.x,y:n.y+n.h*at};case't':return{x:n.x+n.w*at,y:n.y};default:return{x:n.x+n.w*at,y:n.y+n.h}}}
+function route(p1,s1,p2,s2,off){
+ const hz=s=>s==='l'||s==='r';
+ if(s1===s2){
+  if(s1==='b'){const y=Math.max(p1.y,p2.y)+off;return[p1,{x:p1.x,y},{x:p2.x,y},p2]}
+  if(s1==='t'){const y=Math.min(p1.y,p2.y)-off;return[p1,{x:p1.x,y},{x:p2.x,y},p2]}
+  if(s1==='l'){const x=Math.min(p1.x,p2.x)-off;return[p1,{x,y:p1.y},{x,y:p2.y},p2]}
+  const x=Math.max(p1.x,p2.x)+off;return[p1,{x,y:p1.y},{x,y:p2.y},p2];
+ }
+ if(hz(s1)&&hz(s2)){if(Math.abs(p1.y-p2.y)<1)return[p1,p2];const mx=(p1.x+p2.x)/2;return[p1,{x:mx,y:p1.y},{x:mx,y:p2.y},p2]}
+ if(!hz(s1)&&!hz(s2)){if(Math.abs(p1.x-p2.x)<1)return[p1,p2];const my=(p1.y+p2.y)/2;return[p1,{x:p1.x,y:my},{x:p2.x,y:my},p2]}
+ return hz(s1)?[p1,{x:p2.x,y:p1.y},p2]:[p1,{x:p1.x,y:p2.y},p2];
+}
+function midpoint(pts){let tot=0;for(let i=1;i<pts.length;i++)tot+=Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y);let h=tot/2;
+ for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b.x-a.x,b.y-a.y);if(h<=l){const t=l?h/l:0;return{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t}}h-=l}return pts[0]}
+function drawEdges(k){
+ const st=stages[k];if(!st)return;const d=state[k];const svg=st.querySelector('svg.edges'),lbl=st.querySelector('.labels');
+ const byId=Object.fromEntries(d.nodes.map(n=>[n.id,n]));
+ let html='<defs>'+COLOR_KEYS.map(c=>`<marker id="m-${k}-${c}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${COLORS[c]}"/></marker>`).join('')+'</defs>';
+ const seen=new Set();
+ d.edges.forEach(e=>{
+  const a=byId[e.from],b=byId[e.to];if(!a||!b)return;
+  const pts=route(anchor(a,e.fs,e.fromAt),e.fs,anchor(b,e.ts,e.toAt),e.ts,e.off??30);
+  const ds='M'+pts.map(p=>p.x+','+p.y).join(' L');const c=COLORS[e.color]?e.color:'gray';const col=COLORS[c];
+  const isSel=sel&&sel.k===k&&sel.kind==='edge'&&sel.id===e.id;
+  html+=`<path d="${ds}" fill="none" stroke="${isSel?'#e0533d':col}" stroke-width="${isSel?3.5:2}" ${e.dash?'stroke-dasharray="7 6"':''} marker-end="url(#m-${k}-${c})" ${e.both?`marker-start="url(#m-${k}-${c})"`:''}/>`;
+  html+=`<path class="hit" data-eid="${e.id}" d="${ds}" fill="none" stroke="transparent" stroke-width="16"/>`;
+  if(e.label){
+   const m=midpoint(pts);let el=lbl.querySelector(`[data-eid="${e.id}"]`);
+   if(!el)el=makeLabel(k,e,lbl);
+   el.style.left=(m.x+(e.ldx||0))+'px';el.style.top=(m.y+(e.ldy||0))+'px';el.style.color=col;seen.add(e.id);
+  }
+ });
+ svg.innerHTML=html;
+ lbl.querySelectorAll('.lbl').forEach(el=>{if(!seen.has(el.dataset.eid))el.remove()});
+}
+function makeLabel(k,e,lbl){
+ const el=document.createElement('div');el.className='lbl';el.dataset.eid=e.id;el.textContent=e.label;el.contentEditable=mode==='text';el.spellcheck=false;
+ el.addEventListener('focus',()=>snap());
+ el.addEventListener('input',()=>{e.label=el.innerText.replace(/\n$/,'');save()});
+ el.addEventListener('blur',()=>{if(!e.label.trim()){e.label='';drawEdges(k)}});
+ el.addEventListener('pointerdown',ev=>{
+  ev.stopPropagation();activeKey=k;select(k,'edge',e.id);if(mode!=='move')return;ev.preventDefault();snap();
+  const s=stages[k]._s,sx=ev.clientX,sy=ev.clientY,ox=e.ldx||0,oy=e.ldy||0;el.setPointerCapture(ev.pointerId);
+  const mv=m=>{e.ldx=Math.round(ox+(m.clientX-sx)/s);e.ldy=Math.round(oy+(m.clientY-sy)/s);drawEdges(k)};
+  const up=()=>{el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',up);save()};
+  el.addEventListener('pointermove',mv);el.addEventListener('pointerup',up);
+ });
+ lbl.appendChild(el);return el;
+}
+function select(k,kind,id){
+ const prevEdgeK=sel&&sel.kind==='edge'?sel.k:null;
+ sel=k?{k,kind,id}:null;
+ document.querySelectorAll('.node.sel').forEach(e=>e.classList.remove('sel'));
+ if(sel&&kind==='node'&&stages[k]){const el=stages[k].querySelector(`.node[data-id="${id}"]`);if(el)el.classList.add('sel')}
+ if(prevEdgeK)drawEdges(prevEdgeK);if(sel&&kind==='edge')drawEdges(k);
+ updateToolbar();
+}
+function curNode(){return sel&&sel.kind==='node'?state[sel.k].nodes.find(n=>n.id===sel.id):null}
+function curEdge(){return sel&&sel.kind==='edge'?state[sel.k].edges.find(e=>e.id===sel.id):null}
+function addEdge(k,a,b){
+ const d=state[k],A=d.nodes.find(n=>n.id===a),B=d.nodes.find(n=>n.id===b);
+ const dx=(B.x+B.w/2)-(A.x+A.w/2),dy=(B.y+B.h/2)-(A.y+A.h/2);
+ const [fs,ts]=Math.abs(dx)>=Math.abs(dy)?(dx>0?['r','l']:['l','r']):(dy>0?['b','t']:['t','b']);
+ snap();const e={id:uid(),from:a,to:b,fs,ts,color:'gray',label:''};d.edges.push(e);save();sel={k,kind:'edge',id:e.id};drawEdges(k);updateToolbar();toast('화살표를 추가했어요');
+}
+function del(){
+ if(!sel)return;const d=state[sel.k];snap();
+ if(sel.kind==='node'){d.nodes=d.nodes.filter(n=>n.id!==sel.id);d.edges=d.edges.filter(e=>e.from!==sel.id&&e.to!==sel.id)}
+ else d.edges=d.edges.filter(e=>e.id!==sel.id);
+ sel=null;save();render();
+}
+
+// toolbar
+const addSel=document.getElementById('addType'),typeSel=document.getElementById('typeSel');
+addSel.innerHTML=Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+typeSel.innerHTML='<option value="">모양 바꾸기…</option>'+Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{view=b.dataset.view;sel=null;connectFrom=null;render()});
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;connectFrom=null;document.body.className='m-'+mode;render()});
+document.getElementById('addBtn').onclick=()=>{
+ const t=addSel.value,k=activeKey;if(!stages[k])return;snap();
+ const sizes={text:[320,40],lane:[700,160],diamond:[230,120],badge:[260,42],step:[231,82],pill:[170,110]};
+ const [w,h]=sizes[t]||[260,100];
+ const n={id:uid(),type:t,x:Math.round((W-w)/2),y:Math.round((H-h)/2),w,h,title:t==='text'?'텍스트':t==='lane'?'구역':'새 박스'};
+ if(t==='text'){n.fs=18;n.color='#333';n.fw=500}else if(t!=='badge')n.body='설명';
+ if(t==='lane'){n.tone='green';state[k].nodes.unshift(n)}else state[k].nodes.push(n);
+ save();sel={k,kind:'node',id:n.id};buildStage(k);updateToolbar();toast('가운데에 추가했어요 · 이동 모드에서 옮기세요');
+};
+typeSel.onchange=()=>{const n=curNode();if(!n||!typeSel.value)return;snap();n.type=typeSel.value;if(n.type==='lane'&&!n.tone)n.tone='green';n.swatch=n.swatch&&n.type!=='text';save();buildStage(sel.k);updateToolbar()};
+document.getElementById('colorBtn').onclick=()=>{const e=curEdge();if(e){snap();e.color=COLOR_KEYS[(COLOR_KEYS.indexOf(e.color)+1)%COLOR_KEYS.length];save();drawEdges(sel.k);return}
+ const n=curNode();if(n&&n.type==='lane'){snap();const tones=['green','purple','none'];n.tone=tones[(tones.indexOf(n.tone)+1)%3];save();buildStage(sel.k)}};
+document.getElementById('dashBtn').onclick=()=>{const e=curEdge();if(!e)return;snap();e.dash=!e.dash;save();drawEdges(sel.k)};
+document.getElementById('labelBtn').onclick=()=>{const e=curEdge();if(!e)return;if(!e.label){snap();e.label='라벨';save();drawEdges(sel.k)}
+ if(mode!=='text'){mode='text';document.body.className='m-text';render()}
+ const el=stages[sel.k]&&stages[sel.k].querySelector(`.lbl[data-eid="${e.id}"]`);if(el){el.focus();document.execCommand('selectAll',false,null)}};
+document.getElementById('delBtn').onclick=del;
+document.getElementById('undoBtn').onclick=undo;
+document.getElementById('resetBtn').onclick=()=>{if(!confirm('두 흐름 모두 처음 상태로 되돌릴까요? (되돌리기로 복구 가능)'))return;snap();state=normalize(clone(DEFAULTS));sel=null;save();render()};
+function download(href,name){const a=document.createElement('a');a.href=href;a.download=name;document.body.appendChild(a);a.click();a.remove()}
+document.getElementById('jsonBtn').onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify(state,null,1)],{type:'application/json'}));download(u,'honbap-userflow.json');setTimeout(()=>URL.revokeObjectURL(u),1000)};
+document.getElementById('importBtn').onclick=()=>document.getElementById('fileIn').click();
+document.getElementById('fileIn').onchange=async ev=>{const f=ev.target.files[0];if(!f)return;try{const s=JSON.parse(await f.text());if(!s.d1||!s.d2)throw 0;snap();state=normalize(s);sel=null;save();render();toast('불러왔어요')}catch(e){alert('올바른 JSON 파일이 아니에요')}ev.target.value=''};
+document.getElementById('pngBtn').onclick=async()=>{
+ if(typeof html2canvas==='undefined')return alert('PNG 라이브러리를 불러오지 못했어요 (인터넷 연결 확인)');
+ const k=activeKey,st=stages[k];if(!st)return;const keep=sel;select(null);document.activeElement&&document.activeElement.blur();
+ const prev=st.style.transform;st.style.transform='none';
+ try{const c=await html2canvas(st,{backgroundColor:'#fafaf8',scale:1.5,width:W,height:H,windowWidth:W});download(c.toDataURL('image/png'),(k==='d1'?'userflow-상세':'userflow-AI에이전트')+'.png')}
+ finally{st.style.transform=prev;fit()}
+};
+function updateToolbar(){
+ document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===view));
+ document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
+ const n=curNode(),e=curEdge();
+ typeSel.disabled=!n;typeSel.value=n?n.type:'';
+ document.getElementById('colorBtn').disabled=!(e||(n&&n.type==='lane'));
+ document.getElementById('dashBtn').disabled=!e;document.getElementById('labelBtn').disabled=!e;
+ document.getElementById('delBtn').disabled=!sel;
+ const hints={text:'글자를 클릭해서 바로 고치세요. 줄바꿈은 Enter. 화살표를 클릭하면 선택돼요.',move:'박스를 끌어 옮기고, 선택 후 오른쪽 아래 빨간 점으로 크기 조절. 라벨도 끌어서 위치 조정. 방향키로 미세 이동, Delete로 삭제.',connect:'출발 박스 → 도착 박스 순서로 클릭하면 화살표가 생겨요.'};
+ document.getElementById('hint').textContent=hints[mode]+'  ·  변경 내용은 이 브라우저에 자동 저장돼요.';
+}
+document.addEventListener('keydown',ev=>{
+ const editing=document.activeElement&&document.activeElement.isContentEditable;
+ if(editing){if(ev.key==='Escape')document.activeElement.blur();return}
+ if((ev.ctrlKey||ev.metaKey)&&ev.key.toLowerCase()==='z'){ev.preventDefault();undo();return}
+ if(ev.key==='Escape'){connectFrom=null;markSrc();select(null);return}
+ if((ev.key==='Delete'||ev.key==='Backspace')&&sel){ev.preventDefault();del();return}
+ const n=curNode();const dirs={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
+ if(n&&dirs[ev.key]){ev.preventDefault();const st=ev.shiftKey?10:1;n.x+=dirs[ev.key][0]*st;n.y+=dirs[ev.key][1]*st;const el=stages[sel.k].querySelector(`.node[data-id="${n.id}"]`);place(el,n);drawEdges(sel.k);save()}
+});
+render();
+</script>
+</body>
+</html>

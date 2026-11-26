@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/config.js", "destination": "/api/config" }
+  ],
+  "functions": {
+    "api/recommend.py": { "maxDuration": 30, "excludeFiles": "public/**" },
+    "api/config.py": { "excludeFiles": "{public,data,agents}/**" }
+  }
+}
