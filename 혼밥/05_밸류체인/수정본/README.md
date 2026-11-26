@@ -6,21 +6,31 @@
 - 파일 이름의 날짜(`_20261121`, `_1123` 등)는 그 판을 만든 날이다.
 - 문서 안의 파일 경로는 작업할 때의 위치라 지금 폴더와 다를 수 있다.
 
-## 파일 (16개)
+## 11-26 팀원 작업 추가
+
+| 폴더 · 파일 | 내용 | 만든 사람 |
+|---|---|---|
+| `포지셔닝맵_시장규모_초안_1123` | 포지셔닝맵 · TAM/SAM/SOM 초안 | 손효민 |
+| `밸류체인_PDF_1124` | 산업 체인 · 서비스 체인(v챗봇) PDF | 이건협 |
+
+## 파일 (19개)
 
 - `00_자료점검.md`
 - `R1_원페이지.md`
 - `activities_v0.md`
 - `prompts.md`
+- `service/analysis.md`
+- `service/signals.md`
+- `service/stakeholders.md`
+- `service/valuechain_v0.md`
 - `signals.md`
 - `stakeholders.md`
 - `valuechain_v0.md`
 - `valuechain_v1.html`
 - `valuechain_v1.md`
+- `밸류체인_PDF_1124/혼밥_밸류체인_산업체인.pdf`
+- `밸류체인_PDF_1124/혼밥_밸류체인_서비스체인_v챗봇.pdf`
 - `밸류체인_v2_수정검토판_20261124_표시본.md`
 - `완료점검.md`
 - `이전_README_1124.md`
-- `service/analysis.md`
-- `service/signals.md`
-- `service/stakeholders.md`
-- `service/valuechain_v0.md`
+- `포지셔닝맵_시장규모_초안_1123/혼밥_포지셔닝맵_TAM_SAM_SOM_초안.html`
