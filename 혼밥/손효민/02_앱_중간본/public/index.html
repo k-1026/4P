@@ -129,6 +129,7 @@
   .mhero h3{font-size:18px;margin:2px 0 8px}
   .mhero p{font-size:13px;line-height:1.6;color:#5b4d43}
   .mbars{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px 4px;margin-bottom:12px}
+  .mpick{display:flex;justify-content:space-between;gap:12px;padding:8px 0;font-size:13px;color:var(--sub)}.mpick b{color:var(--brand)}
   .mbar{display:grid;grid-template-columns:72px 1fr 72px;gap:8px;align-items:center;font-size:11.5px;color:var(--sub)}
   .mbar .win{color:var(--brand);font-weight:800}
   .mtrack{height:8px;background:var(--line);border-radius:4px;position:relative;overflow:hidden}
@@ -621,7 +622,7 @@ function levelUp(l){
 }
 
 /* ================= 혼밥 MBTI =================
-   4개 축 × 8문항 = 32문항
+   4개 축 × 1문항 = 4문항 (축마다 하나라 동점이 없다)
    W/A 날씨   : W 날씨파(Weather)   vs A 입맛파(Appetite) — 추우면 따뜻한 음식, 더우면 시원한 음식을 찾는지
    B/O 자리   : B 아늑파(Booth)     vs O 당당파(Open)
    N/R 탐험   : N 탐험파(New)       vs R 단골파(Regular)
@@ -640,38 +641,10 @@ const AXES=[
 ];
 // [축, 질문, A답(축의 a쪽), B답(축의 b쪽)]
 const MQ=[
- [0,'기온이 영하로 떨어진 날 점심','뜨끈한 국물 메뉴부터 떠오른다','그날 당기는 걸 먹는다'],
- [1,'식당에 들어갔는데 4인 테이블만 남았다','살짝 민망해서 망설여진다','그냥 넓게 앉는다'],
- [2,'회사 앞에 새 식당이 생겼다','오픈 첫 주에 바로 가본다','늘 가던 곳이 더 편하다'],
- [3,'혼밥 한 끼, 적당한 가격은?','1만원 이하가 마음 편하다','맛있으면 2만원도 괜찮다'],
- [0,'30도가 넘는 한여름 점심','냉면·냉소바처럼 시원한 메뉴','더워도 국밥·찌개 OK'],
- [1,'가장 편한 자리는?','벽 보는 바 좌석·칸막이','창가나 넓은 테이블'],
- [2,'메뉴판 앞에서 나는','처음 보는 메뉴에 도전','늘 먹던 그 메뉴'],
- [3,'양 vs 퀄리티','배부르게 많이','조금이어도 제대로 맛있게'],
- [0,'메뉴 고를 때 날씨(기온)는','꽤 중요한 기준이다','거의 상관없다'],
- [1,'옆 테이블 단체 손님이 시끌벅적하다','신경 쓰여서 빨리 먹고 나간다','별로 상관없다'],
- [2,'나에게 단골집은','딱히 없다, 매번 다른 곳','사장님이 알아보는 곳이 있다'],
- [3,'혼자 오마카세·코스요리','그 돈이면 세 끼 먹는다','나를 위한 선물이지'],
- [0,'추운 날과 더운 날, 내 혼밥 메뉴는','완전히 달라진다','별로 안 달라진다'],
- [1,'"몇 분이세요?" 질문에','"한 명이요…" 살짝 작아진다','"혼자요!" 당당하다'],
- [2,'혼자 고기 굽기, 1인 샤브','재밌겠다, 해보고 싶다','굳이… 익숙한 메뉴가 좋다'],
- [3,'밥·면 리필 무료','완전 중요하다','크게 상관없다'],
- [0,'한겨울에 냉면 먹으러 가자고 하면','겨울엔 따뜻한 게 좋다','겨울 냉면이 오히려 별미'],
- [1,'핫플 웨이팅 줄에 혼자 서기','좀 뻘쭘하다','아무렇지 않다'],
- [2,'점심 메뉴가 고민될 때','안 가본 집을 하나 골라본다','결국 늘 가던 집으로 간다'],
- [3,'월급날 혼밥','평소처럼 먹는다','오늘은 플렉스'],
- [0,'한여름에 펄펄 끓는 찌개·국밥','더운 날엔 좀 부담스럽다','이열치열, 상관없다'],
- [1,'식당 분위기는','혼밥러 많은 곳이 마음 편하다','커플·가족 많아도 상관없다'],
- [2,'여행 가서 혼밥','현지인 골목 맛집 탐방','평소 먹던 익숙한 메뉴'],
- [3,'할인·쿠폰','있는 곳으로 간다','굳이 찾아보진 않는다'],
- [0,'비 오고 쌀쌀한 저녁','칼국수·우동처럼 따끈한 면','평소 먹던 메뉴'],
- [1,'1인 메뉴가 없는 식당','2인분부터라면 패스','사장님께 물어보거나 2인분 시킨다'],
- [2,'같은 식당에 일주일에 두 번','질려서 싫다','오히려 좋다'],
- [3,'분위기 좋은 레스토랑에 혼자','혼자는 좀 아깝다','혼자라서 더 좋다'],
- [0,'갑자기 더워진 봄날','오늘은 시원한 메뉴로 바꾼다','원래 먹으려던 걸 먹는다'],
- [1,'혼밥 중 아는 사람과 마주치면','살짝 당황한다','"같이 먹을래?"'],
- [2,'이번 주 혼밥 메뉴','매일 다르게','비슷해도 괜찮다'],
- [3,'혼밥 음식 사진','찍을 시간에 먹는다','예쁘면 찍어서 남긴다'],
+ [0,'추운 날 점심, 나는','뜨끈한 국물부터 떠오른다','그날 당기는 걸 먹는다'],
+ [1,'혼자 식당에 가면','구석·바 자리가 편하다','어디 앉든 괜찮다'],
+ [2,'점심이 고민될 때','안 가본 집에 간다','늘 가던 집에 간다'],
+ [3,'혼밥 한 끼는','싸고 든든하게','비싸도 맛있게'],
 ];
 // 16유형: 코드 순서 = 고르는 법·자리·새로움·가치
 const TYPES={
@@ -747,19 +720,15 @@ function finishMbti(){
   renderMy();syncProfile&&syncProfile();
   showMbti(true);
 }
-function mbtiBars(pct){
-  return AXES.map((x,i)=>{const p=pct[i],left=p>=50;return `<div class="mbar">
-    <span class="${left?'win':''}"><b>${x.a}</b>${x.aw.slice(1)}<br><small>${x.an}</small></span>
-    <div class="mtrack"><i style="left:0;width:${p}%;${left?'':'opacity:.35'}"></i><i class="r" style="right:0;width:${100-p}%;${left?'opacity:.35':''}"></i></div>
-    <span class="${left?'':'win'}" style="text-align:right"><b>${x.b}</b>${x.bw.slice(1)}<br><small>${x.bn}</small></span></div>
-    <div class="mpct"><span>${p}%</span><span>${100-p}%</span></div>`}).join('');
+function mbtiPicks(pct){
+  return AXES.map((x,i)=>{const front=pct[i]>=50;return `<div class="mpick"><span>${x.t}</span><b>${front?x.a:x.b} ${front?x.an:x.bn}</b></div>`}).join('');
 }
 function showMbti(fresh){
   if(!S.mbti||!TYPES[S.mbti.type]){startMbti();return}
   const {type,pct}=S.mbti,T=TYPES[type];
   sheet(fresh?'🎉 테스트 완료!':'🧩 나의 혼밥 MBTI',`<div class="mres">
     <div class="mhero"><div class="memo">${T.e}</div><div class="mcode">${type}</div><div class="cws">${codeWords(type)}</div><h3>${T.n}</h3><p>${T.d}</p></div>
-    <div class="mbars">${mbtiBars(pct)}</div>
+    <div class="mbars">${mbtiPicks(pct)}</div>
     <div class="mtip">💡 ${T.tip}</div>
   </div>
   <div class="btns" style="margin-top:6px"><button class="cta ghost" id="mCopy">📋 결과 복사</button><button class="cta" id="mGo">🤖 이 결과로 추천받기</button></div>
@@ -767,7 +736,7 @@ function showMbti(fresh){
   $('#mGo').onclick=()=>{closeSheet();go('home');chatMode='mbti';me('MBTI 결과로 추천해줘');think(()=>{bot(`<b>${T.e} ${type} · ${T.n}</b> 타입이시군요! 이 성향에 맞춰 골라봤어요.`);recommend()})};
   $('#mRe').onclick=startMbti;
   $('#mCopy').onclick=()=>{
-    const text=`나의 혼밥 MBTI는 ${type} ${T.e} ${T.n}!\n${T.d}\n`+AXES.map((x,i)=>`${x.an} ${pct[i]}% : ${x.bn} ${100-pct[i]}%`).join('\n');
+    const text=`나의 혼밥 MBTI는 ${type} ${T.e} ${T.n}!\n${T.d}\n`+AXES.map((x,i)=>`${x.t}: ${pct[i]>=50?x.an:x.bn}`).join('\n');
     try{navigator.clipboard.writeText(text).then(()=>snack('결과를 복사했어요 📋'),()=>snack('복사하지 못했어요'))}catch(e){snack('복사하지 못했어요')}
   };
 }
@@ -1275,7 +1244,7 @@ function renderMy(){
   $('#myMbti').innerHTML=M?`<div class="mc-h"><span>🧩 나의 혼밥 MBTI</span><small>AI 추천에 반영 중</small></div>
     <div class="mmini"><div style="font-size:40px;line-height:1">${M.e}</div><div><div class="mcode" style="font-size:22px;margin:0">${S.mbti.type}</div><div class="cws left">${codeWords(S.mbti.type)}</div><b>${M.n}</b><p>${M.d}</p></div></div>
     <div class="btns" style="padding:0;margin-top:10px"><button class="cta ghost" onclick="showMbti()">결과 자세히</button><button class="cta ghost" onclick="startMbti()">다시 테스트</button></div>`
-   :`<div class="mc-h"><span>🧩 혼밥 MBTI</span><small>32문항 · 약 3분</small></div>
+   :`<div class="mc-h"><span>🧩 혼밥 MBTI</span><small>4문항 · 약 10초</small></div>
     <p style="font-size:13px;color:var(--sub);line-height:1.6;margin:6px 0 12px">날씨파일까 입맛파일까? 16가지 혼밥 유형 중 나는 어디에 속하는지 알아보세요. 결과는 AI 추천에 반영돼요.</p>
     <button class="cta" onclick="startMbti()">🧩 혼밥 MBTI 테스트하기</button>`;
   renderSaved();
@@ -1591,12 +1560,12 @@ let testing=false;
 function mbtiReady(){return !!(S.mbti&&TYPES[S.mbti.type]&&S.mbti.ts&&Array.isArray(S.mbti.pct))}
 function openTest(){testing=true;startMbti()}
 function needTest(auto){
-  const m=crewSay('조율자','추천을 시작하려면 <b>혼밥 MBTI 검사</b>를 먼저 해야 해요 (32문항). 검사 결과의 퍼센트로 밥톨이들 비율을 정하거든요.<br><button class="crewbtn">🧩 검사 시작</button>');
+  const m=crewSay('조율자','추천을 시작하려면 <b>혼밥 MBTI 검사</b>를 먼저 해야 해요 (4문항). 고른 성향을 추천에 반영해요.<br><button class="crewbtn">🧩 검사 시작</button>');
   m.querySelector('.crewbtn').onclick=openTest;
   if(auto)setTimeout(openTest,500);
 }
 function mbtiLine(){
-  return `혼밥 MBTI <b>${S.mbti.type}</b> 준비 완료! (${AXES.map((x,i)=>S.mbti.pct[i]>=50?`${x.an} ${S.mbti.pct[i]}%`:`${x.bn} ${100-S.mbti.pct[i]}%`).join(' · ')})`;
+  return `혼밥 MBTI <b>${S.mbti.type}</b> 준비 완료! (${AXES.map((x,i)=>S.mbti.pct[i]>=50?x.an:x.bn).join(' · ')})`;
 }
 function startButton(hurry){
   dropMsg(startMsg);
