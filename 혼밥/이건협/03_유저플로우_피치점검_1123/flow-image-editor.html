@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>유저플로우 이미지 편집</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Noto Sans KR',system-ui,sans-serif;background:#e6e8e4;color:#222}
+.bar{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 12px;background:#fff;border-bottom:1px solid #d6d9d3}
+.bar button,.bar select,.bar input[type=number]{font:inherit;font-size:13px;height:30px;padding:0 10px;border:1px solid #c9cdc6;border-radius:6px;background:#fff;cursor:pointer;color:#222}
+.bar input[type=number]{width:62px;padding:0 6px;cursor:text}
+.bar button:hover{background:#f1f4f0}
+.bar button.on{background:#2c7a56;color:#fff;border-color:#2c7a56}
+.bar button:disabled{opacity:.4;cursor:default}
+.bar label{font-size:12px;color:#666;display:flex;align-items:center;gap:4px}
+.bar input[type=color]{width:30px;height:30px;padding:0;border:1px solid #c9cdc6;border-radius:6px;background:#fff;cursor:pointer}
+.sep{width:1px;height:22px;background:#ddd;margin:0 3px}
+.hint{width:100%;font-size:12px;color:#777}
+#views{padding:12px;display:flex;gap:12px;align-items:flex-start}
+.pane{flex:1;min-width:0;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.12);overflow:hidden;position:relative}
+.pane.hidden{display:none}
+.pane .tag{position:absolute;left:8px;top:8px;z-index:5;font-size:11px;background:rgba(0,0,0,.55);color:#fff;padding:2px 7px;border-radius:4px;pointer-events:none}
+.pane.active{box-shadow:0 0 0 2px #2c7a56}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#222;color:#fff;padding:7px 14px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:99}
+#toast.show{opacity:.92}
+</style>
+</head>
+<body>
+<div class="bar">
+  <button data-view="0">흐름 1 · 상세</button>
+  <button data-view="1">흐름 2 · AI 에이전트</button>
+  <button data-view="split">나란히</button>
+  <span class="sep"></span>
+  <button data-tool="select" title="V">↖ 선택·이동</button>
+  <button data-tool="text" title="T">T 글자</button>
+  <button data-tool="cover" title="E">▭ 가리기(지우개)</button>
+  <button data-tool="rect" title="R">□ 박스</button>
+  <button data-tool="arrow" title="A">→ 화살표</button>
+  <button data-tool="line" title="L">／ 선</button>
+  <button data-tool="pen" title="P">✎ 펜</button>
+  <button data-tool="pick" title="I">💧 스포이드</button>
+  <span class="sep"></span>
+  <label>선·글자 <input type="color" id="stroke" value="#2c7a56"></label>
+  <label>채움 <input type="color" id="fill" value="#eaf5ef"></label>
+  <label><input type="checkbox" id="noFill"> 채움 없음</label>
+  <label>크기 <input type="number" id="size" value="18" min="6" max="120"></label>
+  <label>굵기 <input type="number" id="width" value="2" min="1" max="20"></label>
+  <button id="boldBtn" title="굵게">B</button>
+  <button id="dashBtn" title="점선">┄ 점선</button>
+  <span class="sep"></span>
+  <button id="dupBtn" title="Ctrl+D">복제</button>
+  <button id="delBtn" title="Delete">삭제</button>
+  <button id="undoBtn" title="Ctrl+Z">↶</button>
+  <button id="redoBtn" title="Ctrl+Y">↷</button>
+  <button id="clearBtn">편집 모두 지우기</button>
+  <button id="pngBtn">PNG 저장</button>
+  <button id="copyBtn">이미지 복사</button>
+  <div class="hint" id="hint"></div>
+</div>
+<div id="views"></div>
+<div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<script>
+const IMAGES=[{src:'flow1.webp',name:'흐름1-상세'},{src:'flow2.webp',name:'흐름2-AI에이전트'}];
+const FONT="'Noto Sans KR', sans-serif";
+const $=id=>document.getElementById(id);
+let tool='select',view='0',active=0,dashed=false,bold=true;
+const editors=[];
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1700)}
+const opts=()=>({stroke:$('stroke').value,fill:$('noFill').checked?'transparent':$('fill').value,size:+$('size').value||18,width:+$('width').value||2});
+
+class Editor{
+ constructor(i){
+  this.i=i;this.hist=[];this.redo=[];this.lock=false;
+  const pane=document.createElement('div');pane.className='pane';
+  pane.innerHTML=`<div class="tag">${IMAGES[i].name}</div>`;
+  const cv=document.createElement('canvas');pane.appendChild(cv);$('views').appendChild(pane);
+  this.pane=pane;
+  pane.addEventListener('pointerdown',()=>setActive(i),true);
+  this.c=new fabric.Canvas(cv,{preserveObjectStacking:true,selection:true,targetFindTolerance:6});
+  const img=new Image();
+  img.onload=()=>{
+   this.w=img.naturalWidth;this.h=img.naturalHeight;
+   const off=document.createElement('canvas');off.width=this.w;off.height=this.h;off.getContext('2d').drawImage(img,0,0);this.px=off.getContext('2d');
+   this.c.setBackgroundImage(new fabric.Image(img,{selectable:false}),()=>{this.restore();this.fit()});
+  };
+  img.src=IMAGES[i].src;
+  this.bind();
+ }
+ key(){return 'flow-img-edit-'+this.i}
+ fit(){if(!this.w||this.pane.classList.contains('hidden'))return;const s=this.pane.clientWidth/this.w;this.s=s;this.c.setDimensions({width:this.w*s,height:this.h*s});this.c.setZoom(s);this.c.requestRenderAll()}
+ json(){return JSON.stringify(this.c.toJSON(['tool']).objects)}
+ snap(){if(this.lock)return;const j=this.json();if(this.hist[this.hist.length-1]===j)return;this.hist.push(j);if(this.hist.length>100)this.hist.shift();this.redo=[];try{localStorage.setItem(this.key(),j)}catch(e){}updateUI()}
+ load(j,cb){this.lock=true;this.c.getObjects().slice().forEach(o=>this.c.remove(o));
+  fabric.util.enlivenObjects(JSON.parse(j||'[]'),objs=>{objs.forEach(o=>this.c.add(o));this.lock=false;this.c.requestRenderAll();try{localStorage.setItem(this.key(),j||'[]')}catch(e){}cb&&cb();updateUI()})}
+ restore(){let j='[]';try{j=localStorage.getItem(this.key())||'[]'}catch(e){}this.load(j,()=>{this.hist=[this.json()]})}
+ undo(){if(this.hist.length<2)return toast('되돌릴 내용이 없어요');this.redo.push(this.hist.pop());this.load(this.hist[this.hist.length-1])}
+ redoIt(){if(!this.redo.length)return;const j=this.redo.pop();this.hist.push(j);this.load(j)}
+ color(x,y){if(!this.px)return '#ffffff';x=Math.max(0,Math.min(this.w-1,Math.round(x)));y=Math.max(0,Math.min(this.h-1,Math.round(y)));const d=this.px.getImageData(x,y,1,1).data;return '#'+[d[0],d[1],d[2]].map(v=>v.toString(16).padStart(2,'0')).join('')}
+ arrowPath(x1,y1,x2,y2,hw){const a=Math.atan2(y2-y1,x2-x1),L=hw*4.5,sp=0.45;
+  const p1={x:x2-L*Math.cos(a-sp),y:y2-L*Math.sin(a-sp)},p2={x:x2-L*Math.cos(a+sp),y:y2-L*Math.sin(a+sp)};
+  return `M ${x1} ${y1} L ${x2} ${y2} M ${p1.x} ${p1.y} L ${x2} ${y2} L ${p2.x} ${p2.y}`}
+ bind(){
+  const c=this.c;let start=null,temp=null;
+  c.on('object:added',()=>this.snap());c.on('object:modified',()=>this.snap());c.on('object:removed',()=>this.snap());
+  c.on('text:editing:exited',e=>{const t=e.target;if(t&&!t.text.trim())c.remove(t);else this.snap()});
+  c.on('selection:created',syncFromSel);c.on('selection:updated',syncFromSel);c.on('selection:cleared',updateUI);
+  c.on('path:created',e=>{e.path.set({tool:'pen'});this.snap()});
+  c.on('mouse:down',ev=>{
+   if(tool==='select'||tool==='pen')return;
+   const p=c.getPointer(ev.e),o=opts();
+   if(tool==='pick'){const col=this.color(p.x,p.y);$('stroke').value=col;$('fill').value=col;toast('색을 가져왔어요 '+col);applyToSel();return}
+   if(tool==='text'){
+    if(ev.target&&ev.target.type==='i-text'){return}
+    const t=new fabric.IText('',{left:p.x,top:p.y-o.size*0.6,fontFamily:FONT,fontSize:o.size,fill:o.stroke,fontWeight:bold?700:400,tool:'text'});
+    this.lock=true;c.add(t);this.lock=false;c.setActiveObject(t);t.enterEditing();return;
+   }
+   start=p;
+   if(tool==='cover'||tool==='rect'){
+    const isCover=tool==='cover';
+    temp=new fabric.Rect({left:p.x,top:p.y,width:1,height:1,tool,
+     fill:isCover?this.color(p.x,p.y):o.fill,stroke:isCover?null:o.stroke,strokeWidth:isCover?0:o.width,
+     strokeDashArray:!isCover&&dashed?[8,6]:null,rx:isCover?0:8,ry:isCover?0:8,strokeUniform:true,objectCaching:false});
+   }else{
+    temp=new fabric.Path(this.lineD(p,p,o.width),{stroke:o.stroke,strokeWidth:o.width,fill:null,strokeDashArray:dashed?[8,6]:null,strokeLineCap:'round',strokeLineJoin:'round',tool,objectCaching:false});
+   }
+   this.lock=true;c.add(temp);this.lock=false;c.selection=false;
+  });
+  c.on('mouse:move',ev=>{
+   if(!start||!temp)return;let p=c.getPointer(ev.e);
+   if(temp.type==='rect'){temp.set({left:Math.min(p.x,start.x),top:Math.min(p.y,start.y),width:Math.abs(p.x-start.x),height:Math.abs(p.y-start.y)});temp.setCoords()}
+   else{
+    if(ev.e.shiftKey){if(Math.abs(p.x-start.x)>Math.abs(p.y-start.y))p={x:p.x,y:start.y};else p={x:start.x,y:p.y}}
+    const props={stroke:temp.stroke,strokeWidth:temp.strokeWidth,fill:null,strokeDashArray:temp.strokeDashArray,strokeLineCap:'round',strokeLineJoin:'round',tool:temp.tool,objectCaching:false};
+    this.lock=true;c.remove(temp);temp=new fabric.Path(this.lineD(start,p,props.strokeWidth,temp.tool),props);c.add(temp);this.lock=false;
+   }
+   c.requestRenderAll();
+  });
+  c.on('mouse:up',()=>{
+   if(!start||!temp)return;const t=temp;start=null;temp=null;c.selection=true;
+   const tiny=t.type==='rect'?(t.width<4&&t.height<4):(t.width<4&&t.height<4);
+   this.lock=true;if(tiny){c.remove(t);this.lock=false;return}this.lock=false;
+   t.set({objectCaching:true});t.setCoords();this.snap();
+   if(t.tool==='cover')toast('가렸어요 · 이제 T로 새 글자를 올리세요');
+  });
+ }
+ lineD(a,b,w,kind){kind=kind||tool;return kind==='arrow'?this.arrowPath(a.x,a.y,b.x,b.y,Math.max(2,w)):`M ${a.x} ${a.y} L ${b.x} ${b.y}`}
+ exportURL(){const prev=this.c.getActiveObject();this.c.discardActiveObject();this.c.renderAll();
+  const u=this.c.toDataURL({format:'png',multiplier:1/this.s});if(prev){this.c.setActiveObject(prev);this.c.requestRenderAll()}return u}
+}
+
+function cur(){return editors[active]}
+function setActive(i){if(active===i)return;editors[active].c.discardActiveObject().requestRenderAll();active=i;updateUI()}
+function setTool(t){
+ tool=t;editors.forEach(e=>{const c=e.c;c.isDrawingMode=t==='pen';if(t==='pen'){c.freeDrawingBrush=new fabric.PencilBrush(c);c.freeDrawingBrush.color=$('stroke').value;c.freeDrawingBrush.width=+$('width').value||2}
+  c.defaultCursor=t==='select'?'default':t==='text'?'text':'crosshair';c.skipTargetFind=!(t==='select'||t==='text');c.discardActiveObject();c.requestRenderAll()});
+ updateUI();
+}
+function syncFromSel(){const o=cur().c.getActiveObject();if(o&&o.type!=='activeSelection'){
+  if(o.type==='i-text'){$('size').value=Math.round(o.fontSize*(o.scaleY||1));$('stroke').value=toHex(o.fill);bold=+o.fontWeight>=600||o.fontWeight==='bold'}
+  else{if(o.stroke)$('stroke').value=toHex(o.stroke);if(o.fill&&o.fill!=='transparent')$('fill').value=toHex(o.fill);if(o.strokeWidth)$('width').value=o.strokeWidth;dashed=!!(o.strokeDashArray&&o.strokeDashArray.length)}}
+ updateUI()}
+function toHex(c){if(typeof c!=='string')return '#000000';if(c[0]==='#'&&c.length===7)return c;const ctx=document.createElement('canvas').getContext('2d');ctx.fillStyle=c;return ctx.fillStyle.length===7?ctx.fillStyle:'#000000'}
+function selObjs(){const c=cur().c;return c.getActiveObjects()}
+function applyToSel(what){
+ const objs=selObjs();if(!objs.length)return;const o=opts();
+ objs.forEach(ob=>{
+  if(ob.type==='i-text'){
+   if(!what||what==='stroke')ob.set('fill',o.stroke);
+   if(what==='size')ob.set({fontSize:o.size,scaleX:1,scaleY:1});
+   if(what==='bold')ob.set('fontWeight',bold?700:400);
+  }else{
+   if((!what||what==='stroke')&&ob.tool!=='cover')ob.set('stroke',o.stroke);
+   if(what==='fill'||what==='nofill'||(!what&&ob.tool==='cover'))ob.set('fill',ob.tool==='cover'&&what!=='fill'?$('fill').value:o.fill);
+   if(what==='width'&&ob.tool!=='cover')ob.set('strokeWidth',o.width);
+   if(what==='dash'&&ob.tool!=='cover')ob.set('strokeDashArray',dashed?[8,6]:null);
+  }
+  ob.dirty=true;
+ });
+ cur().c.requestRenderAll();cur().snap();
+}
+$('stroke').addEventListener('input',()=>{applyToSel('stroke');editors.forEach(e=>{if(e.c.freeDrawingBrush)e.c.freeDrawingBrush.color=$('stroke').value})});
+$('fill').addEventListener('input',()=>{$('noFill').checked=false;applyToSel('fill')});
+$('noFill').addEventListener('change',()=>applyToSel('nofill'));
+$('size').addEventListener('input',()=>applyToSel('size'));
+$('width').addEventListener('input',()=>{applyToSel('width');editors.forEach(e=>{if(e.c.freeDrawingBrush)e.c.freeDrawingBrush.width=+$('width').value||2})});
+$('boldBtn').onclick=()=>{bold=!bold;applyToSel('bold');updateUI()};
+$('dashBtn').onclick=()=>{dashed=!dashed;applyToSel('dash');updateUI()};
+function del(){const c=cur().c;const objs=c.getActiveObjects();if(!objs.length)return;cur().lock=true;objs.forEach(o=>c.remove(o));cur().lock=false;c.discardActiveObject();c.requestRenderAll();cur().snap()}
+function dup(){const c=cur().c,o=c.getActiveObject();if(!o)return;o.clone(cl=>{c.discardActiveObject();cl.set({left:cl.left+20,top:cl.top+20,evented:true});
+ if(cl.type==='activeSelection'){cl.canvas=c;cur().lock=true;cl.forEachObject(x=>c.add(x));cur().lock=false;cl.setCoords()}else{cur().lock=true;c.add(cl);cur().lock=false}
+ c.setActiveObject(cl);c.requestRenderAll();cur().snap()},['tool'])}
+$('delBtn').onclick=del;$('dupBtn').onclick=dup;
+$('undoBtn').onclick=()=>cur().undo();$('redoBtn').onclick=()=>cur().redoIt();
+$('clearBtn').onclick=()=>{if(!confirm(IMAGES[active].name+'에 한 편집을 모두 지울까요? (↶로 복구 가능)'))return;const e=cur();e.lock=true;e.c.getObjects().slice().forEach(o=>e.c.remove(o));e.lock=false;e.c.requestRenderAll();e.snap()};
+$('pngBtn').onclick=()=>{const a=document.createElement('a');a.href=cur().exportURL();a.download=IMAGES[active].name+'.png';document.body.appendChild(a);a.click();a.remove()};
+$('copyBtn').onclick=async()=>{try{const b=await (await fetch(cur().exportURL())).blob();await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);toast('클립보드에 복사했어요')}catch(e){toast('복사가 막혀 있어요 · PNG 저장을 써 주세요')}};
+document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{view=b.dataset.view;applyView()});
+function applyView(){editors.forEach((e,i)=>e.pane.classList.toggle('hidden',view!=='split'&&String(i)!==view));if(view!=='split')setActive(+view);requestAnimationFrame(()=>editors.forEach(e=>e.fit()));updateUI()}
+function updateUI(){
+ document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===view));
+ document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('on',b.dataset.tool===tool));
+ $('boldBtn').classList.toggle('on',bold);$('dashBtn').classList.toggle('on',dashed);
+ editors.forEach((e,i)=>e.pane.classList.toggle('active',view==='split'&&i===active));
+ const e=editors[active];const has=e&&e.c.getActiveObjects().length>0;
+ $('delBtn').disabled=!has;$('dupBtn').disabled=!has;
+ if(e){$('undoBtn').disabled=e.hist.length<2;$('redoBtn').disabled=!e.redo.length}
+ const H={select:'클릭해서 고르고 끌어서 이동 · 모서리로 크기 조절 · 글자는 더블클릭해서 수정 · 화살표키로 미세 이동',
+  text:'원하는 곳을 클릭하고 바로 입력 · 기존에 올린 글자는 클릭해서 수정',
+  cover:'지울 영역을 드래그 → 시작점의 배경색으로 덮어요 (원본 글자 지우기용)',
+  rect:'드래그해서 박스 그리기 · 채움 색/채움 없음 선택 가능',arrow:'드래그해서 화살표 · Shift로 수평/수직',line:'드래그해서 선 · Shift로 수평/수직',
+  pen:'자유롭게 그리기',pick:'이미지에서 색을 클릭해 가져오기 (원본과 같은 초록/보라 맞출 때)'};
+ $('hint').textContent=H[tool]+'  ·  편집 내용은 자동 저장돼요';
+}
+document.addEventListener('keydown',ev=>{
+ const e=cur();if(!e)return;const ao=e.c.getActiveObject();
+ if(ao&&ao.isEditing)return;
+ if(['INPUT','SELECT'].includes(document.activeElement.tagName))return;
+ const k=ev.key.toLowerCase(),mod=ev.ctrlKey||ev.metaKey;
+ if(mod&&k==='z'){ev.preventDefault();ev.shiftKey?e.redoIt():e.undo();return}
+ if(mod&&k==='y'){ev.preventDefault();e.redoIt();return}
+ if(mod&&k==='d'){ev.preventDefault();dup();return}
+ if(k==='delete'||k==='backspace'){ev.preventDefault();del();return}
+ if(k==='escape'){e.c.discardActiveObject().requestRenderAll();setTool('select');return}
+ const arr={arrowleft:[-1,0],arrowright:[1,0],arrowup:[0,-1],arrowdown:[0,1]}[k];
+ if(arr&&ao){ev.preventDefault();const st=ev.shiftKey?10:1;ao.set({left:ao.left+arr[0]*st,top:ao.top+arr[1]*st});ao.setCoords();e.c.requestRenderAll();e.snap();return}
+ if(!mod){const m={v:'select',t:'text',e:'cover',r:'rect',a:'arrow',l:'line',p:'pen',i:'pick'}[k];if(m)setTool(m)}
+});
+if(typeof fabric==='undefined'){document.body.insertAdjacentHTML('beforeend','<p style="padding:20px">편집 라이브러리를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.</p>')}
+else{
+ document.fonts&&document.fonts.load("700 18px 'Noto Sans KR'");
+ IMAGES.forEach((_,i)=>editors.push(new Editor(i)));
+ new ResizeObserver(()=>editors.forEach(e=>e.fit())).observe($('views'));
+ applyView();setTool('select');
+}
+</script>
+</body>
+</html>
