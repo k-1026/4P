@@ -21,6 +21,8 @@
 | 제약 | `bm/redteam_log.md`, `ax/risk_check.md` | ⏳ 없음 — 레드팀 전. 이번에는 `honbap/CLAUDE.md` 3장, 혼밥팀 최종본 안내, `1126proto/01_필요데이터_수정사항.md`로 대신 |
 | 완료 기준 | 4절 인수 조건 모음 | ✅ 이 파일 |
 | 데이터 | `1126proto/data/stores_동성로391.json`, `메뉴.json`, `criteria.json` | ✅ 있음 (최종본 DB 391곳) |
+| 웹페이지 · 유저 플로우 | <https://honbap-bapchingu.vercel.app>, `spec/userflow.md` v1, `spec/ia.md` | ✅ 있음 (2026-11-26 실제 플로우. 계획과 다른 점 C1~C8은 userflow.md 4절) |
+| 시장 검증 | `market/` (competitors.md, positioning.html, market_model.xlsx, verify.md) | ✅ 질문 1·2 · ⏳ 질문 3(단위 경제)은 BM 전 |
 
 ⏳ 파일이 생기면 8절 "나중에 채우는 곳"의 순서대로 이 파일을 v1로 올린다.
 
@@ -151,7 +153,7 @@
 
 | 입력 | 값 | 비고 |
 |---|---|---|
-| 웹페이지 주소 | `{{WEB_URL}}` | 예: `http://localhost:8000/`. 로그인이 필요한 주소는 받지 않는다 |
+| 웹페이지 주소 | <https://honbap-bapchingu.vercel.app> | 혼밥 밥친구 (Vercel 배포, 2026-11-26 확인). 로그인 없이 열린다. 주소가 바뀌면 이 칸만 고친다 |
 | 기준 문서 | 이 파일 (`spec/spec.md`) | 4절 필수 스토리, 7.2 화면 목록 |
 | 시험 조건 | 위치 허용 / 거부, 예산 10,000원, "시간이 없어요" | 각 조건으로 한 번씩 지나간다 |
 
@@ -201,7 +203,7 @@
 ### 7.6 프롬프트 예시
 
 ```text
-spec/spec.md 를 읽고, {{WEB_URL}} 을 브라우저로 열어 7절 절차대로
+spec/spec.md 를 읽고, https://honbap-bapchingu.vercel.app 을 브라우저로 열어 7절 절차대로
 spec/userflow.md 와 spec/ia.md 를 만들어 줘.
 - 화면 이름은 7.2 목록만 쓰고, 새 화면은 추가하지 말고 질문으로 남겨 줘.
 - 7.1 시험 조건마다 한 번씩 지나가고, 주 경로 하나 + 예외 경로 2개 이상.
@@ -235,4 +237,4 @@ spec/userflow.md 와 spec/ia.md 를 만들어 줘.
 | Q4 | 혼밥 MBTI 질문을 홈 화면에 넣을까, 나중으로 둘까? | 가중치 보정은 MBTI가 있어야 돈다 | 팀 |
 | Q5 | 30초 응답 기준이 맞나? | 멀티에이전트 호출 시간 측정 전 | 개발 |
 | Q6 | 맛(평점·후기) 정보를 넣을까? 넣는다면 어디서? | 페인포인트 ② 조건 중 맛이 빠져 있음 | 팀 |
-| Q7 | 웹페이지를 어디에 띄울까(로컬 / 팀 서버)? | 7절 `{{WEB_URL}}`과 공개 범위 제약 | 개발 |
+| ~~Q7~~ | ~~웹페이지를 어디에 띄울까(로컬 / 팀 서버)?~~ | **답함 (2026-11-26)**: Vercel <https://honbap-bapchingu.vercel.app> (7.1). 공개 주소라 5절 공개 범위 제약(지도 링크·가게 번호)을 지키는지는 따로 확인 필요 | 개발 |

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>혼밥 밥친구 포지셔닝 맵 (2026-11-26)</title>
+<style>
+:root{--bg:#eef1f0;--card:#fff;--ink:#1d2927;--sub:#5f6e6b;--line:#d9e0de;--teal:#1f8a7a;--teal-soft:#e8f4f1;--dot:#eceff0;--dotline:#7d8d89;--us:#e0603a;--zone:#eaf5df;--zoneline:#bcd9a0;--tag:#8a6d00;--tag-bg:#fdf3cf}
+@media (prefers-color-scheme:dark){:root{--bg:#121817;--card:#1b2321;--ink:#e6eeec;--sub:#9fb0ac;--line:#33413e;--teal:#4fc7b4;--teal-soft:#173029;--dot:#27302f;--dotline:#8fa09c;--us:#f08a66;--zone:#223320;--zoneline:#4a6b3f;--tag:#e9c85a;--tag-bg:#3a3318}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.55}
+.page{max-width:1100px;margin:0 auto;padding:24px 16px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{font-size:12.5px;color:var(--sub);margin:0 0 14px}
+.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.plot{border:1px solid var(--line);border-radius:12px;padding:8px}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:inherit;fill:var(--ink)}
+.ax{stroke:var(--sub);stroke-width:1.6;fill:none}
+.al{font-size:11.5px;font-weight:700}
+.tick{font-size:10px;fill:var(--sub)}
+.dot{fill:var(--dot);stroke:var(--dotline);stroke-width:1.5}
+.dot.i{stroke-dasharray:3 2}
+.dl{font-size:11.5px}
+.zone{fill:var(--zone);stroke:var(--zoneline)}
+.zt{font-size:11px;font-weight:700;fill:#3b6d11}
+@media (prefers-color-scheme:dark){.zt{fill:#9bd27a}}
+.us{fill:var(--us)}
+.ust{font-size:13px;font-weight:700;fill:var(--us)}
+.panel{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--teal-soft);font-size:12.5px}
+.panel h2{font-size:12px;margin:0 0 6px;color:var(--sub)}
+.panel ul{margin:0;padding-left:18px}
+.panel li{margin-bottom:7px}
+table{border-collapse:collapse;width:100%;font-size:12px;margin-top:10px}
+th,td{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left}
+th{background:var(--teal-soft)}
+tr.us td{background:color-mix(in srgb,var(--us) 10%,transparent);font-weight:700}
+.tg{display:inline-block;font-size:10.5px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--tag-bg);color:var(--tag)}
+.ft{font-size:10.5px;color:var(--sub);margin-top:12px}
+</style>
+</head>
+<body>
+<div class="page"><div class="card">
+<h1>포지셔닝 맵 — 1인분을 가게별로 알 수 있는가 × 조건을 한 곳에서 거르는가</h1>
+<p class="sub">점 하나 = <code>market/competitors.md</code> 비교표의 행 하나. 위치는 같은 문서 6.1 점수표 그대로. 점선 테두리 점은 [I](추론) 근거.</p>
+<div class="grid">
+<div class="plot">
+<svg viewBox="0 0 640 430" role="img" aria-label="가로 1인분 확인 1~5, 세로 조건 수 0~5 위에 대안 7개와 우리 서비스를 배치한 포지셔닝 맵">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--sub)"/></marker></defs>
+<!-- 빈 자리: 오른쪽 위 (x>3, y>2.5) -->
+<rect class="zone" x="334" y="26" width="282" height="180" rx="4"/>
+<text class="zt" x="475" y="198" text-anchor="middle">빈 자리 — 수요가 있는가?</text>
+<!-- 축: x 1..5 → 80..580, y 0..5 → 380..40, 가운데 x=3(330), y=2.5(210) -->
+<path class="ax" marker-start="url(#ah)" marker-end="url(#ah)" d="M40,210 H620"/>
+<path class="ax" marker-start="url(#ah)" marker-end="url(#ah)" d="M330,18 V412"/>
+<text class="al" x="338" y="14">↑ 조건을 한 곳에서 함께 거름 (조건 수 5)</text>
+<text class="al" x="338" y="426">↓ 조건이 흩어짐 (0)</text>
+<text class="al" x="42" y="202">← 1인분 확인 불가 (1)</text>
+<text class="al" x="618" y="228" text-anchor="end">1인분 가게별 확인 (5) →</text>
+
+<!-- 카카오맵(웹) · 현상 유지 (1, 0) -->
+<circle class="dot" cx="80" cy="380" r="9"/>
+<text class="dl" x="94" y="376">카카오맵(웹)</text>
+<text class="dl" x="94" y="391">그냥 가서 묻기·편의점</text>
+<!-- 네이버 지도 (2, 3) -->
+<circle class="dot" cx="205" cy="176" r="9"/>
+<text class="dl" x="190" y="160" text-anchor="end">네이버 지도</text>
+<!-- 다이닝코드 (2, 2) -->
+<circle class="dot" cx="205" cy="244" r="9"/>
+<text class="dl" x="190" y="248" text-anchor="end">다이닝코드</text>
+<!-- 캐치테이블 (3, 3) -->
+<circle class="dot" cx="330" cy="176" r="9"/>
+<text class="dl" x="316" y="160" text-anchor="end">캐치테이블</text>
+<!-- 동네 커뮤니티·지인 (3, 2) [I] -->
+<circle class="dot i" cx="330" cy="244" r="9"/>
+<text class="dl" x="344" y="262">동네 커뮤니티·지인</text>
+<!-- 밥토리 (4, 2) [I] -->
+<circle class="dot i" cx="455" cy="244" r="9"/>
+<text class="dl" x="469" y="248">밥토리</text>
+<!-- 우리 (5, 3.5) -->
+<circle class="us" cx="580" cy="142" r="12"/>
+<text class="ust" x="580" y="120" text-anchor="middle">혼밥 밥친구</text>
+</svg>
+</div>
+<div class="panel">
+<h2>읽는 법</h2>
+<ul>
+<li><b>가로</b> — "그 대안만 보고 이 가게에서 혼자 1인분을 먹을 수 있는지 미리 알 수 있는가" (1~5). 페인포인트 ①③.</li>
+<li><b>세로</b> — 앱 필터 비교표(E11, 2026-11-20)의 다섯 칸(1인석·1인 메뉴·분위기·가격대·혼밥)을 O=1 · △=0.5 · X=0으로 더함. 페인포인트 ②.</li>
+<li><b>뭉친 영역</b> — 지도·맛집 앱은 모두 왼쪽(가로 1~3). 네이버·캐치테이블은 세로가 높아도 1인분은 모름.</li>
+<li><b>빈 영역</b> — 오른쪽 위. 1인분 정보가 메뉴판 사진·후기에 흩어져 있어서 비었다 (E25 · E23).</li>
+<li><b>판단</b> — 기회 쪽이지만 수요 근거가 약함: 1인용 메뉴 고려 56.2%(E08, 14개 중 10위), 앱 리뷰 2,000건 중 혼밥 조건 불만 1건 <span class="tg">해석</span></li>
+<li><b>우리 세로 3.5</b> — 실제 앱 기준. 1인석 값이 모두 '모름'(△), 분위기 필터 없음(X). 11-23 문서의 5점은 계획 기준이었다.</li>
+</ul>
+</div>
+</div>
+
+<table>
+<tr><th>대안</th><th>층</th><th>가로</th><th>세로</th><th>근거</th></tr>
+<tr><td>카카오맵(웹)</td><td>참고</td><td>1</td><td>0</td><td>[F] E11</td></tr>
+<tr><td>네이버 지도</td><td>간접</td><td>2</td><td>3</td><td>[F] E11 · E24</td></tr>
+<tr><td>다이닝코드</td><td>간접</td><td>2</td><td>2</td><td>[F] E11 · E24</td></tr>
+<tr><td>캐치테이블</td><td>간접</td><td>3</td><td>3</td><td>[F] E11</td></tr>
+<tr><td>밥토리</td><td>직접</td><td>4</td><td>2</td><td>[I] 앱스토어 소개 문구</td></tr>
+<tr><td>동네 커뮤니티·지인</td><td>대체재</td><td>3</td><td>2</td><td>[I]</td></tr>
+<tr><td>그냥 가서 묻기·편의점</td><td>현상 유지</td><td>1</td><td>0</td><td>[F] 여정 지도 V3·V4</td></tr>
+<tr class="us"><td>혼밥 밥친구 (실제 앱)</td><td>우리</td><td>5</td><td>3.5</td><td>[F] 웹페이지 · 혼밥 DB 391곳 (2026-11-26)</td></tr>
+</table>
+<p class="ft">* 개념도 · 점의 위치는 점수표의 순서를 보여 줄 뿐 거리 비율에 뜻이 없음 · 카카오맵(웹)과 현상 유지는 같은 자리(1, 0) · 카카오맵 앱 · 네이버 앱 · 다이닝코드 앱 화면은 미확인 · AI 검색은 비교에서 제외(2026-11-21 결정) · 지도 앱 외 대안의 세로는 필터가 아니라 추론값</p>
+</div></div>
+</body>
+</html>

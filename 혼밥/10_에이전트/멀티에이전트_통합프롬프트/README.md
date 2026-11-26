@@ -29,6 +29,9 @@
 | `prompts/solo.md` | 혼밥편의 |
 | `prompts/menu.md` | 메뉴 (정보 공유, 점수 없음) |
 | `prompts/verifier.md` | 검증 |
+| `spec/spec.md` | 서비스 spec v0 (목표·사용자·기능·제약·완료 기준) |
+| `spec/userflow.md`, `spec/ia.md` | 실제 웹페이지로 그린 유저 플로우 v1, 사이트맵·스토리 대응표 |
+| `market/` | 시장 검증: 경쟁 비교표, 포지셔닝 맵, TAM·SAM·SOM 시트, 검증 메모 (`market/README.md`) |
 | `ref/예산에이전트_설계_원본.md` | 원본 설계 문서 복사본 (`1123실습/`) |
 | `ref/weather-agent_README_원본.md` | 날씨 에이전트 원본 설명 복사본 |
 
@@ -63,7 +66,8 @@
 
 최종본 DB와 그것으로 만든 JSON에는 지도 링크·가게 번호가 들어 있거나 이어진다.
 공개 깃허브(4P)에 올리지 않고 팀 안에서만 주고받는다.
-그래서 4P 저장소에는 `data/honbap_db_final/`, `data/stores_동성로391.json`, `data/voc_clean.csv`를 넣지 않았다.
+그래서 4P 저장소에는 `data/honbap_db_final/`, `data/stores_동성로391.json`, `data/메뉴.json`, `data/voc_clean.csv`를 넣지 않았다.
+`메뉴.json`은 파일 안 note에 "공개 저장소에 올리지 않는다"고 적혀 있어 2026-11-26 팀원이 4P에서 뺐다.
 공개해도 되는 DB는 `혼밥/이재훈/데이터_공개용/`에 있고, 전체 DB는 혼밥팀 최종본으로 받는다.
 
 `python3 data/build_from_final_db.py`로 최종본 DB에서 JSON 3개를 다시 만든다.
