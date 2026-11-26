@@ -12,14 +12,14 @@
 [입력]
 - 공유 상태: {{board}}
 - 판정 기준표: {{criteria}}
-- 원본 데이터: {{price_data}}, {{store_data}}, {{weather_report}}, {{diary}}
+- 원본 데이터: {{price_data}}, {{store_data}}, {{weather_report}}, {{diary}}   # store_data는 data/stores_동성로391.json (원본 DB data/honbap_db_final/혼밥_동성로.db)
 
 [체크리스트]
 R1 모든 개별 점수가 0~10 정수이거나 null인가. 총점이 0.0~10.0이고 소수 첫째 자리인가.  → 해당 에이전트
 R2 후보 20곳(또는 거리 에이전트가 낸 수) 모두 각 점수 에이전트의 결과가 있는가.       → 누락한 에이전트
 R3 drop 가게가 최종 후보에 들어가지 않았는가.                                          → 조율자
 R4 최종 후보의 1인 가격이 budget_max 이하인가 (premium이면 건너뜀).                     → budget
-R5 evidence의 숫자(가격, 도보 분, 체감온도, 별점)가 원본 데이터와 일치하는가.           → 해당 에이전트
+R5 evidence의 숫자(가격, 도보 분, 체감온도, 별점, 혼밥후기 수)가 원본 데이터와 일치하는가. → 해당 에이전트
 R6 가중치 합이 100이고, 총점 = Σ(점수 × 가중치) ÷ 100 (unknown은 0)이 맞는가.          → 조율자
 R7 confidence가 mid 이하인 정보를 답에서 "확실하지 않다"고 고지했는가.                  → 조율자
 R8 최종 후보가 3곳 미만이면 사유를 밝혔는가.                                           → distance (반경 확대)

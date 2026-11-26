@@ -151,16 +151,41 @@ def score_preference(store_id, shop_avg10=None, kind_avg10=None, kind_count=0,
 
 
 # ───────── 혼밥편의 ─────────
-def score_solo(store_id, min_order_qty=None, single_ok=None, seat=None, cozy_without_pct=False):
+def review_points(counts):
+    """혼밥하기 좋아요 수 목록 -> 같은 순서의 (순위, 후기점수). 최종본 혼밥점수.py와 같은 식."""
+    top, n = C["solo"]["review_points_max"], len(counts)
+    out = []
+    for c in counts:
+        rank = 1 + sum(1 for x in counts if x > c)
+        out.append((rank, -(-top * (n - rank + 1) // n)))  # 정수 올림
+    return out
+
+
+def score_solo(stores):
+    """stores: [{store_id, solo_review_count, solo_seat('있음'/'없음'/None), min_order_qty, single_ok}]
+
+    혼밥점수 = 후기점수(후보끼리 혼밥후기수 순위 8칸, 8~1) + 1인석 있음 2점 (10점 만점).
+    2인분부터면 drop, 혼밥후기수가 없으면(DB에 없는 가게) unknown. 순위는 점수를 받는 가게끼리만 센다.
+    """
     s = C["solo"]
-    if (min_order_qty or 0) >= s["drop_if_min_order_ge"] or single_ok is False:
-        return result(store_id, "drop", reason="2인분부터")
-    if seat in s["seat_confirmed_values"]:
-        return result(store_id, "pass", s["seat_confirmed"], evidence=[f"1인석 확인({seat})"])
-    if single_ok:
-        points = s["single_ok_seat_unknown_cozy_no_pct"] if cozy_without_pct else s["single_ok_seat_unknown"]
-        return result(store_id, "pass", points, "low", ["1인분 확인", "좌석 모름"])
-    return result(store_id, "unknown", confidence="low", reason="1인분·좌석 모두 모름")
+    ranked = [x for x in stores
+              if not ((x.get("min_order_qty") or 0) >= s["drop_if_min_order_ge"] or x.get("single_ok") is False)
+              and x.get("solo_review_count") is not None]
+    pts = dict(zip((x["store_id"] for x in ranked), review_points([x["solo_review_count"] for x in ranked])))
+    out = []
+    for x in stores:
+        sid = x["store_id"]
+        if (x.get("min_order_qty") or 0) >= s["drop_if_min_order_ge"] or x.get("single_ok") is False:
+            out.append(result(sid, "drop", reason="2인분부터"))
+        elif sid not in pts:
+            out.append(result(sid, "unknown", confidence="low", reason="혼밥 DB에 없는 가게(혼밥후기수 모름)"))
+        else:
+            rank, p = pts[sid]
+            seat = s["seat_points"] if x.get("solo_seat") in s["seat_yes_values"] else 0
+            out.append(result(sid, "pass", p + seat, "mid",
+                              [f"혼밥후기 {x['solo_review_count']}명 ({len(ranked)}곳 중 {rank}등) 후기점수 {p}",
+                               f"1인석 {x.get('solo_seat') or '모름'} +{seat}"]))
+    return out
 
 
 # ───────── 조율자 ─────────

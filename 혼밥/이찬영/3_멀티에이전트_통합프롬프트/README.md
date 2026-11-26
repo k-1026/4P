@@ -34,15 +34,20 @@
 
 ## 데이터 (`data/`)
 
-모두 `honbap/`에서 복사했다.
+모두 `honbap/`에서 복사했거나, 복사한 것으로 만들었다.
 원본은 그대로 두었다.
+가게 기준은 2026-11-26 혼밥팀 최종본 DB(391곳)다.
 
 | 파일 | 원본 위치 | 쓰는 에이전트 | 비고 |
 |---|---|---|---|
-| `stores_app_동성로276.json` | `weather-agent/앱데이터.json` | 전체 | 앱이 내보낸 동성로 가게 276곳. 좌석·좌표·평점 칸은 비어 있다 |
+| `honbap_db_final/` | `honbap/혼밥팀_최종본_20261126/1_혼밥DB_최종본/` | 전체 (원본) | 최종본 DB `혼밥_동성로.db`(391곳), CSV, `schema.sql`, `혼밥점수.py`, `test_db.py`, `넘겨주기_혼밥DB.md` |
+| `stores_동성로391.json` | 최종본 DB에서 만듦 | 전체 | 가게 391곳. `store_id`=식당ID, 좌표, 혼밥후기 수, 1인석, 1인 메뉴, 주요메뉴. 지도 링크는 뺐다 |
+| `메뉴.json` | 최종본 DB에서 만듦 | 메뉴, 예산 | `store_id → 1인 메뉴 목록`. 1인 메뉴 근거 + 주요메뉴 중 '단품'·곁들임 아님. `soup`은 null |
+| `id_map_app276_to_db.json` | 1차본 앱 데이터 ↔ 최종본 DB | 전체 | 앱 번호(1001~) 276곳 → 식당ID. 이름이 같은 3쌍은 거리로, `삼락원` 1곳은 손으로 이었다 |
+| `stores_app_동성로276.json` | `weather-agent/앱데이터.json` | (옛 자료) | 1차 앱 내보내기 276곳. 좌석·좌표·평점 칸이 비어 있다. 최종본 391곳으로 대신한다 |
 | `restaurants_대구1174.json` | `chatbot/restaurants.json` | 혼밥편의, 메뉴, 예산 | 대구 1,174곳 1인분 판정과 메뉴 가격 |
 | `source_1in/*.csv` | `chatbot/data_src/` | 혼밥편의 | 다이닝코드·대구푸드 1인분·최소 주문 근거 (2026-11-21 확인) |
-| `voc_clean.csv` | `voc_clean.csv` | 예산 (VOC 보정, 지금은 꺼 둠) | 331건, 모두 D등급. **공개 저장소라 이 폴더에는 넣지 않았다** (고객 글 원문) |
+| `voc_clean.csv` | `voc_clean.csv` | 예산 (VOC 보정, 지금은 꺼 둠) | 331건, 모두 D등급. 공개 결과물에는 원문 대신 요약과 voc_id만 쓴다 |
 | `혼밥일기.json` | `weather-agent/혼밥일기.json` | 취향기록 | 샘플 일기 9건 |
 | `취향요약.json` | `weather-agent/취향요약.json` | 취향기록 | 앱 일기로 만든 요약 예시 (별점 1~5 기준 옛 형식) |
 | `가게정보.csv` | `weather-agent/가게정보.csv` | 취향기록 | 샘플 가게 11곳의 음식 종류 |
@@ -55,6 +60,13 @@
 - `weather-agent/api_key.txt`: 비밀값이다.
 - `history.csv`, `history_old.csv`: 비어 있다.
 - `chatbot/data_src/대구푸드_맛집DB_905곳.json`: `restaurants_대구1174.json`이 이 파일로 만든 결과라 뺐다.
+
+최종본 DB와 그것으로 만든 JSON에는 지도 링크·가게 번호가 들어 있거나 이어진다.
+공개 깃허브(4P)에 올리지 않고 팀 안에서만 주고받는다.
+그래서 4P 저장소에는 `data/honbap_db_final/`, `data/stores_동성로391.json`, `data/voc_clean.csv`를 넣지 않았다.
+공개해도 되는 DB는 `혼밥/이재훈/데이터_공개용/`에 있고, 전체 DB는 혼밥팀 최종본으로 받는다.
+
+`python3 data/build_from_final_db.py`로 최종본 DB에서 JSON 3개를 다시 만든다.
 
 ## 근거 규칙
 

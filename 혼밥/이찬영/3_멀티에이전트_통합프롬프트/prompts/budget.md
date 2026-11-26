@@ -13,7 +13,7 @@
 - 지시서: {{instruction}}
 - 사용자 성향: {{user_profile}}        # segment(value / premium / unknown), budget_max
 - 후보 가게: {{candidates}}            # 거리 에이전트가 고른 가까운 20곳, 메뉴 에이전트가 붙인 prices
-- 가격 데이터: {{price_data}}          # store_id, price_per_person, source, updated_at
+- 가격 데이터: {{price_data}}          # store_id, price_per_person, source, updated_at (혼밥 DB 근거의 출처·본날)
 - VOC: {{voc}}                         # store_id, text, date
 - 판정 기준: {{criteria.budget}}
 
@@ -26,6 +26,7 @@
 [절차]
 1. 후보마다 1인 가격을 정한다: 메뉴 에이전트가 준 1인 메뉴 가격 목록의 중앙값.
    목록이 없으면 price_data의 price_per_person을 쓴다. 둘 다 없으면 추측하지 말고 unknown으로 둔다.
+   혼밥 DB 주요메뉴의 크기·세트·무게 가격과 곁들임일 수 있는 메뉴는 쓰지 않는다(최종본 안내).
 2. VOC에서 가격 관련 문장만 골라 positive(가성비, 양 많음, 저렴) / negative(비쌈, 양 적음, 가격 인상) / none으로 분류한다.
    분류만 하고 점수 계산은 하지 않는다.
 3. score_budget 도구에 가격, 분류 결과, segment, 상한을 넘겨 점수와 판정을 받는다.
@@ -42,7 +43,7 @@
   지금은 가게와 이어진 VOC가 없어 꺼 둔다(criteria.json voc_enabled: false).
 
 [confidence]
-- 메뉴판 가격, 12개월 이내: high
+- 메뉴판 가격, 12개월 이내: high (혼밥 DB 가격은 2026-11-25~26에 본 값이지만 AI가 화면에서 적은 '검토전' 값이라 mid, '사람확인'이면 high)
 - 12개월 초과, VOC로만 확인, 가격 인상 언급, 날짜 없는 앱 가격: mid
 - 가격 없음: low
 

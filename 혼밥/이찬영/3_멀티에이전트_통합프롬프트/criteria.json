@@ -1,5 +1,6 @@
 {
-  "version": "1126proto-1.0",
+  "version": "1126proto-1.1",
+  "data": "data/stores_동성로391.json (혼밥팀 최종본 DB 391곳, store_id = 식당ID)",
   "updated": "2026-11-26",
   "note": "모든 판정·규칙 점수는 10점 만점이다. 개별 점수는 0~10 정수, 총점은 0.0~10.0(소수 첫째 자리).",
 
@@ -85,15 +86,21 @@
   },
 
   "solo": {
+    "source": "혼밥팀 최종본 혼밥점수.py (2026-11-26 결정)",
+    "score": "후기점수(최대 8) + 1인석점수(2 또는 0)",
+    "review_points_max": 8,
+    "review_points": "ceil(8 × (가게수 − 순위 + 1) ÷ 가게수). 순위 = 자기보다 혼밥후기수가 많은 가게 수 + 1",
+    "review_points_20": [8, 8, 8, 7, 7, 6, 6, 6, 5, 5, 4, 4, 4, 3, 3, 2, 2, 2, 1, 1],
+    "seat_points": 2,
+    "seat_yes_values": ["있음"],
     "drop_if_min_order_ge": 2,
-    "seat_confirmed": 10,
-    "single_ok_seat_unknown": 6,
-    "single_ok_seat_unknown_cozy_no_pct": 3,
-    "both_unknown": "unknown",
-    "seat_confirmed_values": ["bar", "single", "diary"]
+    "not_in_db": "unknown",
+    "confidence": "mid (혼밥후기수는 AI가 지도 화면을 보고 적은 값, 검토전)"
   },
 
-  "menu": {"max_people": 1, "weight": 0, "price_per_person": "1인 메뉴 가격의 중앙값"},
+  "menu": {"max_people": 1, "weight": 0, "price_per_person": "1인 메뉴 가격의 중앙값",
+           "price_filter": "주요메뉴는 가격단위 '단품'이고 곁들임일수있음 0인 것만 쓴다 (크기·세트·무게 제외)",
+           "menus_file": "data/메뉴.json"},
 
   "debate": {"open_if_gap_le": 0.5, "max_objections_per_agent": 1, "can_change_score": false},
   "replan": {"max_rounds": 2},
