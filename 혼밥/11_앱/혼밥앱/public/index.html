@@ -142,6 +142,14 @@
   .mycard{margin:0 16px 12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}
   .mycard .listrow{margin:0 0 8px;background:#faf5f0;border-color:transparent}
   .mycard .listrow:last-child{margin-bottom:0}
+  .srow{display:flex;align-items:center;gap:10px;background:#faf5f0;border:1px solid transparent;border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+  .srow:hover{border-color:var(--brand)}
+  .srow .ico{font-size:20px}
+  .srow .nm{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .srow .ct{font-size:12px;color:var(--sub);white-space:nowrap}
+  .sheart{margin-left:auto;border:0;background:none;color:var(--brand);font-size:17px;line-height:1;padding:4px 6px;cursor:pointer;font-family:inherit}
+  .smore{display:block;width:100%;border:1px solid var(--line);background:#fff;color:var(--sub);border-radius:12px;padding:9px;font-size:12.5px;font-family:inherit;cursor:pointer}
+  .smore:hover{border-color:var(--brand);color:var(--brand)}
   .pav.big{width:52px;height:52px;font-size:26px;border:0;cursor:pointer}
   .mc-h{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:800;margin-bottom:8px}
   .mc-h small{font-weight:400;color:var(--sub);font-size:11.5px}
@@ -1227,10 +1235,15 @@ async function saveWrite(){
 function writeDiary(id){closeSheet();go('diary');setTimeout(()=>{openWrite(id);if(W)W.fromPlace=true},260)}
 
 /* ================= 찜 / 마이 ================= */
+const SAVED_PREVIEW=2;let savedOpen=false;
+function toggleSavedMore(){savedOpen=!savedOpen;renderSaved()}
 function renderSaved(){
   const list=S.saved.slice().reverse().map(byId).filter(Boolean);
   $('#savedCnt').textContent=list.length?`${list.length}곳`:'';
-  $('#savedList').innerHTML=list.length?list.map(r=>`<div class="saved">${row(r)}<button type="button" class="unsave" onclick="toggleSave(${r.id})">♥ 찜 취소</button></div>`).join(''):'<div class="vhint" style="margin-top:0">아직 찜한 식당이 없어요. AI 추천 카드나 식당 상세에서 ♡를 눌러 저장해 보세요.</div>';
+  if(!list.length){savedOpen=false;$('#savedList').innerHTML='<div class="vhint" style="margin-top:0">아직 찜한 식당이 없어요. AI 추천 카드나 식당 상세에서 ♡를 눌러 저장해 보세요.</div>';return}
+  const more=list.length-SAVED_PREVIEW,shown=savedOpen||more<=0?list:list.slice(0,SAVED_PREVIEW);
+  $('#savedList').innerHTML=shown.map(r=>`<div class="srow" onclick="detail(${r.id})"><span class="ico">${r.ic}</span><span class="nm">${esc(r.name)}</span><span class="ct">${esc(r.cat)}</span><button type="button" class="sheart" aria-label="${esc(r.name)} 찜 취소" title="찜 취소" onclick="event.stopPropagation();toggleSave(${r.id})">♥</button></div>`).join('')
+    +(more>0?`<button type="button" class="smore" aria-expanded="${savedOpen}" onclick="toggleSavedMore()">${savedOpen?'접기 ▲':`더보기 (+${more}곳) ▼`}</button>`:'');
 }
 function renderMy(){
   const M=S.mbti&&TYPES[S.mbti.type]?TYPES[S.mbti.type]:null;
@@ -1668,9 +1681,6 @@ if(mbtiReady()){if(hasRank())askCategory(false,mbtiLine());else askRank(false,mb
     .track{margin:66px 18px 16px 22px}
     .lvfoods{padding:12px 4px}.lvfoods span{font-size:15px}.lvfoods i{font-size:9px}
   }
-  .saved{margin-bottom:16px}.saved:last-child{margin-bottom:0}.saved .listrow{margin:0}
-  .unsave{display:block;margin:8px 0 0 auto;border:1px solid var(--line);background:#fff;color:var(--sub);border-radius:20px;padding:8px 14px;font-size:12.5px;font-family:inherit;cursor:pointer}
-  .unsave:hover{border-color:var(--brand);color:var(--brand)}
   .pick{display:block;width:100%;text-align:left;margin-top:10px;border:1.5px solid var(--brand);background:#fff;border-radius:14px;padding:14px 16px;font-family:inherit;color:var(--text);cursor:pointer}
   .pick b{display:block;font-size:15px;color:var(--brand)}.pick small{display:block;margin-top:4px;font-size:12px;color:var(--sub);line-height:1.6}
   .pick.on{background:var(--brand)}.pick.on b,.pick.on small{color:#fff}
