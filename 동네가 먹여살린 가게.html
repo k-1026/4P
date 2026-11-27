@@ -1,0 +1,429 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>동네가 먹여살린 가게</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Jua&display=swap">
+<style>
+/* 레이아웃: 상단 검색바 → [단계 필터 | 지도 | 결과 목록] 3열 → 판정 기준·데이터 출처·확인 필요 표 */
+:root{
+  --bg:#F3F5F2; --surface:#FFFFFF; --ink:#1C2420; --muted:#5E6B64; --line:#DCE2DD; --soft:#E9EDE9;
+  --s3:#2F4BA0; --s3-bg:#E6EBF8; --s2:#2C7A57; --s2-bg:#E3F2EA; --s1:#A86A12; --s1-bg:#F7EDDB; --s0:#9AA49F;
+  --ok:#2C7A57; --no:#B4322E; --warn:#A86A12; --warn-bg:#FBF1DC;
+  --f-display:'Jua','IBM Plex Sans KR',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans KR',-apple-system,'Malgun Gothic',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141A17; --surface:#1C2420; --ink:#E7ECE8; --muted:#9AA7A0; --line:#2E3833; --soft:#242D29;
+  --s3:#8FA6EC; --s3-bg:#232C47; --s2:#6CC59B; --s2-bg:#1F3329; --s1:#E0A54B; --s1-bg:#382B17; --s0:#5F6A65;
+  --ok:#6CC59B; --no:#F08A84; --warn:#E0A54B; --warn-bg:#382B17; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141A17; --surface:#1C2420; --ink:#E7ECE8; --muted:#9AA7A0; --line:#2E3833; --soft:#242D29;
+  --s3:#8FA6EC; --s3-bg:#232C47; --s2:#6CC59B; --s2-bg:#1F3329; --s1:#E0A54B; --s1-bg:#382B17; --s0:#5F6A65;
+  --ok:#6CC59B; --no:#F08A84; --warn:#E0A54B; --warn-bg:#382B17; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--s3);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+
+/* 상단 바 */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding-block:10px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.logo{display:flex;align-items:baseline;gap:8px;text-decoration:none;color:var(--ink)}
+.logo b{font-family:var(--f-display);font-size:22px;font-weight:400}
+.logo small{color:var(--muted);font-size:12px}
+.search{flex:1 1 260px;display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:999px;padding:6px 14px;min-width:0}
+.search input{border:0;background:none;outline:none;width:100%;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.banner{background:var(--warn-bg);color:var(--ink);border-bottom:1px solid var(--line);padding-block:8px;font-size:13px}
+.banner b{color:var(--warn)}
+
+/* 3열 */
+.wrap{display:grid;grid-template-columns:320px minmax(0,1fr) 320px;gap:16px;padding-block:16px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.panel h2{font-family:var(--f-display);font-weight:400;font-size:20px}
+.sub{color:var(--muted);font-size:13px;margin:4px 0 14px}
+
+/* 단계 그룹 */
+.stages{display:flex;flex-direction:column;gap:12px}
+.stage{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stage-head{display:flex;gap:10px;align-items:flex-start;padding:12px;background:var(--sbg);cursor:pointer}
+.stage-head input{margin-top:4px;width:17px;height:17px;accent-color:var(--sc);flex:none}
+.stage-title{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.stage-title .lv{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;color:var(--sc)}
+.stage-title b{font-family:var(--f-display);font-weight:400;font-size:18px;color:var(--ink)}
+.stage-title small{color:var(--muted);font-size:12px}
+.stage-count{font-family:var(--f-mono);font-size:12px;color:var(--sc);white-space:nowrap;margin-top:2px}
+.crits{list-style:none;margin:0;padding:6px 12px 10px}
+.crit{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px dashed var(--line)}
+.crit:first-child{border-top:0}
+.crit input{margin-top:3px;accent-color:var(--sc);flex:none}
+.crit label{cursor:pointer;min-width:0;flex:1}
+.crit .nm{font-weight:600;font-size:13.5px}
+.crit .ds{display:block;color:var(--muted);font-size:12.5px}
+.tag{display:inline-block;font-size:11px;border-radius:4px;padding:0 5px;margin-left:4px;vertical-align:1px}
+.tag.todo{background:var(--warn-bg);color:var(--warn)}
+.tag.aux{background:var(--soft);color:var(--muted)}
+.s3{--sc:var(--s3);--sbg:var(--s3-bg)} .s2{--sc:var(--s2);--sbg:var(--s2-bg)} .s1{--sc:var(--s1);--sbg:var(--s1-bg)}
+.panel-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px}
+.btn:hover{background:var(--soft)}
+
+details.cfg{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+details.cfg summary{cursor:pointer;font-weight:600;font-size:13.5px}
+.cfg-grid{display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center;margin-top:10px;font-size:13px}
+.cfg-grid input{width:70px;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font-family:var(--f-mono);text-align:right}
+.cfg-grid span small{color:var(--muted)}
+
+/* 지도 */
+.mapbox{padding:0;overflow:hidden}
+.map-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.map-head b{font-family:var(--f-display);font-weight:400;font-size:18px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+#map{display:block;width:100%;height:auto;background:var(--soft)}
+#map .dist{fill:var(--surface);stroke:var(--line);stroke-width:1}
+#map .dlabel{fill:var(--muted);font-size:13px;font-family:var(--f-body);font-weight:600;text-anchor:middle;pointer-events:none}
+#map .pt{cursor:pointer;stroke:var(--surface);stroke-width:1.5;transition:r .15s}
+#map .pt.dim{opacity:.18}
+#map .pt.sel{stroke:var(--ink);stroke-width:2.5}
+.map-note{font-size:12px;color:var(--muted);padding:8px 16px 12px}
+
+/* 결과 */
+.listhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.listhead b{font-family:var(--f-display);font-weight:400;font-size:20px}
+.listhead span{color:var(--muted);font-size:12px}
+.results{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:640px;overflow:auto}
+.res{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.res:hover{background:var(--soft)}
+.res.sel{border-color:var(--ink)}
+.badge{font-family:var(--f-mono);font-size:11px;border-radius:4px;padding:1px 6px;white-space:nowrap;flex:none}
+.b3{background:var(--s3-bg);color:var(--s3)} .b2{background:var(--s2-bg);color:var(--s2)} .b1{background:var(--s1-bg);color:var(--s1)} .b0{background:var(--soft);color:var(--muted)}
+.res .t{min-width:0;flex:1}
+.res .t b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.res .t small{color:var(--muted);font-size:12px}
+.res .yr{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.empty{color:var(--muted);padding:20px 4px;text-align:center}
+
+.detail{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.detail h3{font-size:16px}
+.detail .meta{color:var(--muted);font-size:12.5px;margin:2px 0 10px}
+.chk{list-style:none;margin:0;padding:0;font-size:12.5px;display:flex;flex-direction:column;gap:5px}
+.chk li{display:grid;grid-template-columns:18px 1fr;gap:4px}
+.chk .y{color:var(--ok);font-weight:700} .chk .n{color:var(--no);font-weight:700}
+.chk .lvh{grid-column:1/-1;font-family:var(--f-mono);font-size:11px;letter-spacing:.05em;margin-top:6px}
+
+/* 하단 표 */
+.sec{padding-block:8px 24px}
+.sec h2{font-family:var(--f-display);font-weight:400;font-size:24px}
+.sec > p{color:var(--muted);margin:4px 0 12px;max-width:70ch}
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600;background:var(--soft)}
+tr:last-child td{border-bottom:0}
+td a{color:var(--s3)}
+.st-ok{color:var(--ok);font-weight:600;white-space:nowrap} .st-todo{color:var(--warn);font-weight:600;white-space:nowrap}
+.grade{font-family:var(--f-mono)}
+.foot{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-block:16px 28px}
+
+@media (max-width:1180px){.wrap{grid-template-columns:300px minmax(0,1fr)}.wrap .right{grid-column:1/-1}.results{max-height:none}}
+@media (max-width:760px){.wrap{grid-template-columns:minmax(0,1fr)}.wrap .left{order:2}.wrap .mapbox{order:1}.wrap .right{order:3}}
+@media (prefers-reduced-motion:reduce){#map .pt{transition:none}}
+</style>
+
+<header class="top pad">
+  <a class="logo" href="#"><b>동네가 먹여살린 가게</b><small>대구</small></a>
+  <label class="search"><span aria-hidden="true">⌕</span>
+    <input id="q" type="search" placeholder="가게 이름·구·업태 검색" aria-label="가게 검색"></label>
+  <nav id="districts" class="chips" aria-label="구·군 선택"></nav>
+</header>
+<div class="banner pad"><b>예시 데이터</b> · 지도의 가게는 판정 방식을 보여 주는 예시입니다. 실제 공공데이터를 붙이면 같은 기준으로 다시 판정됩니다.</div>
+
+<main class="wrap pad">
+  <aside class="panel left">
+    <h2>맛집 기준 선택</h2>
+    <p class="sub">처음엔 모든 기준이 켜져 있어 <b>3단계까지 통과한 가게</b>만 보입니다. 기준을 끄면 범위가 넓어집니다.</p>
+    <div id="stages" class="stages"></div>
+    <div class="panel-actions">
+      <button id="allOn" class="btn" type="button">전체 선택</button>
+      <button id="allOff" class="btn" type="button">전체 해제</button>
+    </div>
+    <details class="cfg">
+      <summary>기준값 조정</summary>
+      <div id="cfg" class="cfg-grid"></div>
+    </details>
+  </aside>
+
+  <section class="panel mapbox" aria-label="지도">
+    <div class="map-head">
+      <b>대구 맛집 지도</b>
+      <div class="legend">
+        <span><i style="background:var(--s3)"></i>동네가 먹여 살린 집</span>
+        <span><i style="background:var(--s2)"></i>동네가 고른 집</span>
+        <span><i style="background:var(--s1)"></i>오래 버틴 집</span>
+        <span><i style="background:var(--s0)"></i>단계 미달</span>
+      </div>
+    </div>
+    <svg id="map" viewBox="0 0 640 560" role="img" aria-label="대구 구·군별 가게 위치 약도"></svg>
+    <p class="map-note">구·군 위치를 단순화한 약도입니다. 점 색은 가게가 도달한 최고 단계입니다.</p>
+  </section>
+
+  <aside class="panel right">
+    <div class="listhead"><b id="count"></b><span>단계 높은 순 · 업력 긴 순</span></div>
+    <ul id="results" class="results"></ul>
+    <div id="detail" class="detail" hidden></div>
+  </aside>
+</main>
+
+<section class="sec pad" id="criteria-sec">
+  <h2>단계별 판정 조건</h2>
+  <p>아래 단계가 위 단계의 전제입니다. 3단계는 1·2단계 조건을 모두 통과한 뒤 감점·가산 필터를 거칩니다.</p>
+  <div class="tbl-wrap"><table id="critTable"></table></div>
+</section>
+<section class="sec pad" id="data-sec">
+  <h2>데이터 출처</h2>
+  <p>출처 등급 A는 공공기관 원문 페이지 확인, B는 보도·2차 자료 확인, C는 미확인입니다.</p>
+  <div class="tbl-wrap"><table id="srcTable"></table></div>
+</section>
+<section class="sec pad" id="todo-sec">
+  <h2>확인 필요 항목</h2>
+  <p id="todoSub"></p>
+  <div class="tbl-wrap"><table id="todoTable"></table></div>
+</section>
+<footer class="foot pad">동네가 먹여살린 가게 · 대구 사람들이 오래 지켜 온 가게를 공공데이터로 찾습니다. 검증 기준: 1단계 결과에 대구 백년가게가 몇 % 포함되는지 확인합니다(전국 백년가게 지정리스트, 소상공인시장진흥공단).</footer>
+
+<script>
+/* ── 기준값 (엑셀 '단계별 조건' 노란 칸) ── */
+const CFG={mult:2,minYears:5,radius:300,compMin:3,period:3,bonusMin:1};
+const CFG_META=[
+  ['mult','생존배수','배','같은 구·업태 중위 생존기간의 몇 배',0.5],
+  ['minYears','최소 업력','년','업력 하한',1],
+  ['radius','경쟁 반경','m','같은 업종 점포를 세는 반경',50],
+  ['compMin','경쟁 점포 수','곳','반경 안 같은 업종 점포 하한 (임시값)',1],
+  ['period','행정처분 조회 기간','년','최근 몇 년간 처분 없음',1],
+  ['bonusMin','가산 항목 최소 개수','개','착한가격·전통시장·모범음식점·위생등급 중',1],
+];
+
+/* ── 판정 조건 (엑셀 그대로) ── */
+const STAGES=[
+  {n:3,name:'동네가 먹여 살린 집',tag:'2단계 통과 + 감점·가산 필터'},
+  {n:2,name:'동네가 고른 집',tag:'1단계 통과 + 동네 입지·경쟁'},
+  {n:1,name:'오래 버틴 집',tag:'업력과 독립 점포 여부'},
+];
+const CRIT=[
+  {id:'mult',stage:1,name:'업력 배수',desc:()=>`업력 ≥ 같은 구·업태 중위 생존기간 × ${CFG.mult}배`,status:'설계 완료',
+    data:'전국일반음식점표준데이터(인허가)',org:'행정안전부',fields:'인허가일자, 폐업일자, 영업상태, 업태구분',
+    test:s=>s.years>=s.median*CFG.mult, why:s=>`업력 ${s.years}년 / 기준 ${(s.median*CFG.mult).toFixed(1)}년 (중위 ${s.median}년)`},
+  {id:'min',stage:1,name:'최소 업력',desc:()=>`업력 ≥ ${CFG.minYears}년`,status:'설계 완료',
+    data:'전국일반음식점표준데이터(인허가)',org:'행정안전부',fields:'인허가일자',
+    test:s=>s.years>=CFG.minYears, why:s=>`업력 ${s.years}년`},
+  {id:'fr',stage:1,name:'프랜차이즈 제외',desc:()=>'가맹 브랜드명과 상호가 일치하면 제외',status:'설계 완료',
+    data:'가맹정보(정보공개서)',org:'공정거래위원회',fields:'브랜드명',
+    test:s=>!s.franchise, why:s=>s.franchise?'가맹 브랜드 상호와 일치':'독립 점포'},
+  {id:'area',stage:1,name:'초대형 면적 제외',desc:()=>'같은 업태 면적 상위 구간 제외 (구간은 분포 확인 후)',status:'확인 필요',
+    data:'전국일반음식점표준데이터(인허가)',org:'행정안전부',fields:'소재지면적',
+    test:s=>!s.bigArea, why:s=>`면적 ${s.area}㎡${s.bigArea?' (상위 구간)':''}`},
+  {id:'res',stage:2,name:'주거지 입지',desc:()=>'점포 좌표가 주거지역 안 (또는 외지인 비중 낮은 동)',status:'확인 필요',
+    data:'용도지역지구 정보',org:'국토교통부(국가공간정보)',fields:'용도지역 구분, 좌표',
+    test:s=>s.residential, why:s=>s.residential?'주거지역':'상업·기타 지역'},
+  {id:'comp',stage:2,name:'경쟁 강도',desc:()=>`반경 ${CFG.radius}m 안 같은 업종 점포 ≥ ${CFG.compMin}곳`,status:'설계 완료',
+    data:'상가(상권)정보',org:'소상공인시장진흥공단',fields:'업종 소분류, 위도, 경도',
+    test:s=>s.comp>=CFG.compMin, why:s=>`같은 업종 ${s.comp}곳`},
+  {id:'dens',stage:2,aux:true,name:'주민 밀도',desc:()=>'행정동 인구 1천 명당 음식점 수',status:'확인 필요',
+    data:'주민등록 인구통계',org:'행정안전부',fields:'행정동별 인구',
+    test:s=>s.densOk, why:s=>`1천 명당 ${s.dens}곳${s.densOk?'':' (기준 밖)'}`},
+  {id:'out',stage:2,aux:true,name:'외지인 비중',desc:()=>'구 단위 외지인 방문·소비 비중 하위',status:'설계 완료',
+    data:'빅데이터_지역별 방문자수',org:'한국관광공사',fields:'지역별 방문자 수',
+    test:s=>s.outLow, why:s=>s.outLow?'외지인 비중 하위 구':'외지인 비중 높은 구'},
+  {id:'viol',stage:3,name:'감점: 행정처분',desc:()=>`최근 ${CFG.period}년 식품위생 행정처분 없음`,status:'설계 완료',
+    data:'행정처분결과(식품접객업)',org:'식품의약품안전처',fields:'인허가번호, 처분확정일자, 위반내용',
+    test:s=>!(s.violYear!=null && s.violYear<CFG.period), why:s=>s.violYear==null?'처분 이력 없음':`${s.violYear+1}년 이내 처분 1건`},
+  {id:'bonus',stage:3,name:'가산 항목',desc:()=>`가산 항목 ${CFG.bonusMin}개 이상 (착한가격·전통시장·모범음식점·위생등급)`,status:'확인 필요',
+    data:'착한가격업소 / 온누리 가맹점 / 모범음식점 / 위생등급',org:'대구 구·군 / 소상공인시장진흥공단 / 대구 남구 / 구·군',fields:'업소명, 주소',
+    test:s=>s.bonus.length>=CFG.bonusMin, why:s=>s.bonus.length?s.bonus.join('·'):'해당 없음'},
+];
+
+const SOURCES=[
+  ['전국일반음식점표준데이터','행정안전부(소관: 식품의약품안전처)','CSV / API','https://www.data.go.kr/data/15096283/openapi.do','인허가일자, 폐업일자, 영업상태, 업태, 소재지면적, 좌표','1단계','A','좌표계 EPSG:5174 → 위경도 변환 필요. 폐업일자 포함 여부 확인'],
+  ['기업생멸행정통계','국가데이터처(KOSIS)','KOSIS 표 / API','https://eiec.kdi.re.kr/policy/materialView.do?num=288411','1년·5년 생존율','1단계 기준선 교차검증','B','대구×숙박·음식점업 표 ID 확인 필요'],
+  ['가맹정보 정보공개서 조회','공정거래위원회','API(XML)','https://data.go.kr/data/15125570/openapi.do','브랜드명','1단계 제외','A','응답 필드는 활용신청 후 확인'],
+  ['용도지역지구 정보','국토교통부(국가공간정보)','미확인','','용도지역 구분, 경계','2단계','C','정확한 데이터셋 URL 확인 필요'],
+  ['상가(상권)정보 API','소상공인시장진흥공단','API(JSON·XML)','https://www.data.go.kr/data/15012005/openapi.do','상호, 업종 소분류(247개), 위도, 경도','2단계','A','개발계정 일 10,000건'],
+  ['주민등록 인구통계','행정안전부','미확인','','행정동별 인구','2단계(보조)','C','데이터셋 URL 확인 필요'],
+  ['빅데이터_지역별 방문자수','한국관광공사','API(JSON·XML)','https://www.data.go.kr/data/15101972/openapi.do','지역별 방문자 수','2단계(보조)','A','광역·기초지자체 단위'],
+  ['행정처분결과(식품접객업)','식품의약품안전처','API(JSON·XML)','https://www.data.go.kr/data/15058429/openapi.do','업소명, 인허가번호, 처분확정일자, 처분유형, 위반내용','3단계 감점','A','인허가번호로 인허가 데이터와 결합'],
+  ['대구광역시 북구_착한가격업소','대구광역시 북구','CSV','https://www.data.go.kr/data/15030563/fileData.do','업소명, 주소, 대표 메뉴·가격','3단계 가산','A','나머지 7개 구·군 확인 필요'],
+  ['전국 온누리상품권 가맹점 현황','소상공인시장진흥공단','CSV / API','https://www.data.go.kr/data/3060079/fileData.do','가맹점명, 소속 시장명, 소재지','3단계 가산','A','기준 2025-07-31'],
+  ['대구광역시 남구_모범음식점 현황','대구광역시 남구','CSV','https://www.data.go.kr/dcat/metadata/3069692','업소명, 주소','3단계 가산','A','남구 한정'],
+  ['음식점 위생등급 지정 현황','각 구·군(예: 광주 남구)','CSV','https://www.data.go.kr/biz/dcat/metadata/15157949.do','상호명, 업태','3단계 가산','C','대구 자료 확인 필요. 링크는 타 지역 형식 예시'],
+  ['전국 백년가게 지정리스트','소상공인시장진흥공단','CSV / API','https://www.data.go.kr/data/15132695/fileData.do','업체명, 업체주소','검증(정답지)','A','전국 1,511곳'],
+];
+const TODOS=[
+  ['인허가 데이터에 폐업 업소·폐업일자가 포함되는지','1단계'],
+  ['대구 8개 구·군 추출 가능 여부(시군구 코드)','1단계'],
+  ['가맹정보 API 응답에 브랜드명 필드가 있는지','1단계'],
+  ['소재지면적 분포 확인 후 초대형 구간 확정','1단계'],
+  ['용도지역지구 데이터셋 URL과 형식','2단계'],
+  ['반경 내 경쟁 점포 수 분포 확인 후 N 확정','2단계'],
+  ['주민등록 인구 행정동 데이터 URL','2단계'],
+  ['방문자수 API가 대구 구·군 단위까지 나오는지','2단계'],
+  ['행정처분 데이터와 인허가 데이터 결합 키(인허가번호) 일치 여부','3단계'],
+  ['대구 구·군별 착한가격업소 파일 존재 여부','3단계'],
+  ['대구 위생등급 지정 현황 파일 존재 여부','3단계'],
+  ['대구 백년가게 수 집계','검증'],
+];
+
+/* ── 예시 가게 생성 (실제 데이터로 교체할 자리) ── */
+const DIST={ // 약도용 위치(경도, 위도)와 퍼짐 정도
+  '중구':[128.600,35.870,.008],'동구':[128.690,35.915,.018],'서구':[128.540,35.880,.010],'남구':[128.590,35.830,.010],
+  '북구':[128.580,35.925,.014],'수성구':[128.665,35.845,.016],'달서구':[128.515,35.835,.015],'달성군':[128.440,35.740,.035]};
+const OUT_LOW={'중구':false,'동구':false,'서구':true,'남구':true,'북구':true,'수성구':false,'달서구':true,'달성군':true};
+const KINDS=[['한식',4.6],['분식',3.4],['중국식',4.1],['일식',3.8],['경양식',3.2]];
+const BONUS=['착한가격','전통시장','모범음식점','위생등급'];
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const R=rng(20261029);
+const STORES=[];
+(()=>{const names=Object.keys(DIST);const cnt={};
+  for(let i=0;i<64;i++){
+    const d=names[i%names.length];const [lng,lat,sp]=DIST[d];
+    const [kind,base]=KINDS[Math.floor(R()*KINDS.length)];
+    cnt[kind]=(cnt[kind]||0)+1;
+    const ang=R()*Math.PI*2,rad=Math.sqrt(R())*sp;
+    STORES.push({
+      id:i,name:`예시 ${kind}집 ${String(cnt[kind]).padStart(2,'0')}`,district:d,kind,
+      lng:lng+Math.cos(ang)*rad*1.2,lat:lat+Math.sin(ang)*rad,
+      years:Math.max(1,Math.round(1+Math.pow(R(),0.75)*42)),
+      median:+(base*(0.85+R()*0.3)).toFixed(1),
+      franchise:R()<0.12, area:0, bigArea:R()<0.08,
+      residential:R()<0.8, comp:Math.floor(R()*10),
+      dens:+(4+R()*10).toFixed(1), densOk:R()<0.85, outLow:OUT_LOW[d]||R()<0.35,
+      violYear:R()<0.14?Math.floor(R()*5):null,
+      bonus:BONUS.filter(()=>R()<0.32),
+    });
+    const s=STORES[i]; s.area=s.bigArea?Math.round(330+R()*400):Math.round(25+R()*140);
+  }})();
+
+/* ── 상태 ── */
+const on=new Set(CRIT.map(c=>c.id));        // 처음엔 전체 선택
+let district='전체', query='', selected=null;
+
+function stageOf(s){let st=0;for(const n of [1,2,3]){if(CRIT.filter(c=>c.stage===n).every(c=>c.test(s)))st=n;else break}return st}
+function visible(s){
+  if(district!=='전체'&&s.district!==district)return false;
+  if(query){const q=query.toLowerCase();if(!(`${s.name} ${s.district} ${s.kind}`.toLowerCase().includes(q)))return false}
+  return CRIT.every(c=>!on.has(c.id)||c.test(s));
+}
+const esc=t=>String(t).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const $=id=>document.getElementById(id);
+
+/* ── 필터 패널 ── */
+function renderStages(){
+  const base=STORES.filter(s=>(district==='전체'||s.district===district));
+  $('stages').innerHTML=STAGES.map(st=>{
+    const cs=CRIT.filter(c=>c.stage===st.n);
+    const reach=base.filter(s=>stageOf(s)>=st.n).length;
+    return `<div class="stage s${st.n}">
+      <label class="stage-head"><input type="checkbox" data-stage="${st.n}" aria-label="${st.name} 기준 전체 선택">
+        <span class="stage-title"><span class="lv">${st.n}단계</span><b>${st.name}</b><small>${st.tag}</small></span>
+        <span class="stage-count">${reach}곳</span></label>
+      <ul class="crits">${cs.map(c=>`<li class="crit"><input type="checkbox" id="c_${c.id}" data-crit="${c.id}" ${on.has(c.id)?'checked':''}>
+        <label for="c_${c.id}"><span class="nm">${c.name}</span>${c.aux?'<span class="tag aux">보조</span>':''}${c.status==='확인 필요'?'<span class="tag todo">확인 필요</span>':''}
+        <span class="ds">${esc(c.desc())}</span></label></li>`).join('')}</ul></div>`}).join('');
+  syncStageBoxes();
+}
+function syncStageBoxes(){
+  document.querySelectorAll('[data-stage]').forEach(b=>{
+    const ids=CRIT.filter(c=>c.stage===+b.dataset.stage).map(c=>c.id);
+    const n=ids.filter(id=>on.has(id)).length;
+    b.checked=n===ids.length; b.indeterminate=n>0&&n<ids.length;
+  });
+}
+$('stages').addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.crit){t.checked?on.add(t.dataset.crit):on.delete(t.dataset.crit);syncStageBoxes()}
+  if(t.dataset.stage){CRIT.filter(c=>c.stage===+t.dataset.stage).forEach(c=>{t.checked?on.add(c.id):on.delete(c.id);const el=$('c_'+c.id);if(el)el.checked=t.checked})}
+  update(false);
+});
+$('allOn').onclick=()=>{CRIT.forEach(c=>on.add(c.id));renderStages();update(false)};
+$('allOff').onclick=()=>{on.clear();renderStages();update(false)};
+
+/* 기준값 */
+$('cfg').innerHTML=CFG_META.map(([k,l,u,d,st])=>`<span>${l} <small>${d}</small></span>
+  <label><input id="cfg_${k}" type="number" step="${st}" min="0" value="${CFG[k]}" data-k="${k}" aria-label="${l}"> ${u}</label>`).join('');
+$('cfg').addEventListener('input',e=>{const k=e.target.dataset.k;const v=parseFloat(e.target.value);if(k&&!isNaN(v)){CFG[k]=v;renderStages();update(false);renderCritTable()}});
+
+/* 구·군 칩 */
+$('districts').innerHTML=['전체',...Object.keys(DIST)].map(d=>`<button class="chip" type="button" data-d="${d}" aria-pressed="${d==='전체'}">${d}</button>`).join('');
+$('districts').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!b)return;district=b.dataset.d;
+  document.querySelectorAll('[data-d]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderStages();update(false)});
+$('q').addEventListener('input',e=>{query=e.target.value.trim();update(false)});
+
+/* ── 지도 ── */
+const W=640,H=560,B={x0:128.37,x1:128.75,y0:35.68,y1:35.97};
+const px=(lng,lat)=>[ (lng-B.x0)/(B.x1-B.x0)*(W-40)+20, (B.y1-lat)/(B.y1-B.y0)*(H-40)+20 ];
+const COL=['var(--s0)','var(--s1)','var(--s2)','var(--s3)'];
+function drawMap(){
+  const svg=$('map');
+  let h='';
+  for(const [d,[lng,lat,sp]] of Object.entries(DIST)){
+    const [x,y]=px(lng,lat);const rx=sp*1.2/(B.x1-B.x0)*(W-40)+14, ry=sp/(B.y1-B.y0)*(H-40)+14;
+    h+=`<ellipse class="dist" cx="${x}" cy="${y}" rx="${rx}" ry="${ry}"/>`;
+  }
+  for(const [d,[lng,lat,sp]] of Object.entries(DIST)){
+    const [x,y]=px(lng,lat);const ry=sp/(B.y1-B.y0)*(H-40)+14;
+    h+=`<text class="dlabel" x="${x}" y="${y-ry-6}">${d}</text>`;
+  }
+  h+=STORES.map(s=>{const [x,y]=px(s.lng,s.lat);return `<circle class="pt" data-id="${s.id}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6"><title>${esc(s.name)} · ${s.district}</title></circle>`}).join('');
+  svg.innerHTML=h;
+}
+$('map').addEventListener('click',e=>{const c=e.target.closest('.pt');if(c)select(+c.dataset.id)});
+
+/* ── 결과·상세 ── */
+function update(){
+  const st=new Map(STORES.map(s=>[s.id,stageOf(s)]));
+  const vis=STORES.filter(visible);
+  const vset=new Set(vis.map(s=>s.id));
+  document.querySelectorAll('#map .pt').forEach(c=>{const id=+c.dataset.id;const s=STORES[id];
+    c.setAttribute('fill',COL[st.get(id)]);c.classList.toggle('dim',!vset.has(id));c.classList.toggle('sel',id===selected);
+    c.setAttribute('r',vset.has(id)?(st.get(id)===3?8:6):4);
+    if(district!=='전체'&&s.district!==district)c.classList.add('dim');});
+  vis.sort((a,b)=>st.get(b.id)-st.get(a.id)||b.years-a.years);
+  $('count').textContent=`${vis.length}곳`;
+  $('results').innerHTML=vis.length?vis.map(s=>{const n=st.get(s.id);return `<li class="res${s.id===selected?' sel':''}" data-id="${s.id}" tabindex="0">
+      <span class="badge b${n}">${n?n+'단계':'미달'}</span>
+      <span class="t"><b>${esc(s.name)}</b><small>${s.district} · ${s.kind}</small></span>
+      <span class="yr">${s.years}년</span></li>`}).join('')
+    :'<li class="empty">켜 둔 기준을 모두 통과한 가게가 없습니다. 기준을 몇 개 꺼 보세요.</li>';
+  if(selected!=null)renderDetail(STORES[selected]);
+}
+$('results').addEventListener('click',e=>{const r=e.target.closest('.res');if(r)select(+r.dataset.id)});
+$('results').addEventListener('keydown',e=>{if(e.key==='Enter'){const r=e.target.closest('.res');if(r)select(+r.dataset.id)}});
+function select(id){selected=id;update();}
+function renderDetail(s){
+  const n=stageOf(s);const d=$('detail');d.hidden=false;
+  d.innerHTML=`<h3>${esc(s.name)}</h3><p class="meta">${s.district} · ${s.kind} · <span class="badge b${n}">${n?STAGES.find(x=>x.n===n).name:'단계 미달'}</span></p>
+   <ul class="chk">${[1,2,3].map(lv=>`<li class="lvh" style="color:var(--s${lv})">${lv}단계 ${STAGES.find(x=>x.n===lv).name}</li>`+
+     CRIT.filter(c=>c.stage===lv).map(c=>{const ok=c.test(s);return `<li><span class="${ok?'y':'n'}">${ok?'✓':'✗'}</span><span><b>${c.name}</b> · ${esc(c.why(s))}</span></li>`}).join('')).join('')}</ul>`;
+}
+
+/* ── 하단 표 ── */
+function renderCritTable(){
+  $('critTable').innerHTML=`<thead><tr><th>단계</th><th>이름</th><th>조건 항목</th><th>판정 기준</th><th>데이터</th><th>제공기관</th><th>쓰는 필드</th><th>상태</th></tr></thead><tbody>`+
+   STAGES.flatMap(st=>CRIT.filter(c=>c.stage===st.n).map(c=>`<tr><td><span class="badge b${st.n}">${st.n}단계</span></td><td>${st.name}</td><td>${c.name}${c.aux?' (보조)':''}</td><td>${esc(c.desc())}</td><td>${esc(c.data)}</td><td>${esc(c.org)}</td><td>${esc(c.fields)}</td><td class="${c.status==='확인 필요'?'st-todo':'st-ok'}">${c.status}</td></tr>`)).join('')+
+   `<tr><td><span class="badge b0">검증</span></td><td>정답지</td><td>백년가게 적중률</td><td>1단계 결과에 대구 백년가게가 몇 % 포함되는지</td><td>전국 백년가게 지정리스트</td><td>소상공인시장진흥공단</td><td>업체명, 업체주소</td><td class="st-ok">설계 완료</td></tr></tbody>`;
+}
+$('srcTable').innerHTML=`<thead><tr><th>데이터셋</th><th>제공기관</th><th>형식</th><th>쓰는 필드</th><th>사용 단계</th><th>등급</th><th>비고</th></tr></thead><tbody>`+
+  SOURCES.map(r=>`<tr><td>${r[3]?`<a href="${r[3]}" target="_blank" rel="noopener">${esc(r[0])}</a>`:esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[4])}</td><td>${esc(r[5])}</td><td class="grade">${r[6]}</td><td>${esc(r[7])}</td></tr>`).join('')+'</tbody>';
+$('todoSub').textContent=`실데이터 연결 전에 확인할 ${TODOS.length}건입니다. 현재 완료 0건입니다.`;
+$('todoTable').innerHTML=`<thead><tr><th>번호</th><th>확인할 항목</th><th>관련 단계</th><th>상태</th></tr></thead><tbody>`+
+  TODOS.map((t,i)=>`<tr><td class="grade">${i+1}</td><td>${esc(t[0])}</td><td>${t[1]}</td><td class="st-todo">확인 전</td></tr>`).join('')+'</tbody>';
+
+drawMap();renderStages();renderCritTable();update();
+</script>
+
+</body></html>
