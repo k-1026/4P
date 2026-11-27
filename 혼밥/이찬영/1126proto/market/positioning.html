@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>혼밥 밥친구 포지셔닝 맵 (2026-11-26 v2)</title>
+<style>
+:root{--bg:#eef1f0;--card:#fff;--ink:#1d2927;--sub:#5f6e6b;--line:#d9e0de;--teal:#1f8a7a;--teal-soft:#e8f4f1;--dot:#eceff0;--dotline:#7d8d89;--us:#e0603a;--zone:#eaf5df;--zoneline:#bcd9a0;--tag:#8a6d00;--tag-bg:#fdf3cf}
+@media (prefers-color-scheme:dark){:root{--bg:#121817;--card:#1b2321;--ink:#e6eeec;--sub:#9fb0ac;--line:#33413e;--teal:#4fc7b4;--teal-soft:#173029;--dot:#27302f;--dotline:#8fa09c;--us:#f08a66;--zone:#223320;--zoneline:#4a6b3f;--tag:#e9c85a;--tag-bg:#3a3318}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.55}
+.page{max-width:1100px;margin:0 auto;padding:24px 16px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{font-size:12.5px;color:var(--sub);margin:0 0 14px}
+.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.plot{border:1px solid var(--line);border-radius:12px;padding:8px}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:inherit;fill:var(--ink)}
+.ax{stroke:var(--sub);stroke-width:1.6;fill:none}
+.al{font-size:11.5px;font-weight:700}
+.tk{font-size:11px;font-weight:700;fill:var(--sub)}
+.dot{fill:var(--dot);stroke:var(--dotline);stroke-width:1.5}
+.dot.i{stroke-dasharray:3 2}
+.dl{font-size:11.5px}
+.zone{fill:var(--zone);stroke:var(--zoneline)}
+.zt{font-size:11px;font-weight:700;fill:#3b6d11}
+@media (prefers-color-scheme:dark){.zt{fill:#9bd27a}}
+.us{fill:var(--us)}
+.ust{font-size:13px;font-weight:700;fill:var(--us)}
+.panel{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--teal-soft);font-size:12.5px}
+.panel h2{font-size:12px;margin:0 0 6px;color:var(--sub)}
+.panel ul{margin:0;padding-left:18px}
+.panel li{margin-bottom:7px}
+table{border-collapse:collapse;width:100%;font-size:12px;margin-top:10px}
+th,td{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left;vertical-align:top}
+th{background:var(--teal-soft)}
+tr.us td{background:color-mix(in srgb,var(--us) 10%,transparent);font-weight:700}
+.tg{display:inline-block;font-size:10.5px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--tag-bg);color:var(--tag)}
+.ft{font-size:10.5px;color:var(--sub);margin-top:12px}
+</style>
+</head>
+<body>
+<div class="page"><div class="card">
+<h1>포지셔닝 맵 — 1인분을 가게별로 알 수 있는가 × 혼밥 한 끼 가격으로 거를 수 있는가</h1>
+<p class="sub">점 하나 = <code>market/competitors.md</code> 비교표의 행 하나. 위치는 같은 문서 6.1 점수표 그대로. 세로축은 팀 11-26 결정(조건 수 → 혼밥 한 끼 가격). 점선 테두리 점은 [I](추론) 근거.</p>
+<div class="grid">
+<div class="plot">
+<svg viewBox="0 0 640 430" role="img" aria-label="가로 1인분 확인 1~5, 세로 혼밥 한 끼 가격 O·△·X 위에 대안 7개와 우리 서비스를 배치한 포지셔닝 맵">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--sub)"/></marker></defs>
+<!-- 빈 자리: 오른쪽 위 -->
+<rect class="zone" x="334" y="40" width="282" height="120" rx="4"/>
+<text class="zt" x="475" y="150" text-anchor="middle">빈 자리 — 확인한 대안 중 우리만 있음</text>
+<!-- 축: 가로 1..5 → 80..580 · 세로 O 98 · △ 270 · X 340, 가운데 선 220 -->
+<path class="ax" marker-start="url(#ah)" marker-end="url(#ah)" d="M40,220 H620"/>
+<path class="ax" marker-start="url(#ah)" marker-end="url(#ah)" d="M330,22 V412"/>
+<text class="al" x="338" y="18">↑ 혼밥 한 끼 가격(1만 원대)으로 거를 수 있음</text>
+<text class="al" x="338" y="426">↓ 가격으로 거를 수 없음</text>
+<text class="al" x="42" y="212">← 1인분 확인 불가 (1)</text>
+<text class="al" x="618" y="238" text-anchor="end">1인분 가게별 확인 (5) →</text>
+<text class="tk" x="318" y="102" text-anchor="end">O</text>
+<text class="tk" x="318" y="274" text-anchor="end">△</text>
+<text class="tk" x="318" y="344" text-anchor="end">X</text>
+
+<!-- 카카오맵(웹) · 현상 유지 (1, X) -->
+<circle class="dot" cx="80" cy="340" r="9"/>
+<text class="dl" x="70" y="364">카카오맵(웹)</text>
+<text class="dl" x="70" y="379">그냥 가서 묻기·편의점</text>
+<!-- 네이버 지도 (2, X) -->
+<circle class="dot" cx="205" cy="340" r="9"/>
+<text class="dl" x="205" y="322" text-anchor="middle">네이버 지도</text>
+<!-- 다이닝코드 (2, △) -->
+<circle class="dot" cx="205" cy="270" r="9"/>
+<text class="dl" x="205" y="252" text-anchor="middle">다이닝코드</text>
+<!-- 캐치테이블 (3, △) -->
+<circle class="dot" cx="330" cy="270" r="9"/>
+<text class="dl" x="344" y="274">캐치테이블</text>
+<!-- 동네 커뮤니티·지인 (3, X) [I] -->
+<circle class="dot i" cx="330" cy="340" r="9"/>
+<text class="dl" x="344" y="364">동네 커뮤니티·지인</text>
+<!-- 밥토리 (4, X) [I] -->
+<circle class="dot i" cx="455" cy="340" r="9"/>
+<text class="dl" x="469" y="344">밥토리</text>
+<!-- 우리 (5, O) -->
+<circle class="us" cx="580" cy="98" r="12"/>
+<text class="ust" x="580" y="76" text-anchor="middle">혼밥 밥친구</text>
+</svg>
+</div>
+<div class="panel">
+<h2>읽는 법</h2>
+<ul>
+<li><b>가로</b> — "그 대안만 보고 이 가게에서 혼자 1인분을 먹을 수 있는지 미리 알 수 있는가" (1~5). 1인용 메뉴 고려 56.2% (E08).</li>
+<li><b>세로</b> — O = 1인 한 끼를 2만 원 이하 구간으로 고를 수 있음 · △ = 가격 기능은 있으나 1만 원대 한 끼를 구분 못함 · X = 가격 기능 없음. 가격은 혼자 외식할 때 고려 요인 1위 89.7%, 혼밥 1회 1만~1.5만 원이 38.6%로 가장 많음 (E08). <span class="tg">팀 결정 2026-11-26</span></li>
+<li><b>뭉친 영역</b> — 우리 말고는 모두 가로축 아래. 가격 기능이 없거나(X), 있어도 1만 원대 한 끼를 구분 못함(△).</li>
+<li><b>빈 영역</b> — 오른쪽 위. 메뉴판에는 "혼자 한 끼 얼마"라는 값이 없어, 1인 메뉴만 골라 가격을 다시 계산해야 해서 비었다 (E22 · E25).</li>
+<li><b>판단</b> — 기회 쪽이지만 수요 근거가 약함: 4개 앱 iOS 최근 리뷰 2,000건 중 3년 안의 혼밥 조건 불만 0건. 가장 큰 숙제는 정확도 (사람 확인 391곳 중 17곳) <span class="tg">해석</span></li>
+<li><b>참고: 조건 수</b> — 예전 세로축. 우리 3.5 · 네이버 3 · 캐치테이블 3 · 다이닝코드 2 · 카카오맵(웹) 0으로 차이가 작아 세로축에서 뺐다.</li>
+</ul>
+</div>
+</div>
+
+<table>
+<tr><th>대안</th><th>층</th><th>가로 (1인분)</th><th>세로 (가격)</th><th>근거</th><th>참고: 조건 수</th></tr>
+<tr><td>카카오맵(웹)</td><td>참고</td><td>1</td><td>X</td><td>[F] E11</td><td>0</td></tr>
+<tr><td>네이버 지도</td><td>간접</td><td>2</td><td>X</td><td>[F] E11 · E24</td><td>3</td></tr>
+<tr><td>다이닝코드</td><td>간접</td><td>2</td><td>△</td><td>[F] E11 · E24</td><td>2</td></tr>
+<tr><td>캐치테이블</td><td>간접</td><td>3</td><td>△</td><td>[F] E11 (가장 작은 칸 '10만원 이하')</td><td>3</td></tr>
+<tr><td>밥토리</td><td>직접</td><td>4</td><td>X</td><td>[I] 앱스토어 소개 문구</td><td>2 [I]</td></tr>
+<tr><td>동네 커뮤니티·지인</td><td>대체재</td><td>3</td><td>X</td><td>[I]</td><td>–</td></tr>
+<tr><td>그냥 가서 묻기·편의점</td><td>현상 유지</td><td>1</td><td>X</td><td>[F] 여정 지도 V3·V4 · [I]</td><td>–</td></tr>
+<tr class="us"><td>혼밥 밥친구 (실제 앱)</td><td>우리</td><td>5</td><td>O</td><td>[F] 웹페이지 예산 8천~2만 원 · 혼밥 DB 391곳 (2026-11-26)</td><td>3.5</td></tr>
+</table>
+<p class="ft">* 개념도 · 점의 위치는 점수표의 순서를 보여 줄 뿐 거리 비율에 뜻이 없음 · 카카오맵(웹)과 현상 유지는 같은 자리(1, X) · 경쟁 앱 값은 E11 화면 확인(2026-11-20), 우리 값은 실제 앱·DB(2026-11-26) · 카카오맵 앱 · 네이버 앱 · 다이닝코드 앱 화면과 캐치테이블 가격이 1인 기준인지는 미확인 · AI 검색은 비교에서 제외(2026-11-21 결정) · 지도 앱 외 대안의 값은 필터가 아니라 추론값</p>
+</div></div>
+</body>
+</html>

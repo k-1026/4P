@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>혼밥 피칭 11쪽 · 시장 규모 (960×540, 2쪽)</title>
+<style>
+/* 「혼밥 피피티.pdf」 한 쪽 = 960×540pt(16:9). 1쪽은 11쪽 '시장 규모' 자리를 채우고, 2쪽은 바뀐 점을 보여 주는 부록이다. */
+@page { size: 960px 540px; margin: 0; }
+:root{--bg:#FDFDFC;--navy:#22406E;--bar:#274A79;--panel:#F1F4F8;--line:#C9D2DF;--ink:#1B2B45;--sub:#5B6472;--mute:#8A93A2;--accent:#E0603A;--warn:#FDF3CF;--warnink:#7A5C00}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#d9dde3}
+body{font-family:"Noto Sans KR","Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.deck{transform-origin:0 0}
+.stage{width:960px;height:540px;position:relative;background:var(--bg);overflow:hidden;margin-bottom:24px;break-after:page;page-break-after:always}
+.stage:last-child{margin-bottom:0}
+.brand{position:absolute;left:38px;top:22px;font-size:13px;font-weight:800;letter-spacing:.06em;color:var(--navy)}
+.rule{position:absolute;top:53px;height:1.5px;background:var(--navy)}
+.rule.l{left:38px;width:298px}.rule.r{left:623px;width:299px}
+.nav{position:absolute;top:41px;left:336px;width:287px;display:flex;justify-content:center;align-items:center;gap:8px;font-size:11.5px;font-weight:700;color:var(--sub)}
+.nav .sep{color:var(--mute);font-weight:400;font-size:9px}
+.nav .on{background:var(--navy);color:#fff;border-radius:999px;padding:1px 9px}
+.chip{position:absolute;right:38px;top:20px;background:var(--panel);color:var(--navy);font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 11px}
+.title{position:absolute;top:84px;left:0;width:960px;text-align:center;font-size:29px;font-weight:800;color:var(--navy);letter-spacing:-.02em}
+.subtitle{position:absolute;top:128px;left:0;width:960px;text-align:center;font-size:14px;color:var(--sub)}
+.src{position:absolute;left:38px;top:470px;width:820px;font-size:10px;line-height:1.45;color:var(--sub)}
+.pg{position:absolute;right:38px;top:474px;font-size:14px;font-weight:800;color:var(--navy)}
+.bar{position:absolute;left:0;bottom:0;width:960px;height:22px;background:var(--bar)}
+
+/* 1쪽: 카드 세 장 — 11쪽 자리와 같은 칸 (x 64~896, y 231~386) */
+.card{position:absolute;top:200px;width:266px;height:200px;border-radius:12px;background:var(--panel);text-align:center;padding-top:18px}
+.card.c1{left:64px}.card.c2{left:347px}.card.c3{left:630px;background:var(--navy);color:#fff}
+.k{font-size:14px;font-weight:800;color:var(--navy);letter-spacing:.02em}
+.c3 .k{color:#fff}
+.where{font-size:11.5px;font-weight:700;color:var(--sub);margin-top:2px}
+.c3 .where{color:#C9D6EA}
+.big{font-size:40px;font-weight:800;color:var(--navy);letter-spacing:-.02em;margin-top:6px;line-height:1.1}
+.c3 .big{color:#fff}
+.f{font-size:11px;color:var(--ink);margin-top:8px;line-height:1.5}
+.c3 .f{color:#E6ECF5}
+.r{font-size:10.5px;color:var(--sub);line-height:1.5}
+.c3 .r{color:#C9D6EA}
+.tag{display:inline-block;font-size:9.5px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--warn);color:var(--warnink);margin-left:3px;vertical-align:1px}
+.note{position:absolute;left:64px;top:416px;width:832px;font-size:11px;color:var(--sub);text-align:center;line-height:1.5}
+
+/* 2쪽: 원 + 비교표 */
+.circ{position:absolute;left:46px;top:160px;width:300px;height:300px}
+.circ svg{width:300px;height:300px;display:block}
+.circ text{font-family:inherit}
+.tb{position:absolute;left:364px;top:166px;width:552px;border-collapse:collapse;font-size:11px}
+.tb th,.tb td{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left;vertical-align:top}
+.tb th{background:var(--panel);color:var(--navy);font-size:10.5px}
+.tb td.new{background:color-mix(in srgb,var(--accent) 9%,transparent);font-weight:700}
+.tb .same{color:var(--mute)}
+.callout{position:absolute;left:364px;top:378px;width:552px;background:var(--warn);color:var(--ink);border-radius:8px;padding:7px 10px;font-size:11px;line-height:1.5}
+@media print{html,body{background:var(--bg)}.deck{transform:none!important}.stage{margin:0}}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ───────── 1쪽: 피칭 11쪽 자리 ───────── -->
+<section class="stage">
+  <div class="brand">혼밥 · 팀 4P</div>
+  <div class="rule l"></div><div class="rule r"></div>
+  <div class="nav"><span>문제</span><span class="sep">›</span><span>해결</span><span class="sep">›</span><span class="on">시장</span><span class="sep">›</span><span>BM</span><span class="sep">›</span><span>MVP</span></div>
+  <div class="chip">피치 3 · 시장</div>
+  <div class="title">시장 규모 — 경상도 388만 명, 첫해는 동성로 2.4만 명부터</div>
+  <div class="subtitle">혼밥하는 사람 기준 · 지난 일주일 점심·저녁을 혼자 3회 이상 먹은 사람 (KREI 원자료)</div>
+
+  <div class="card c1">
+    <div class="k">TAM</div><div class="where">경상도에서 혼밥하는 사람 · 넓혀 갈 끝</div>
+    <div class="big">388만 명</div>
+    <div class="f">20세 이상 1,074만 명 × 혼밥 비율 36.1%</div>
+    <div class="r">범위 369만~406만 · 연 지출 약 1조 1,194억 원</div>
+  </div>
+  <div class="card c2">
+    <div class="k">SAM</div><div class="where">대구에서 혼밥하는 사람 · 서비스 지역</div>
+    <div class="big">77만 명</div>
+    <div class="f">20세 이상 202만 명 × 혼밥 비율 38.0%</div>
+    <div class="r">범위 70만~84만 · 연 지출 약 2,214억 원</div>
+  </div>
+  <div class="card c3">
+    <div class="k">SOM</div><div class="where">동성로에서 혼밥하는 사람 · 첫해 범위</div>
+    <div class="big">2.4만 명</div>
+    <div class="f">대구 77만 명 × 동성로 식당 비중 3.1%<span class="tag">가정</span></div>
+    <div class="r">범위 2.2만~2.6만 · 연 지출 약 68.6억 원</div>
+  </div>
+
+  <div class="note">TAM → SAM 19.8% → SOM 3.1% · 동성로 비중 = 동성로 식당 1,134곳 ÷ 대구 음식점 36,592곳 (혼밥이 식당 수에 비례한다고 가정)<br>SOM은 연 23.1회를 모두 동성로에서 먹는 사람으로 환산한 수 · 지출 = 인원 × 연 식당 혼밥 23.1회 × 객단가 12,500원(가정) · 범위는 95% 신뢰구간</div>
+  <div class="src">출처: 국가데이터처 인구총조사 DT_1IN1503(2025) · KREI 식품소비행태조사 2023~2025 원자료(Claude 계산) · 서비스업조사 2024 · 혼밥팀 최종본(동성로 1,134곳) · aT 2025 국내외 외식트렌드 · 10_에이전트/market/market_model.xlsx 7절</div>
+  <div class="pg">11</div>
+  <div class="bar"></div>
+</section>
+
+<!-- ───────── 2쪽: 부록 — 바뀐 점 ───────── -->
+<section class="stage">
+  <div class="brand">혼밥 · 팀 4P</div>
+  <div class="rule l"></div><div class="rule r"></div>
+  <div class="nav"><span>문제</span><span class="sep">›</span><span>해결</span><span class="sep">›</span><span class="on">시장</span><span class="sep">›</span><span>BM</span><span class="sep">›</span><span>MVP</span></div>
+  <div class="chip">피치 3 · 시장 · 부록</div>
+  <div class="title">TAM · SAM · SOM을 한 칸씩 좁히면</div>
+  <div class="subtitle">앱이 다루는 가게는 동성로 391곳뿐 — 첫해에 닿을 수 있는 범위로 다시 잼</div>
+
+  <div class="circ">
+  <svg viewBox="0 0 300 300" role="img" aria-label="세 겹 원: TAM 경상도 388만 명, SAM 대구 77만 명, SOM 동성로 2.4만 명">
+    <circle cx="150" cy="150" r="144" fill="#F1F4F8" stroke="#C9D2DF" stroke-width="1.5"/>
+    <circle cx="150" cy="186" r="104" fill="#D9E2EF" stroke="#B7C4D8"/>
+    <circle cx="150" cy="224" r="62" fill="#22406E"/>
+    <text x="150" y="34" text-anchor="middle" font-size="15" font-weight="800" fill="#22406E">TAM 경상도</text>
+    <text x="150" y="51" text-anchor="middle" font-size="12" fill="#1B2B45">388만 명 · 1조 1,194억</text>
+    <text x="150" y="110" text-anchor="middle" font-size="15" font-weight="800" fill="#22406E">SAM 대구</text>
+    <text x="150" y="127" text-anchor="middle" font-size="12" fill="#1B2B45">77만 명 · 2,214억</text>
+    <text x="150" y="218" text-anchor="middle" font-size="15" font-weight="800" fill="#fff">SOM 동성로</text>
+    <text x="150" y="236" text-anchor="middle" font-size="12" fill="#E6ECF5">2.4만 명 · 68.6억</text>
+    <text x="150" y="252" text-anchor="middle" font-size="9.5" fill="#C9D6EA">그중 DB 391곳 23.7억</text>
+  </svg>
+  </div>
+
+  <table class="tb">
+    <tr><th>단계</th><th>지금 (팀 11-23 결정)</th><th>제안</th><th>근거</th></tr>
+    <tr><td><b>TAM</b></td><td>전국 1,377만 명</td><td class="new">경상도 388만 명</td><td>인구 × 혼밥 비율 36.1%. 같은 수집 방법으로 넓혀 갈 영남권</td></tr>
+    <tr><td><b>SAM</b></td><td>경상도 388만 명</td><td class="new">대구 77만 명</td><td>앱은 대구 안에서만 쓰는 서비스 (페인포인트 최종본 5절)</td></tr>
+    <tr><td><b>SOM</b></td><td>대구 77만 명</td><td class="new">동성로 2.4만 명 · 68.6억 원</td><td>× 동성로 식당 비중 3.1% <span class="tag">가정</span></td></tr>
+    <tr><td><b>첫해 이용자</b><br><span style="color:var(--sub);font-size:10px">이용률 1·5·10%</span></td><td>7,668 · 38,340 · 76,680명</td><td class="new">238 · 1,188 · 2,376명</td><td>같은 이용률을 SOM에 곱함</td></tr>
+  </table>
+
+  <div class="callout"><b>왜 바꾸나</b> — 단계마다 고르게 줄어든다(TAM → SAM 19.8%, SAM → SOM 3.1%). 지금 '기준' 시나리오(대구 5%, 38,340명)는 동성로 혼밥 시장 전체(23,763명)의 <b>1.6배</b>라 첫해에 닿을 수 없다.<br><b>남은 일</b> — 동성로 낮 시간 인구를 찾으면 '식당 수 비중' 가정을 바꾼다. 범위 변경은 팀 확인이 필요하다.</div>
+
+  <div class="src">출처: 10_에이전트/market/market_model.xlsx 4~7절 (7절 제안) · verify.md 2.1절 · 팀 문서 혼밥_포지셔닝맵_시장규모_수익시뮬레이션_20261126.html (시장 규모 장)</div>
+  <div class="pg">11-1</div>
+  <div class="bar"></div>
+</section>
+</div>
+<script>
+(function(){
+  const d=document.getElementById('deck');
+  function fit(){ const k=Math.min(1,(innerWidth-16)/960); d.style.transform='scale('+k+')'; d.style.marginLeft=Math.max(0,(innerWidth-960*k)/2)+'px'; }
+  addEventListener('resize',fit); fit();
+})();
+</script>
+</body>
+</html>
